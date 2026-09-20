@@ -764,6 +764,14 @@ select {
   min-width: 0;
 }
 
+.toolbar__label {
+  white-space: nowrap;
+}
+
+.toolbar__label .count {
+  color: var(--gold);
+}
+
 .tabs {
   display: flex;
   gap: 2px;
@@ -1381,10 +1389,12 @@ a.coin:focus-visible {
   background: var(--raised);
 }
 
-.listing__art svg {
+.listing__art svg,
+.listing__art img {
   display: block;
   width: 100%;
   height: 100%;
+  object-fit: cover;
   image-rendering: pixelated;
 }
 
@@ -1663,27 +1673,46 @@ a.coin:focus-visible {
 /* ---------- wallet ---------- */
 
 .wallet {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
 
-.wallet select {
-  width: auto;
-  max-width: 11rem;
-  padding: 6px 24px 6px 8px;
-  background-color: var(--page);
-  color: var(--text);
-  border-color: var(--line);
-  font-family: var(--font-pixel);
-  font-size: 0.56rem;
-  background-image: linear-gradient(45deg, transparent 50%, var(--text2) 50%),
-    linear-gradient(135deg, var(--text2) 50%, transparent 50%);
+/* The connected account, shown in full on hover rather than truncated away. */
+.wallet__key {
+  border: 2px solid var(--line);
+  background: var(--surface);
+  color: var(--text2);
+  padding: 5px 8px;
+  font-size: 0.78rem;
+  line-height: 1;
+  white-space: nowrap;
 }
 
-.wallet select:hover {
-  border-color: var(--text);
+/* Rejections and account switches are real states, so they get a line of text
+   under the button instead of being swallowed. */
+.wallet__note {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  width: max-content;
+  max-width: 21rem;
+  margin: 0;
+  padding: 8px 10px;
+  border: 2px solid var(--line);
+  border-left-width: 6px;
+  background: var(--raised);
+  color: var(--text2);
+  box-shadow: 4px 4px 0 var(--shadow);
+}
+
+@media (max-width: 720px) {
+  .wallet__key {
+    display: none;
+  }
 }
 
 /* ---------- post office scene ---------- */

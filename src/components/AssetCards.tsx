@@ -8,8 +8,12 @@ export interface StampCardData {
   mint: string;
   amountBase: string;
   decimals: number;
-  collection: string;
+  /** Name supplied when the stamp was issued. */
+  name: string;
+  /** Ticker supplied when the stamp was issued. */
   symbol: string;
+  /** Artwork supplied when the stamp was issued, if any. */
+  imageDataUrl?: string | null;
   number: number;
   listing?: { state: string; priceZat: string } | null;
   /** Newest settled sale, kept strictly separate from the asking price. */
@@ -25,9 +29,23 @@ export function stampHref(stamp: { mint: string; id: string }): string {
 }
 
 /**
- * A single stamp, drawn as postage: perforated edge, square artwork panel,
- * collection, catalogue number, represented quantity, and a price block that
- * keeps "asking" and "sold" visually distinct.
+ * The picture supplied at issue time. The deterministic pixel motif is only a
+ * fallback for stamps that were issued without artwork.
+ */
+export function StampImage({
+  stamp,
+}: {
+  stamp: { id: string; name?: string; imageDataUrl?: string | null };
+}) {
+  if (!stamp.imageDataUrl) return <StampArt seed={stamp.id} />;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={stamp.imageDataUrl} alt={stamp.name ?? ""} />;
+}
+
+/**
+ * A single stamp, drawn as postage: perforated edge, square artwork panel, the
+ * name and ticker it was issued with, catalogue number, denomination, and a
+ * price block that keeps "asking" and "sold" visually distinct.
  */
 export function StampCard({ stamp }: { stamp: StampCardData }) {
   const listing = stamp.listing && !CLOSED.includes(stamp.listing.state) ? stamp.listing : null;
@@ -38,15 +56,15 @@ export function StampCard({ stamp }: { stamp: StampCardData }) {
   return (
     <Link className="stampcard" href={stampHref(stamp)}>
       <div className="stampcard__art">
-        <StampArt seed={stamp.id} />
+        <StampImage stamp={stamp} />
         <span className="stampcard__denom">
           {formatUnits(stamp.amountBase, stamp.decimals)} {stamp.symbol}
         </span>
       </div>
 
       <div className="stampcard__body">
-        <span className="stampcard__name" title={stamp.collection}>
-          {stamp.collection}
+        <span className="stampcard__name" title={stamp.name}>
+          {stamp.name}
         </span>
         <span className="stampcard__meta">
           <span className="mono">No. {stamp.number}</span>

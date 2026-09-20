@@ -2,22 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BlankStampArt, CoinArt } from "@/components/art/PixelArt";
+import { BlankStampArt } from "@/components/art/PixelArt";
 import { PostOffice } from "@/components/art/PostOffice";
-import { CoinRow, StampCard, type StampCardData } from "@/components/AssetCards";
+import { StampCard, type StampCardData } from "@/components/AssetCards";
 import { Empty, Note, Panel, Tech } from "@/components/ui";
 import { formatUnits, formatZec, shortId, stampNumbers } from "@/lib/format";
 
-interface Launch {
+/** The metadata supplied when a stamp was issued: name, ticker and artwork. */
+interface StampMeta {
   mint: string;
   name: string;
   symbol: string;
-  quoteSymbol: string;
-  currentSupply: string;
-  launchSupply: string;
-  decimals: number;
   imageDataUrl: string | null;
-  createdAt: string;
 }
 
 interface Stamp {
@@ -52,10 +48,8 @@ interface Sale {
   height: number;
 }
 
-type Tab = "coins" | "stamps";
-
 export default function ExplorePage() {
-  const [launches, setLaunches] = useState<Launch[]>([]);
+  const [meta, setMeta] = useState<StampMeta[]>([]);
   const [stamps, setStamps] = useState<Stamp[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
@@ -63,9 +57,8 @@ export default function ExplorePage() {
     statePersistence?: string;
     stonk?: { paidLaunchesEnabled?: boolean };
   } | null>(null);
-  const [tab, setTab] = useState<Tab>("stamps");
   const [query, setQuery] = useState("");
-  const [venue, setVenue] = useState("all");
+  const [forSaleOnly, setForSaleOnly] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -79,7 +72,7 @@ export default function ExplorePage() {
         fetch("/api/sales").then((r) => r.json()),
       ]);
       if (cancelled) return;
-      setLaunches(l.data?.launches ?? []);
+      setMeta(l.data?.launches ?? []);
       setStamps(s.data?.stamps ?? []);
       setListings([...(m.data?.listings ?? []), ...(m.data?.history ?? [])]);
       setSales(h.data?.sales ?? []);
@@ -92,10 +85,7 @@ export default function ExplorePage() {
     };
   }, []);
 
-  const collections = useMemo(
-    () => new Map(launches.map((l) => [l.mint, l])),
-    [launches],
-  );
+  const metaByMint = useMemo(() => new Map(meta.map((m) => [m.mint, m])), [meta]);
   const numbers = useMemo(() => stampNumbers(stamps), [stamps]);
   const liveListing = useMemo(() => {
     const map = new Map<string, Listing>();
@@ -116,15 +106,16 @@ export default function ExplorePage() {
   const stampCards: StampCardData[] = useMemo(
     () =>
       stamps.map((s) => {
-        const launch = collections.get(s.mint);
+        const issued = metaByMint.get(s.mint);
         const sale = lastSales.get(s.id);
         return {
           id: s.id,
           mint: s.mint,
           amountBase: s.amountBase,
           decimals: s.decimals,
-          collection: launch?.name ?? "Unlisted collection",
-          symbol: launch?.symbol ?? "",
+          name: issued?.name ?? "Untitled stamp",
+          symbol: issued?.symbol ?? "",
+          imageDataUrl: issued?.imageDataUrl ?? null,
           number: numbers.get(s.id) ?? 1,
           listing: liveListing.get(s.id) ?? null,
           lastSale: sale
@@ -132,28 +123,18 @@ export default function ExplorePage() {
             : null,
         };
       }),
-    [stamps, collections, numbers, liveListing, lastSales],
+    [stamps, metaByMint, numbers, liveListing, lastSales],
   );
 
   const q = query.trim().toLowerCase();
   const visibleStamps = stampCards.filter((s) => {
-    if (venue === "listed" && !s.listing) return false;
-    if (venue === "unlisted" && s.listing) return false;
+    if (forSaleOnly && !s.listing) return false;
     if (!q) return true;
     return (
       s.id.toLowerCase().includes(q) ||
-      s.collection.toLowerCase().includes(q) ||
+      s.name.toLowerCase().includes(q) ||
       s.symbol.toLowerCase().includes(q) ||
       s.mint.toLowerCase().includes(q)
-    );
-  });
-  const visibleCoins = launches.filter((l) => {
-    if (venue === "listed" || venue === "unlisted") return true;
-    if (!q) return true;
-    return (
-      l.name.toLowerCase().includes(q) ||
-      l.symbol.toLowerCase().includes(q) ||
-      l.mint.toLowerCase().includes(q)
     );
   });
 
@@ -173,44 +154,35 @@ export default function ExplorePage() {
         key: `stamp-${s.id}`,
         when: s.zcashHeight,
         line: `Stamp issued · ${formatUnits(s.amountBase, s.decimals)} ${
-          collections.get(s.mint)?.symbol ?? ""
+          metaByMint.get(s.mint)?.symbol ?? ""
         }`.trim(),
         sub: `height ${s.zcashHeight} · ${shortId(s.id, 8, 4)}`,
         href: `/collections/${s.mint}/stamps/${s.id}`,
       });
     }
-    for (const l of launches) {
-      events.push({
-        key: `launch-${l.mint}`,
-        when: 0,
-        line: `Coin launched · ${l.symbol}`,
-        sub: shortId(l.mint, 8, 4),
-        href: `/launches/${l.mint}`,
-      });
-    }
     return events.sort((a, b) => b.when - a.when).slice(0, 6);
-  }, [sales, stamps, launches, collections]);
+  }, [sales, stamps, metaByMint]);
 
   return (
     <>
       <Panel className="intro-panel">
         <div className="intro">
           <div className="intro__copy">
-            <p className="eyebrow">StampPad · post office for onchain assets</p>
+            <p className="eyebrow">StampPad · post office for onchain stamps</p>
             <h1>Small stamps. Big ideas.</h1>
             <p className="lede muted">
-              Discover Solana coins and Zcash stamps. Burn a coin to issue a stamp on Zcash, then
-              own it, send it, or sell the whole stamp for ZEC.
+              Collectible stamps published on Zcash. Issue one with your own artwork and ticker,
+              then own it, send it, or sell the whole stamp for ZEC.
             </p>
             <p className="tiny muted" style={{ marginTop: 8 }}>
-              Tradable for ZEC · Records the exact quantity burned · Published on Zcash
+              Tradable for ZEC · Whole stamps only · Published on Zcash
             </p>
             <div className="cluster" style={{ marginTop: 14 }}>
               <a className="btn btn--primary" href="#assets">
-                Explore assets
+                Explore stamps
               </a>
-              <Link className="btn" href="/launch">
-                Launch
+              <Link className="btn" href="/convert">
+                Issue a stamp
               </Link>
             </div>
           </div>
@@ -224,180 +196,123 @@ export default function ExplorePage() {
         <div className="stack">
           <Panel>
             <div className="toolbar" role="search">
-              <div className="tabs" role="tablist" aria-label="Asset type">
-                <button
-                  role="tab"
-                  className="tab"
-                  aria-selected={tab === "stamps"}
-                  onClick={() => setTab("stamps")}
-                >
-                  Zcash stamps <span className="count">{stampCards.length}</span>
-                </button>
-                <button
-                  role="tab"
-                  className="tab"
-                  aria-selected={tab === "coins"}
-                  onClick={() => setTab("coins")}
-                >
-                  Solana coins <span className="count">{launches.length}</span>
-                </button>
-              </div>
+              <span className="eyebrow toolbar__label">
+                Stamps <span className="count">{stampCards.length}</span>
+              </span>
               <div className="grow">
                 <label className="sr-only" htmlFor="q">
-                  Search assets
+                  Search stamps
                 </label>
                 <input
                   id="q"
                   value={query}
-                  placeholder={tab === "stamps" ? "Search stamps or collections" : "Search coins"}
+                  placeholder="Search by name, ticker or identifier"
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
-              <div>
-                <label className="sr-only" htmlFor="venue">
-                  Market
-                </label>
-                <select id="venue" value={venue} onChange={(e) => setVenue(e.target.value)}>
-                  <option value="all">All markets</option>
-                  <option value="listed">Stamps: listed for ZEC</option>
-                  <option value="unlisted">Stamps: not listed</option>
-                </select>
+              <div className="rangetabs" role="group" aria-label="Filter stamps">
+                <button aria-pressed={!forSaleOnly} onClick={() => setForSaleOnly(false)}>
+                  All
+                </button>
+                <button aria-pressed={forSaleOnly} onClick={() => setForSaleOnly(true)}>
+                  For sale
+                </button>
               </div>
             </div>
 
             <p className="tiny muted" style={{ marginTop: 10 }}>
-              {tab === "stamps"
-                ? "Stamps are transparent Zcash inscriptions, traded whole and never split. Prices below are stamp listings in ZEC, unrelated to any Solana market price."
-                : "Coins trade on their Solana venue. Stamp listings are a separate market and are not shown here."}
+              Stamps are traded whole and never split. Every price here is a stamp price in ZEC
+              recorded on this deployment.
             </p>
           </Panel>
 
-          {tab === "stamps" ? (
-            <section aria-label="Zcash stamps">
-              {!loaded ? (
-                <div className="stampgrid">
-                  {[0, 1, 2].map((i) => (
-                    <div key={i} className="stampcard" aria-hidden="true">
-                      <div className="stampcard__art dither" />
-                      <div className="stampcard__body">
-                        <div className="skeleton" />
-                      </div>
+          <section aria-label="Stamps">
+            {!loaded ? (
+              <div className="stampgrid">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="stampcard" aria-hidden="true">
+                    <div className="stampcard__art dither" />
+                    <div className="stampcard__body">
+                      <div className="skeleton" />
                     </div>
-                  ))}
-                </div>
-              ) : stampCards.length === 0 ? (
-                <Empty
-                  art={<BlankStampArt />}
-                  title="No stamps issued yet"
-                  action={
-                    <>
-                      <Link className="btn btn--primary" href="/convert">
-                        Issue a stamp
-                      </Link>
-                      <Link className="btn" href="/launch">
-                        Launch a coin
-                      </Link>
-                    </>
-                  }
-                >
-                  Every stamp starts as a coin burn, and nobody has burned anything here yet. Burn
-                  tokens you already hold, or launch a coin first and stamp that.
-                </Empty>
-              ) : visibleStamps.length === 0 ? (
-                <Empty
-                  title="Nothing matches"
-                  action={
-                    <button className="btn" onClick={() => setQuery("")}>
-                      Clear search
-                    </button>
-                  }
-                >
-                  No stamp on this instance matches that search.
-                </Empty>
-              ) : (
-                <div className="stampgrid">
-                  {visibleStamps.map((s) => (
-                    <StampCard key={s.id} stamp={s} />
-                  ))}
-                  {visibleStamps.length < 3 && (
-                    <Link className="stampcard stampcard--ghost" href="/convert">
-                      <div className="stampcard__art dither">
-                        <BlankStampArt />
-                      </div>
-                      <div className="stampcard__body">
-                        <span className="stampcard__name">Issue a stamp</span>
-                        <span className="tiny muted">Burn tokens you hold to mint the next one.</span>
-                      </div>
-                      <div className="stampcard__foot">
-                        <span className="tiny dim">Convert</span>
-                        <span className="linky">Start</span>
-                      </div>
-                    </Link>
-                  )}
-                </div>
-              )}
-            </section>
-          ) : (
-            <section aria-label="Solana coins" className="coinlist">
-              {visibleCoins.length === 0 ? (
-                <Empty
-                  art={<CoinArt seed="stamppad" />}
-                  title={launches.length === 0 ? "No coins launched yet" : "Nothing matches"}
-                  action={
-                    launches.length === 0 ? (
-                      <Link className="btn btn--primary" href="/launch">
-                        Launch a coin
-                      </Link>
-                    ) : (
-                      <button className="btn" onClick={() => setQuery("")}>
-                        Clear search
-                      </button>
-                    )
-                  }
-                >
-                  {launches.length === 0
-                    ? "Every coin listed here was launched on this deployment, quoted against Zcash. Yours would be the first."
-                    : "No coin on this instance matches that search."}
-                </Empty>
-              ) : (
-                visibleCoins.map((l) => (
-                  <CoinRow
-                    key={l.mint}
-                    coin={l}
-                    href={`/launches/${l.mint}`}
-                    action="Trade"
-                    detail={
-                      <span className="tiny muted">
-                        vs {l.quoteSymbol} · {formatUnits(l.currentSupply, l.decimals)} supply
-                      </span>
-                    }
-                  />
-                ))
-              )}
-            </section>
-          )}
+                  </div>
+                ))}
+              </div>
+            ) : stampCards.length === 0 ? (
+              <Empty
+                art={<BlankStampArt />}
+                title="No stamps issued yet"
+                action={
+                  <Link className="btn btn--primary" href="/convert">
+                    Issue a stamp
+                  </Link>
+                }
+              >
+                Nobody has issued a stamp on this deployment. Pick a name, a ticker and some
+                artwork, and yours is the first one on the wall.
+              </Empty>
+            ) : visibleStamps.length === 0 ? (
+              <Empty
+                title={forSaleOnly && !q ? "Nothing is for sale" : "Nothing matches"}
+                action={
+                  <button
+                    className="btn"
+                    onClick={() => {
+                      setQuery("");
+                      setForSaleOnly(false);
+                    }}
+                  >
+                    Show all stamps
+                  </button>
+                }
+              >
+                {forSaleOnly && !q
+                  ? "No stamp on this instance is listed right now. Owners can list one from its own page."
+                  : "No stamp on this instance matches that search."}
+              </Empty>
+            ) : (
+              <div className="stampgrid">
+                {visibleStamps.map((s) => (
+                  <StampCard key={s.id} stamp={s} />
+                ))}
+                {visibleStamps.length < 3 && (
+                  <Link className="stampcard stampcard--ghost" href="/convert">
+                    <div className="stampcard__art dither">
+                      <BlankStampArt />
+                    </div>
+                    <div className="stampcard__body">
+                      <span className="stampcard__name">Issue a stamp</span>
+                      <span className="tiny muted">Your artwork, your ticker, your stamp.</span>
+                    </div>
+                    <div className="stampcard__foot">
+                      <span className="tiny dim">Issue</span>
+                      <span className="linky">Start</span>
+                    </div>
+                  </Link>
+                )}
+              </div>
+            )}
+          </section>
         </div>
 
         <aside className="stack">
           <Panel>
             <h2>How it works</h2>
             <p className="tiny muted" style={{ marginTop: 8 }}>
-              A stamp is a collectible asset on Zcash that records a coin burn. One stamp, one
-              owner, one exact quantity.
+              A stamp is a collectible asset on Zcash. One stamp, one owner, one exact
+              denomination.
             </p>
             <ol className="howto" style={{ marginTop: 10 }}>
+              <li>Issue a stamp with the name, ticker and artwork you want it to carry.</li>
               <li>
-                Launch or choose a coin. Coins trade on Solana, quoted in ZEC.
-              </li>
-              <li>
-                Convert tokens into a stamp. The tokens are destroyed and the stamp is published on
-                Zcash with the amount it represents.
+                It is published on Zcash as a transparent inscription recording the denomination it
+                represents.
               </li>
               <li>Collect or trade. Stamps move to a new owner as a whole, priced in ZEC.</li>
             </ol>
             <div className="cluster" style={{ marginTop: 14 }}>
               <Link className="btn btn--sm btn--primary" href="/convert">
-                Convert
+                Issue a stamp
               </Link>
               <Link className="btn btn--sm" href="/market">
                 Market
@@ -457,8 +372,9 @@ export default function ExplorePage() {
       </div>
 
       <Note tone="quiet">
-        A stamp is a burn receipt. It is not a reserve-backed wrapper, is not redeemable, carries no
-        price parity with the burned token, and is a transparent inscription — not a shielded asset.
+        A stamp is a collectible, not a claim: it is not reserve-backed, is not redeemable, and is a
+        transparent inscription rather than a shielded asset. Sales complete on StampPad&apos;s own
+        ledger, so ownership moves but no ZEC changes hands.
       </Note>
     </>
   );

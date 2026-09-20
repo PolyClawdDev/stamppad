@@ -4,14 +4,13 @@
  * Stamp detail: asset header, compact statistics, chart beside the trade panel
  * on desktop and stacked on mobile.
  *
- * Every price on this page is a stamp price in ZEC. The Solana market price of
- * the burned token is never substituted for it, and an asking price is never
- * counted as a sale.
+ * Every price on this page is a stamp price in ZEC, taken only from sales this
+ * deployment settled. An asking price is never counted as a sale.
  */
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { StampArt } from "@/components/art/PixelArt";
+import { StampImage } from "@/components/AssetCards";
 import { PriceChart, toCandles, type ChartPoint } from "@/components/PriceChart";
 import { useWallet } from "@/components/Wallet";
 import { Badge, Loading, Note, Panel, Tech } from "@/components/ui";
@@ -80,6 +79,8 @@ interface StampView {
 }
 
 const CLOSED = ["cancelled", "expired", "failed", "settled"];
+const NO_DESTINATION =
+  "Name the Zcash address your stamps live at on the Convert screen first. Ownership here is keyed to that address, not to your Solana key.";
 const RANGES = [
   { id: "24h", label: "24H", ms: 24 * 3600_000 },
   { id: "7d", label: "7D", ms: 7 * 24 * 3600_000 },
@@ -89,10 +90,15 @@ const RANGES = [
 
 export default function StampDetailPage() {
   const { mint, id } = useParams<{ mint: string; id: string }>();
-  const { wallet, sign, connect } = useWallet();
+  const { wallet, sign, connect, zcashDestination } = useWallet();
 
   const [stamp, setStamp] = useState<StampView | null>(null);
-  const [collection, setCollection] = useState<{ name: string; symbol: string } | null>(null);
+  /** Name, ticker and artwork as supplied when this stamp was issued. */
+  const [meta, setMeta] = useState<{
+    name: string;
+    symbol: string;
+    imageDataUrl: string | null;
+  } | null>(null);
   const [number, setNumber] = useState<number | null>(null);
   const [sales, setSales] = useState<Sale[]>([]);
   const [collectionSales, setCollectionSales] = useState<Sale[]>([]);
@@ -119,7 +125,11 @@ export default function StampDetailPage() {
     setCollectionSales(all);
     setSales(all.filter((x) => x.stampId === id));
     if (coll.data?.launch) {
-      setCollection({ name: coll.data.launch.name, symbol: coll.data.launch.symbol });
+      setMeta({
+        name: coll.data.launch.name,
+        symbol: coll.data.launch.symbol,
+        imageDataUrl: coll.data.launch.imageDataUrl ?? null,
+      });
     }
   }, [id, mint]);
 
@@ -129,8 +139,12 @@ export default function StampDetailPage() {
 
   const liveListing = stamp?.listings.find((l) => !CLOSED.includes(l.state)) ?? null;
   const lastSale = sales.length ? sales[sales.length - 1]! : null;
-  const isOwner = Boolean(wallet && stamp && wallet.zcashAddress === stamp.currentOwner);
-  const isSeller = Boolean(wallet && liveListing && wallet.zcashAddress === liveListing.sellerAddress);
+  // Ownership lives at a Zcash address, so the viewer only matches once they have
+  // told this app which address is theirs.
+  const isOwner = Boolean(zcashDestination && stamp && zcashDestination === stamp.currentOwner);
+  const isSeller = Boolean(
+    zcashDestination && liveListing && zcashDestination === liveListing.sellerAddress,
+  );
 
   const points: ChartPoint[] = useMemo(() => {
     const source = scope === "stamp" ? sales : collectionSales;
@@ -181,6 +195,7 @@ export default function StampDetailPage() {
 
   async function listForSale() {
     if (!wallet) return connect();
+    if (!zcashDestination) return setError(NO_DESTINATION);
     setBusy(true);
     setError(null);
     try {
@@ -189,7 +204,7 @@ export default function StampDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           stampId: id,
-          sellerAddress: wallet.zcashAddress,
+          sellerAddress: zcashDestination,
           sellerPublicKeyHex: wallet.publicKeyHex,
           priceZat: zecToZat(priceZec),
         }),
@@ -207,6 +222,7 @@ export default function StampDetailPage() {
 
   async function act(action: "reserve" | "cancel") {
     if (!wallet || !liveListing) return connect();
+    if (action === "reserve" && !zcashDestination) return setError(NO_DESTINATION);
     setBusy(true);
     setError(null);
     try {
@@ -217,7 +233,7 @@ export default function StampDetailPage() {
           action === "reserve"
             ? {
                 action,
-                buyerAddress: wallet.zcashAddress,
+                buyerAddress: zcashDestination,
                 buyerPublicKeyHex: wallet.publicKeyHex,
               }
             : { action },
@@ -253,8 +269,8 @@ export default function StampDetailPage() {
     );
   }
 
-  const name = collection?.name ?? "Zcash stamp";
-  const symbol = collection?.symbol ?? "";
+  const name = meta?.name ?? "Untitled stamp";
+  const symbol = meta?.symbol ?? "";
   const explorer = zcashTxUrl(stamp.destinationNetwork, stamp.zcashTx);
   const statusLabel = liveListing
     ? liveListing.state === "listed"
@@ -275,7 +291,7 @@ export default function StampDetailPage() {
           <div className="assethead__art">
             <div className="stampcard stampcard--static">
               <div className="stampcard__art">
-                <StampArt seed={stamp.id} />
+                <StampImage stamp={{ id: stamp.id, name, imageDataUrl: meta?.imageDataUrl }} />
                 <span className="stampcard__denom">
                   {formatUnits(stamp.amountBase, stamp.decimals)} {symbol}
                 </span>
@@ -289,11 +305,10 @@ export default function StampDetailPage() {
               <Badge state={liveListing?.state}>{statusLabel}</Badge>
             </div>
             <p className="muted">
-              {number ? `Stamp No. ${number} · ` : ""}represents{" "}
+              {number ? `Stamp No. ${number} · ` : ""}denomination{" "}
               <strong className="num">
-                {formatUnits(stamp.amountBase, stamp.decimals)} {symbol || "tokens"}
-              </strong>{" "}
-              destroyed on Solana.
+                {formatUnits(stamp.amountBase, stamp.decimals)} {symbol || "units"}
+              </strong>
             </p>
             <div className="idrow">
               <code className="mono idrow__id" title={stamp.id}>
@@ -536,6 +551,8 @@ export default function StampDetailPage() {
               </button>
             )}
 
+            {wallet && !zcashDestination && <Note tone="quiet">{NO_DESTINATION}</Note>}
+
             {wallet && liveListing && !isSeller && liveListing.state === "listed" && (
               <>
                 <button
@@ -547,7 +564,8 @@ export default function StampDetailPage() {
                 </button>
                 <p className="tiny muted" style={{ marginTop: 8 }}>
                   Reserves this stamp for your wallet, then the seller signs the offer and
-                  authorization. Real ZEC never moves in this build.
+                  authorization. Sales complete on StampPad&apos;s own ledger, so ownership moves
+                  but no ZEC changes hands.
                 </p>
               </>
             )}
@@ -604,7 +622,7 @@ export default function StampDetailPage() {
               </Note>
             )}
 
-            {wallet && !liveListing && !isOwner && (
+            {wallet && zcashDestination && !liveListing && !isOwner && (
               <Note tone="quiet">
                 Not listed. Only the verified current owner can list this stamp, and this wallet is
                 not it.
@@ -619,7 +637,7 @@ export default function StampDetailPage() {
           <Panel tone="ink">
             <h2>Price meaning</h2>
             <ul className="tiny" style={{ marginTop: 8 }}>
-              <li>Prices here are stamp prices in ZEC, not the burned token&apos;s price.</li>
+              <li>Every price here is a whole-stamp price in ZEC.</li>
               <li>Asking price is an offer. Only settled transfers count as sales.</li>
               <li>Whole stamps only. No partial fills, no split or merge.</li>
               <li>No market cap, no supply-derived valuation, no USD conversion.</li>

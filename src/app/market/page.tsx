@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWallet } from "@/components/Wallet";
-import { BlankStampArt, StampArt } from "@/components/art/PixelArt";
+import { BlankStampArt } from "@/components/art/PixelArt";
 import {
   ListingStateBadge,
   StampCard,
+  StampImage,
   stampHref,
   type StampCardData,
 } from "@/components/AssetCards";
@@ -64,6 +65,14 @@ interface CompletedSale {
   height: number;
 }
 
+/** Name, ticker and artwork as they were supplied when the stamp was issued. */
+interface StampMeta {
+  mint: string;
+  name: string;
+  symbol: string;
+  imageDataUrl?: string | null;
+}
+
 const STEP_HELP: Record<string, string> = {
   listed:
     "Waiting for a buyer to be named. Offers are targeted at one buyer, which is what stops two buyers racing for one stamp.",
@@ -78,17 +87,15 @@ const STEP_HELP: Record<string, string> = {
 };
 
 export default function MarketPage() {
-  const { wallet, sign, connect } = useWallet();
+  const { wallet, sign, connect, zcashDestination } = useWallet();
   const [listings, setListings] = useState<Listing[]>([]);
   const [history, setHistory] = useState<Listing[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
   const [disclosure, setDisclosure] = useState<Disclosure | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  // Listings carry a mint; names and tickers come from the launch catalogue.
-  const [collections, setCollections] = useState<Map<string, { name: string; symbol: string }>>(
-    new Map(),
-  );
+  // Listings carry a mint; the metadata supplied at issue time comes from the catalogue.
+  const [collections, setCollections] = useState<Map<string, StampMeta>>(new Map());
   const [stamps, setStamps] = useState<StampSummary[]>([]);
   const [saleHistory, setSaleHistory] = useState<CompletedSale[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -98,11 +105,7 @@ export default function MarketPage() {
       .then((r) => r.json())
       .then((j) =>
         setCollections(
-          new Map(
-            (j.data?.launches ?? []).map(
-              (l: { mint: string; name: string; symbol: string }) => [l.mint, l] as const,
-            ),
-          ),
+          new Map((j.data?.launches ?? []).map((l: StampMeta) => [l.mint, l] as const)),
         ),
       );
   }, []);
@@ -156,17 +159,18 @@ export default function MarketPage() {
           mint: s.mint,
           amountBase: s.amountBase,
           decimals: s.decimals,
-          collection: launch?.name ?? "Unlisted collection",
+          name: launch?.name ?? "Untitled stamp",
           symbol: launch?.symbol ?? "",
+          imageDataUrl: launch?.imageDataUrl ?? null,
           number: numbers.get(s.id) ?? 1,
           listing: listing ? { state: listing.state, priceZat: listing.priceZat } : null,
           lastSale: sale
             ? { priceZat: sale.priceZat, settledAt: sale.settledAt, height: sale.height }
             : null,
-          ownedByViewer: Boolean(wallet && s.currentOwner === wallet.zcashAddress),
+          ownedByViewer: Boolean(zcashDestination && s.currentOwner === zcashDestination),
         };
       }),
-    [stamps, collections, numbers, lastSales, liveByStamp, wallet],
+    [stamps, collections, numbers, lastSales, liveByStamp, zcashDestination],
   );
 
   async function act(listing: Listing, action: string) {
@@ -176,7 +180,12 @@ export default function MarketPage() {
     try {
       const body: Record<string, unknown> = { action };
       if (action === "reserve") {
-        body.buyerAddress = wallet.zcashAddress;
+        if (!zcashDestination) {
+          throw new Error(
+            "Name the Zcash address a stamp should arrive at on the Convert screen first; a purchase has to be delivered somewhere.",
+          );
+        }
+        body.buyerAddress = zcashDestination;
         body.buyerPublicKeyHex = wallet.publicKeyHex;
       }
       if (action === "publishOffer" || action === "authorize") {
@@ -204,8 +213,8 @@ export default function MarketPage() {
   }
 
   function actionsFor(listing: Listing) {
-    const isSeller = wallet?.zcashAddress === listing.sellerAddress;
-    const isBuyer = wallet?.zcashAddress === listing.buyerAddress;
+    const isSeller = Boolean(zcashDestination) && zcashDestination === listing.sellerAddress;
+    const isBuyer = Boolean(zcashDestination) && zcashDestination === listing.buyerAddress;
     const out: Array<{ action: string; label: string; allowed: boolean; primary?: boolean }> = [];
     if (listing.state === "listed") {
       out.push({ action: "reserve", label: "Buy this stamp", allowed: !isSeller, primary: true });
@@ -284,18 +293,13 @@ export default function MarketPage() {
               art={<BlankStampArt />}
               title="Nothing has been issued yet"
               action={
-                <>
-                  <Link className="btn btn--primary" href="/convert">
-                    Issue a stamp
-                  </Link>
-                  <Link className="btn" href="/launch">
-                    Launch a coin
-                  </Link>
-                </>
+                <Link className="btn btn--primary" href="/convert">
+                  Issue a stamp
+                </Link>
               }
             >
-              This marketplace only trades stamps that were issued here. Burning tokens creates the
-              first one.
+              This marketplace only trades stamps that were issued here. Issuing one creates the
+              first listing candidate.
             </Empty>
           ) : (
             <div className="stampgrid">
@@ -320,18 +324,25 @@ export default function MarketPage() {
             </Empty>
           ) : (
             listings.map((l) => {
-              const isSeller = wallet?.zcashAddress === l.sellerAddress;
-              const isBuyer = wallet?.zcashAddress === l.buyerAddress;
+              const isSeller = Boolean(zcashDestination) && zcashDestination === l.sellerAddress;
+              const isBuyer = Boolean(zcashDestination) && zcashDestination === l.buyerAddress;
+              const meta = l.stamp ? collections.get(l.stamp.mint) : undefined;
               return (
                 <Panel key={l.id}>
                   <div className="listing">
                     <Link className="listing__art" href={hrefFor(l.stampId)}>
-                      <StampArt seed={l.stampId} />
+                      <StampImage
+                        stamp={{
+                          id: l.stampId,
+                          name: meta?.name,
+                          imageDataUrl: meta?.imageDataUrl,
+                        }}
+                      />
                     </Link>
                     <div className="stack-sm" style={{ minWidth: 0 }}>
                       <div className="spread">
                         <Link className="listing__id" href={hrefFor(l.stampId)}>
-                          {(l.stamp && collections.get(l.stamp.mint)?.name) ?? "Zcash stamp"}
+                          {meta?.name ?? "Untitled stamp"}
                         </Link>
                         <ListingStateBadge state={l.state} />
                       </div>
@@ -339,8 +350,8 @@ export default function MarketPage() {
                         <span className="price">{formatZec(l.priceZat)} ZEC</span>
                         {l.stamp && (
                           <span className="tiny muted">
-                            represents {formatUnits(l.stamp.amountBase, l.stamp.decimals)}{" "}
-                            {collections.get(l.stamp.mint)?.symbol ?? "tokens"}
+                            denomination {formatUnits(l.stamp.amountBase, l.stamp.decimals)}{" "}
+                            {meta?.symbol ?? "units"}
                           </span>
                         )}
                       </div>
@@ -374,8 +385,15 @@ export default function MarketPage() {
                         {busy === l.id ? "Working…" : a.label}
                       </button>
                     ))}
-                    {!wallet && (
-                      <span className="tiny muted">Connect a wallet to act on this listing.</span>
+                    {!wallet ? (
+                      <span className="tiny muted">Connect Phantom to act on this listing.</span>
+                    ) : (
+                      !zcashDestination && (
+                        <span className="tiny muted">
+                          Name your Zcash address on Convert before buying or selling; every step
+                          here is keyed to the address a stamp lives at.
+                        </span>
+                      )
                     )}
                   </div>
 
@@ -465,7 +483,7 @@ export default function MarketPage() {
           <Panel tone="ink">
             <h2>Before you buy</h2>
             <ul className="tiny" style={{ marginTop: 8 }}>
-              <li>Real ZEC sales are disabled in this build.</li>
+              <li>Sales complete on StampPad&apos;s own ledger. Ownership moves; no ZEC changes hands.</li>
               <li>Delivery is an ordered sequence, not an atomic swap.</li>
               <li>Whole stamps only. No partial fills exist.</li>
               <li>The app never holds your stamp or your ZEC.</li>
