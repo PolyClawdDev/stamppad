@@ -1,7 +1,9 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { accessSync, constants, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
 import { emptyChain } from "../solana/demo";
 import { emptyZcash } from "../zcash/demo";
+import demoSnapshot from "./demo-snapshot.json";
 import { deserializeDemo, serializeDemo } from "./serialize";
 import type { JobRow, LaunchRow, ListingRow, StampRow, Store, TransferRow } from "./types";
 
@@ -14,24 +16,59 @@ interface MemoryShape {
   demo: ReturnType<typeof serializeDemo>;
 }
 
-const DEFAULT_PATH = process.env.STAMP_MEMORY_FILE ?? ".stamp-memory.json";
+function writable(dir: string): boolean {
+  try {
+    accessSync(dir, constants.W_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Serverless hosts mount the deployment read-only, so the ledger cannot sit
+ * next to the code. State written to the temp directory belongs to one
+ * instance and is gone after a cold start; STAMP_STORE=postgres is the only
+ * durable option.
+ */
+const HOSTED = !process.env.STAMP_MEMORY_FILE && !writable(process.cwd());
+const DEFAULT_PATH =
+  process.env.STAMP_MEMORY_FILE ?? (HOSTED ? join(tmpdir(), "stamp-memory.json") : ".stamp-memory.json");
+
+export function memoryStateInfo(): { path: string; ephemeral: boolean } {
+  return { path: DEFAULT_PATH, ephemeral: HOSTED };
+}
+
+/**
+ * A hosted instance starts from the committed demo ledger so every visitor
+ * sees the same simulated stamps and sales instead of an empty page. Local
+ * runs and tests still start empty.
+ */
+export function initialState(fromSnapshot: boolean): MemoryShape {
+  if (fromSnapshot) return structuredClone(demoSnapshot) as unknown as MemoryShape;
+  return {
+    launches: {},
+    jobs: {},
+    stamps: {},
+    listings: {},
+    transfers: {},
+    demo: serializeDemo(emptyChain(), emptyZcash()),
+  };
+}
 
 export class MemoryStore implements Store {
-  constructor(private readonly path = DEFAULT_PATH) {}
+  private readonly seeded: boolean;
+
+  constructor(private readonly path = DEFAULT_PATH) {
+    this.seeded = HOSTED && path === DEFAULT_PATH;
+  }
 
   private read(): MemoryShape {
     let data: MemoryShape;
     try {
       data = JSON.parse(readFileSync(this.path, "utf8")) as MemoryShape;
     } catch {
-      data = {
-        launches: {},
-        jobs: {},
-        stamps: {},
-        listings: {},
-        transfers: {},
-        demo: serializeDemo(emptyChain(), emptyZcash()),
-      };
+      data = initialState(this.seeded);
     }
     data.listings ??= {};
     data.transfers ??= {};

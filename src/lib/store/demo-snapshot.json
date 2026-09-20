@@ -1,0 +1,3296 @@
+{
+  "launches": {
+    "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS": {
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "name": "Proof of Burn",
+      "symbol": "PROOF",
+      "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+      "imageDataUrl": null,
+      "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+      "quoteSymbol": "SPYX",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "decimals": 6,
+      "launchSupply": "1000000000000000",
+      "poolBase": "793100000000000",
+      "currentSupply": "799099723000000",
+      "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+      "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+      "stonkUrl": "https://www.stonkfun.xyz/token/EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "source": "demo seed — not a Stonk mainnet launch",
+      "createdAt": "2026-09-20T21:15:25.033Z"
+    }
+  },
+  "jobs": {
+    "eefcfc22-0629-47c1-842b-667471d21d6a": {
+      "id": "eefcfc22-0629-47c1-842b-667471d21d6a",
+      "state": "confirmed",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "owner": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+      "amountBase": "40000000",
+      "decimals": 6,
+      "destination": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+      "nonce": "e6161f11ea42471192b4b59d554a7698",
+      "sourceTx": "2jRzTYdN7sTaCM5KCfAoZg5ucePMLE1LmwrrSfar7E2H56u8NCm1uRWDtERhKqTbvJAMJ6LkzxhUtq9nR72yyQn2",
+      "burnLocator": "outer:0",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "burnAuthority": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "commitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "zcashTx": "4220f62324ca8584dc912ebe1e73a4e36329c4f12298b8891f844739096b0dd1",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 101,
+      "confirmations": 2,
+      "rejectReason": null,
+      "rejectMessage": null,
+      "claimPackage": {
+        "protocol": "stamp-exp",
+        "version": 0,
+        "preimage": "stamp-exp\n0\nsolana:demo\nzcash:demo\nEZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS\nTokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\n2jRzTYdN7sTaCM5KCfAoZg5ucePMLE1LmwrrSfar7E2H56u8NCm1uRWDtERhKqTbvJAMJ6LkzxhUtq9nR72yyQn2\nouter:0\n40000000\n6\nzdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c\n2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht\nowner\nouter:1\ne6161f11ea42471192b4b59d554a7698",
+        "commitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+        "solana": {
+          "network": "solana:demo",
+          "signature": "2jRzTYdN7sTaCM5KCfAoZg5ucePMLE1LmwrrSfar7E2H56u8NCm1uRWDtERhKqTbvJAMJ6LkzxhUtq9nR72yyQn2",
+          "transaction": {
+            "signature": "2jRzTYdN7sTaCM5KCfAoZg5ucePMLE1LmwrrSfar7E2H56u8NCm1uRWDtERhKqTbvJAMJ6LkzxhUtq9nR72yyQn2",
+            "slot": 3,
+            "network": "solana:demo",
+            "commitment": "finalized",
+            "err": null,
+            "signers": [
+              "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht"
+            ],
+            "instructions": [
+              {
+                "locator": "outer:0",
+                "instruction": {
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "accounts": [
+                    "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg",
+                    "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                    "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht"
+                  ],
+                  "data": {
+                    "0": 15,
+                    "1": 0,
+                    "2": 90,
+                    "3": 98,
+                    "4": 2,
+                    "5": 0,
+                    "6": 0,
+                    "7": 0,
+                    "8": 0,
+                    "9": 6
+                  }
+                }
+              },
+              {
+                "locator": "outer:1",
+                "instruction": {
+                  "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                  "accounts": [],
+                  "data": {
+                    "0": 83,
+                    "1": 84,
+                    "2": 77,
+                    "3": 80,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 46,
+                    "8": 122,
+                    "9": 100,
+                    "10": 101,
+                    "11": 109,
+                    "12": 111,
+                    "13": 49,
+                    "14": 57,
+                    "15": 57,
+                    "16": 101,
+                    "17": 99,
+                    "18": 49,
+                    "19": 55,
+                    "20": 49,
+                    "21": 51,
+                    "22": 52,
+                    "23": 100,
+                    "24": 52,
+                    "25": 101,
+                    "26": 101,
+                    "27": 57,
+                    "28": 52,
+                    "29": 97,
+                    "30": 56,
+                    "31": 97,
+                    "32": 100,
+                    "33": 53,
+                    "34": 99,
+                    "35": 101,
+                    "36": 99,
+                    "37": 56,
+                    "38": 50,
+                    "39": 100,
+                    "40": 48,
+                    "41": 101,
+                    "42": 57,
+                    "43": 97,
+                    "44": 101,
+                    "45": 52,
+                    "46": 54,
+                    "47": 56,
+                    "48": 99,
+                    "49": 100,
+                    "50": 48,
+                    "51": 57,
+                    "52": 54,
+                    "53": 99,
+                    "54": 0,
+                    "55": 90,
+                    "56": 98,
+                    "57": 2,
+                    "58": 0,
+                    "59": 0,
+                    "60": 0,
+                    "61": 0,
+                    "62": 201,
+                    "63": 140,
+                    "64": 156,
+                    "65": 25,
+                    "66": 211,
+                    "67": 136,
+                    "68": 40,
+                    "69": 22,
+                    "70": 56,
+                    "71": 5,
+                    "72": 110,
+                    "73": 217,
+                    "74": 45,
+                    "75": 45,
+                    "76": 88,
+                    "77": 252,
+                    "78": 238,
+                    "79": 236,
+                    "80": 221,
+                    "81": 198,
+                    "82": 239,
+                    "83": 22,
+                    "84": 131,
+                    "85": 1,
+                    "86": 14,
+                    "87": 194,
+                    "88": 235,
+                    "89": 18,
+                    "90": 57,
+                    "91": 28,
+                    "92": 127,
+                    "93": 137,
+                    "94": 230,
+                    "95": 22,
+                    "96": 31,
+                    "97": 17,
+                    "98": 234,
+                    "99": 66,
+                    "100": 71,
+                    "101": 17,
+                    "102": 146,
+                    "103": 180,
+                    "104": 181,
+                    "105": 157,
+                    "106": 85,
+                    "107": 74,
+                    "108": 118,
+                    "109": 152
+                  }
+                }
+              }
+            ],
+            "tokenAccounts": {
+              "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg": {
+                "address": "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg",
+                "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                "owner": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+                "amount": "999960000000",
+                "delegate": null,
+                "delegatedAmount": "0",
+                "frozen": false
+              }
+            },
+            "mint": {
+              "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "supply": "796099960000000",
+              "decimals": 6,
+              "initialized": true,
+              "extensions": [],
+              "name": "Proof of Burn",
+              "symbol": "PROOF",
+              "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+              "imageDataUrl": null,
+              "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+              "quoteSymbol": "SPYX",
+              "launchSupply": "1000000000000000",
+              "poolBase": "793100000000000",
+              "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+              "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+              "createdAt": "2026-09-20T21:15:25.033Z"
+            }
+          }
+        },
+        "destination": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "zcashPayloadHex": "53544d500000edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+        "notes": "Another compatible publisher may create a transparent Zcash transaction paying destination and this OP_RETURN. Do not burn again. Paying publication fees is not custody of the burned tokens."
+      },
+      "idempotencyKey": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht:EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS:40000000:zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c:1789938925049",
+      "createdAt": "2026-09-20T21:15:25.050Z",
+      "updatedAt": "2026-09-20T21:15:25.053Z"
+    },
+    "74f79264-4e89-469a-940f-7cceac88dad4": {
+      "id": "74f79264-4e89-469a-940f-7cceac88dad4",
+      "state": "confirmed",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "owner": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+      "amountBase": "10000000",
+      "decimals": 6,
+      "destination": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+      "nonce": "e6042bd1da2c44f797618bf12ac3de41",
+      "sourceTx": "3dZBwVYdkdqqufwYZgMexGxoe9rY9seVpwpYyGiPU5Ark6HDqnhTG7gFCZWPRmasbwRNgrhkUa9WsJRpLaXveMwK",
+      "burnLocator": "outer:0",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "burnAuthority": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "commitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "zcashTx": "af15056d0a091fc4e772d79c83bd8deb547c44d6d66606e8c6cc876f70582f88",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 110,
+      "confirmations": 2,
+      "rejectReason": null,
+      "rejectMessage": null,
+      "claimPackage": {
+        "protocol": "stamp-exp",
+        "version": 0,
+        "preimage": "stamp-exp\n0\nsolana:demo\nzcash:demo\nEZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS\nTokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\n3dZBwVYdkdqqufwYZgMexGxoe9rY9seVpwpYyGiPU5Ark6HDqnhTG7gFCZWPRmasbwRNgrhkUa9WsJRpLaXveMwK\nouter:0\n10000000\n6\nzdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305\nEniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz\nowner\nouter:1\ne6042bd1da2c44f797618bf12ac3de41",
+        "commitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "solana": {
+          "network": "solana:demo",
+          "signature": "3dZBwVYdkdqqufwYZgMexGxoe9rY9seVpwpYyGiPU5Ark6HDqnhTG7gFCZWPRmasbwRNgrhkUa9WsJRpLaXveMwK",
+          "transaction": {
+            "signature": "3dZBwVYdkdqqufwYZgMexGxoe9rY9seVpwpYyGiPU5Ark6HDqnhTG7gFCZWPRmasbwRNgrhkUa9WsJRpLaXveMwK",
+            "slot": 4,
+            "network": "solana:demo",
+            "commitment": "finalized",
+            "err": null,
+            "signers": [
+              "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz"
+            ],
+            "instructions": [
+              {
+                "locator": "outer:0",
+                "instruction": {
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "accounts": [
+                    "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w",
+                    "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                    "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz"
+                  ],
+                  "data": {
+                    "0": 15,
+                    "1": 128,
+                    "2": 150,
+                    "3": 152,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 0,
+                    "8": 0,
+                    "9": 6
+                  }
+                }
+              },
+              {
+                "locator": "outer:1",
+                "instruction": {
+                  "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                  "accounts": [],
+                  "data": {
+                    "0": 83,
+                    "1": 84,
+                    "2": 77,
+                    "3": 80,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 46,
+                    "8": 122,
+                    "9": 100,
+                    "10": 101,
+                    "11": 109,
+                    "12": 111,
+                    "13": 49,
+                    "14": 101,
+                    "15": 56,
+                    "16": 101,
+                    "17": 56,
+                    "18": 97,
+                    "19": 100,
+                    "20": 99,
+                    "21": 100,
+                    "22": 52,
+                    "23": 48,
+                    "24": 49,
+                    "25": 98,
+                    "26": 98,
+                    "27": 97,
+                    "28": 100,
+                    "29": 54,
+                    "30": 53,
+                    "31": 52,
+                    "32": 98,
+                    "33": 50,
+                    "34": 98,
+                    "35": 101,
+                    "36": 102,
+                    "37": 54,
+                    "38": 98,
+                    "39": 55,
+                    "40": 52,
+                    "41": 99,
+                    "42": 55,
+                    "43": 98,
+                    "44": 57,
+                    "45": 101,
+                    "46": 54,
+                    "47": 49,
+                    "48": 50,
+                    "49": 53,
+                    "50": 97,
+                    "51": 51,
+                    "52": 48,
+                    "53": 53,
+                    "54": 128,
+                    "55": 150,
+                    "56": 152,
+                    "57": 0,
+                    "58": 0,
+                    "59": 0,
+                    "60": 0,
+                    "61": 0,
+                    "62": 201,
+                    "63": 140,
+                    "64": 156,
+                    "65": 25,
+                    "66": 211,
+                    "67": 136,
+                    "68": 40,
+                    "69": 22,
+                    "70": 56,
+                    "71": 5,
+                    "72": 110,
+                    "73": 217,
+                    "74": 45,
+                    "75": 45,
+                    "76": 88,
+                    "77": 252,
+                    "78": 238,
+                    "79": 236,
+                    "80": 221,
+                    "81": 198,
+                    "82": 239,
+                    "83": 22,
+                    "84": 131,
+                    "85": 1,
+                    "86": 14,
+                    "87": 194,
+                    "88": 235,
+                    "89": 18,
+                    "90": 57,
+                    "91": 28,
+                    "92": 127,
+                    "93": 137,
+                    "94": 230,
+                    "95": 4,
+                    "96": 43,
+                    "97": 209,
+                    "98": 218,
+                    "99": 44,
+                    "100": 68,
+                    "101": 247,
+                    "102": 151,
+                    "103": 97,
+                    "104": 139,
+                    "105": 241,
+                    "106": 42,
+                    "107": 195,
+                    "108": 222,
+                    "109": 65
+                  }
+                }
+              }
+            ],
+            "tokenAccounts": {
+              "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w": {
+                "address": "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w",
+                "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                "owner": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+                "amount": "999990000000",
+                "delegate": null,
+                "delegatedAmount": "0",
+                "frozen": false
+              }
+            },
+            "mint": {
+              "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "supply": "796099950000000",
+              "decimals": 6,
+              "initialized": true,
+              "extensions": [],
+              "name": "Proof of Burn",
+              "symbol": "PROOF",
+              "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+              "imageDataUrl": null,
+              "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+              "quoteSymbol": "SPYX",
+              "launchSupply": "1000000000000000",
+              "poolBase": "793100000000000",
+              "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+              "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+              "createdAt": "2026-09-20T21:15:25.033Z"
+            }
+          }
+        },
+        "destination": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "zcashPayloadHex": "53544d500000262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "notes": "Another compatible publisher may create a transparent Zcash transaction paying destination and this OP_RETURN. Do not burn again. Paying publication fees is not custody of the burned tokens."
+      },
+      "idempotencyKey": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz:EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS:10000000:zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305:1789938927639",
+      "createdAt": "2026-09-20T21:15:27.640Z",
+      "updatedAt": "2026-09-20T21:15:27.645Z"
+    },
+    "1168875e-0da7-4f3a-bcad-af5f58665e1b": {
+      "id": "1168875e-0da7-4f3a-bcad-af5f58665e1b",
+      "state": "confirmed",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "owner": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+      "amountBase": "120000000",
+      "decimals": 6,
+      "destination": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "nonce": "c45c419bb2f84e859ca54dfecb581784",
+      "sourceTx": "4PMCBJy9fLxrMZBYxSxYwrLo9yxc4vkd2Rq5NBUj5dJH7APaw6dydLYLiGMsRCdbLmvXf2WRUkQts6uzki6VvpA3",
+      "burnLocator": "outer:0",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "burnAuthority": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "commitmentHex": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+      "zcashTx": "69500f0f61abcb31f6c27fa391b324cc9cdc6e4ba82ca8a1c9276323786a1b4a",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 123,
+      "confirmations": 2,
+      "rejectReason": null,
+      "rejectMessage": null,
+      "claimPackage": {
+        "protocol": "stamp-exp",
+        "version": 0,
+        "preimage": "stamp-exp\n0\nsolana:demo\nzcash:demo\nEZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS\nTokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\n4PMCBJy9fLxrMZBYxSxYwrLo9yxc4vkd2Rq5NBUj5dJH7APaw6dydLYLiGMsRCdbLmvXf2WRUkQts6uzki6VvpA3\nouter:0\n120000000\n6\nzdemo190faeae7225c06ff8c23149ff15c295b1fc00981\nER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34\nowner\nouter:1\nc45c419bb2f84e859ca54dfecb581784",
+        "commitmentHex": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+        "solana": {
+          "network": "solana:demo",
+          "signature": "4PMCBJy9fLxrMZBYxSxYwrLo9yxc4vkd2Rq5NBUj5dJH7APaw6dydLYLiGMsRCdbLmvXf2WRUkQts6uzki6VvpA3",
+          "transaction": {
+            "signature": "4PMCBJy9fLxrMZBYxSxYwrLo9yxc4vkd2Rq5NBUj5dJH7APaw6dydLYLiGMsRCdbLmvXf2WRUkQts6uzki6VvpA3",
+            "slot": 5,
+            "network": "solana:demo",
+            "commitment": "finalized",
+            "err": null,
+            "signers": [
+              "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34"
+            ],
+            "instructions": [
+              {
+                "locator": "outer:0",
+                "instruction": {
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "accounts": [
+                    "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r",
+                    "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                    "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34"
+                  ],
+                  "data": {
+                    "0": 15,
+                    "1": 0,
+                    "2": 14,
+                    "3": 39,
+                    "4": 7,
+                    "5": 0,
+                    "6": 0,
+                    "7": 0,
+                    "8": 0,
+                    "9": 6
+                  }
+                }
+              },
+              {
+                "locator": "outer:1",
+                "instruction": {
+                  "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                  "accounts": [],
+                  "data": {
+                    "0": 83,
+                    "1": 84,
+                    "2": 77,
+                    "3": 80,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 46,
+                    "8": 122,
+                    "9": 100,
+                    "10": 101,
+                    "11": 109,
+                    "12": 111,
+                    "13": 49,
+                    "14": 57,
+                    "15": 48,
+                    "16": 102,
+                    "17": 97,
+                    "18": 101,
+                    "19": 97,
+                    "20": 101,
+                    "21": 55,
+                    "22": 50,
+                    "23": 50,
+                    "24": 53,
+                    "25": 99,
+                    "26": 48,
+                    "27": 54,
+                    "28": 102,
+                    "29": 102,
+                    "30": 56,
+                    "31": 99,
+                    "32": 50,
+                    "33": 51,
+                    "34": 49,
+                    "35": 52,
+                    "36": 57,
+                    "37": 102,
+                    "38": 102,
+                    "39": 49,
+                    "40": 53,
+                    "41": 99,
+                    "42": 50,
+                    "43": 57,
+                    "44": 53,
+                    "45": 98,
+                    "46": 49,
+                    "47": 102,
+                    "48": 99,
+                    "49": 48,
+                    "50": 48,
+                    "51": 57,
+                    "52": 56,
+                    "53": 49,
+                    "54": 0,
+                    "55": 14,
+                    "56": 39,
+                    "57": 7,
+                    "58": 0,
+                    "59": 0,
+                    "60": 0,
+                    "61": 0,
+                    "62": 201,
+                    "63": 140,
+                    "64": 156,
+                    "65": 25,
+                    "66": 211,
+                    "67": 136,
+                    "68": 40,
+                    "69": 22,
+                    "70": 56,
+                    "71": 5,
+                    "72": 110,
+                    "73": 217,
+                    "74": 45,
+                    "75": 45,
+                    "76": 88,
+                    "77": 252,
+                    "78": 238,
+                    "79": 236,
+                    "80": 221,
+                    "81": 198,
+                    "82": 239,
+                    "83": 22,
+                    "84": 131,
+                    "85": 1,
+                    "86": 14,
+                    "87": 194,
+                    "88": 235,
+                    "89": 18,
+                    "90": 57,
+                    "91": 28,
+                    "92": 127,
+                    "93": 137,
+                    "94": 196,
+                    "95": 92,
+                    "96": 65,
+                    "97": 155,
+                    "98": 178,
+                    "99": 248,
+                    "100": 78,
+                    "101": 133,
+                    "102": 156,
+                    "103": 165,
+                    "104": 77,
+                    "105": 254,
+                    "106": 203,
+                    "107": 88,
+                    "108": 23,
+                    "109": 132
+                  }
+                }
+              }
+            ],
+            "tokenAccounts": {
+              "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r": {
+                "address": "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r",
+                "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                "owner": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+                "amount": "999880000000",
+                "delegate": null,
+                "delegatedAmount": "0",
+                "frozen": false
+              }
+            },
+            "mint": {
+              "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "supply": "796099830000000",
+              "decimals": 6,
+              "initialized": true,
+              "extensions": [],
+              "name": "Proof of Burn",
+              "symbol": "PROOF",
+              "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+              "imageDataUrl": null,
+              "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+              "quoteSymbol": "SPYX",
+              "launchSupply": "1000000000000000",
+              "poolBase": "793100000000000",
+              "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+              "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+              "createdAt": "2026-09-20T21:15:25.033Z"
+            }
+          }
+        },
+        "destination": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "zcashPayloadHex": "53544d5000000738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+        "notes": "Another compatible publisher may create a transparent Zcash transaction paying destination and this OP_RETURN. Do not burn again. Paying publication fees is not custody of the burned tokens."
+      },
+      "idempotencyKey": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34:EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS:120000000:zdemo190faeae7225c06ff8c23149ff15c295b1fc00981:1789938931831",
+      "createdAt": "2026-09-20T21:15:31.832Z",
+      "updatedAt": "2026-09-20T21:15:31.838Z"
+    },
+    "c09aa860-6243-4ffe-8237-1222b81dc183": {
+      "id": "c09aa860-6243-4ffe-8237-1222b81dc183",
+      "state": "confirmed",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "owner": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+      "amountBase": "25000000",
+      "decimals": 6,
+      "destination": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+      "nonce": "01b5fc42016f4cedb6a62cd28b0f2cbd",
+      "sourceTx": "2jdNBhu6mniqJ1j4HeP1DK8EhCjy4WH8V4EwqHcpidcLk2ysn1BdydHu85Zv9uUydxxs8eHBdMh93x8etcYjnyVp",
+      "burnLocator": "outer:0",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "burnAuthority": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "commitmentHex": "7352f039a9c6f269a8e35fef9d3a678c1e17b74ff22030f0d0f65a7bb18313cf",
+      "zcashTx": "84fdaec8ee61204224b4617b32fb2cad0e2b0871f835a5f9dcbaa97556ff42c6",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 128,
+      "confirmations": 2,
+      "rejectReason": null,
+      "rejectMessage": null,
+      "claimPackage": {
+        "protocol": "stamp-exp",
+        "version": 0,
+        "preimage": "stamp-exp\n0\nsolana:demo\nzcash:demo\nEZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS\nTokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\n2jdNBhu6mniqJ1j4HeP1DK8EhCjy4WH8V4EwqHcpidcLk2ysn1BdydHu85Zv9uUydxxs8eHBdMh93x8etcYjnyVp\nouter:0\n25000000\n6\nzdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c\n2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht\nowner\nouter:1\n01b5fc42016f4cedb6a62cd28b0f2cbd",
+        "commitmentHex": "7352f039a9c6f269a8e35fef9d3a678c1e17b74ff22030f0d0f65a7bb18313cf",
+        "solana": {
+          "network": "solana:demo",
+          "signature": "2jdNBhu6mniqJ1j4HeP1DK8EhCjy4WH8V4EwqHcpidcLk2ysn1BdydHu85Zv9uUydxxs8eHBdMh93x8etcYjnyVp",
+          "transaction": {
+            "signature": "2jdNBhu6mniqJ1j4HeP1DK8EhCjy4WH8V4EwqHcpidcLk2ysn1BdydHu85Zv9uUydxxs8eHBdMh93x8etcYjnyVp",
+            "slot": 6,
+            "network": "solana:demo",
+            "commitment": "finalized",
+            "err": null,
+            "signers": [
+              "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht"
+            ],
+            "instructions": [
+              {
+                "locator": "outer:0",
+                "instruction": {
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "accounts": [
+                    "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg",
+                    "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                    "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht"
+                  ],
+                  "data": {
+                    "0": 15,
+                    "1": 64,
+                    "2": 120,
+                    "3": 125,
+                    "4": 1,
+                    "5": 0,
+                    "6": 0,
+                    "7": 0,
+                    "8": 0,
+                    "9": 6
+                  }
+                }
+              },
+              {
+                "locator": "outer:1",
+                "instruction": {
+                  "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                  "accounts": [],
+                  "data": {
+                    "0": 83,
+                    "1": 84,
+                    "2": 77,
+                    "3": 80,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 46,
+                    "8": 122,
+                    "9": 100,
+                    "10": 101,
+                    "11": 109,
+                    "12": 111,
+                    "13": 49,
+                    "14": 57,
+                    "15": 57,
+                    "16": 101,
+                    "17": 99,
+                    "18": 49,
+                    "19": 55,
+                    "20": 49,
+                    "21": 51,
+                    "22": 52,
+                    "23": 100,
+                    "24": 52,
+                    "25": 101,
+                    "26": 101,
+                    "27": 57,
+                    "28": 52,
+                    "29": 97,
+                    "30": 56,
+                    "31": 97,
+                    "32": 100,
+                    "33": 53,
+                    "34": 99,
+                    "35": 101,
+                    "36": 99,
+                    "37": 56,
+                    "38": 50,
+                    "39": 100,
+                    "40": 48,
+                    "41": 101,
+                    "42": 57,
+                    "43": 97,
+                    "44": 101,
+                    "45": 52,
+                    "46": 54,
+                    "47": 56,
+                    "48": 99,
+                    "49": 100,
+                    "50": 48,
+                    "51": 57,
+                    "52": 54,
+                    "53": 99,
+                    "54": 64,
+                    "55": 120,
+                    "56": 125,
+                    "57": 1,
+                    "58": 0,
+                    "59": 0,
+                    "60": 0,
+                    "61": 0,
+                    "62": 201,
+                    "63": 140,
+                    "64": 156,
+                    "65": 25,
+                    "66": 211,
+                    "67": 136,
+                    "68": 40,
+                    "69": 22,
+                    "70": 56,
+                    "71": 5,
+                    "72": 110,
+                    "73": 217,
+                    "74": 45,
+                    "75": 45,
+                    "76": 88,
+                    "77": 252,
+                    "78": 238,
+                    "79": 236,
+                    "80": 221,
+                    "81": 198,
+                    "82": 239,
+                    "83": 22,
+                    "84": 131,
+                    "85": 1,
+                    "86": 14,
+                    "87": 194,
+                    "88": 235,
+                    "89": 18,
+                    "90": 57,
+                    "91": 28,
+                    "92": 127,
+                    "93": 137,
+                    "94": 1,
+                    "95": 181,
+                    "96": 252,
+                    "97": 66,
+                    "98": 1,
+                    "99": 111,
+                    "100": 76,
+                    "101": 237,
+                    "102": 182,
+                    "103": 166,
+                    "104": 44,
+                    "105": 210,
+                    "106": 139,
+                    "107": 15,
+                    "108": 44,
+                    "109": 189
+                  }
+                }
+              }
+            ],
+            "tokenAccounts": {
+              "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg": {
+                "address": "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg",
+                "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                "owner": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+                "amount": "999935000000",
+                "delegate": null,
+                "delegatedAmount": "0",
+                "frozen": false
+              }
+            },
+            "mint": {
+              "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "supply": "796099805000000",
+              "decimals": 6,
+              "initialized": true,
+              "extensions": [],
+              "name": "Proof of Burn",
+              "symbol": "PROOF",
+              "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+              "imageDataUrl": null,
+              "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+              "quoteSymbol": "SPYX",
+              "launchSupply": "1000000000000000",
+              "poolBase": "793100000000000",
+              "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+              "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+              "createdAt": "2026-09-20T21:15:25.033Z"
+            }
+          }
+        },
+        "destination": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "zcashPayloadHex": "53544d5000007352f039a9c6f269a8e35fef9d3a678c1e17b74ff22030f0d0f65a7bb18313cf",
+        "notes": "Another compatible publisher may create a transparent Zcash transaction paying destination and this OP_RETURN. Do not burn again. Paying publication fees is not custody of the burned tokens."
+      },
+      "idempotencyKey": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht:EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS:25000000:zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c:1789938933347",
+      "createdAt": "2026-09-20T21:15:33.348Z",
+      "updatedAt": "2026-09-20T21:15:33.355Z"
+    },
+    "0d8608c3-f768-4095-a235-9d2cfca008c6": {
+      "id": "0d8608c3-f768-4095-a235-9d2cfca008c6",
+      "state": "confirmed",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "owner": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+      "amountBase": "60000000",
+      "decimals": 6,
+      "destination": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+      "nonce": "8faa471d2e4d4745b46cc821750d7fe2",
+      "sourceTx": "PYcM7NmRWHzW4ZmbjbKmwsSTenTqmbhkcgqPTsSGjdEBqNdkYR9JFwxRGSM9huVwhrP6LiAV9QzaTa5kYjpQZWa",
+      "burnLocator": "outer:0",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "burnAuthority": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "commitmentHex": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+      "zcashTx": "0be419d551862aa216a754fef50013e82fc0d6f9394a35272d8942083abcbf65",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 129,
+      "confirmations": 2,
+      "rejectReason": null,
+      "rejectMessage": null,
+      "claimPackage": {
+        "protocol": "stamp-exp",
+        "version": 0,
+        "preimage": "stamp-exp\n0\nsolana:demo\nzcash:demo\nEZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS\nTokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\nPYcM7NmRWHzW4ZmbjbKmwsSTenTqmbhkcgqPTsSGjdEBqNdkYR9JFwxRGSM9huVwhrP6LiAV9QzaTa5kYjpQZWa\nouter:0\n60000000\n6\nzdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305\nEniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz\nowner\nouter:1\n8faa471d2e4d4745b46cc821750d7fe2",
+        "commitmentHex": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+        "solana": {
+          "network": "solana:demo",
+          "signature": "PYcM7NmRWHzW4ZmbjbKmwsSTenTqmbhkcgqPTsSGjdEBqNdkYR9JFwxRGSM9huVwhrP6LiAV9QzaTa5kYjpQZWa",
+          "transaction": {
+            "signature": "PYcM7NmRWHzW4ZmbjbKmwsSTenTqmbhkcgqPTsSGjdEBqNdkYR9JFwxRGSM9huVwhrP6LiAV9QzaTa5kYjpQZWa",
+            "slot": 7,
+            "network": "solana:demo",
+            "commitment": "finalized",
+            "err": null,
+            "signers": [
+              "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz"
+            ],
+            "instructions": [
+              {
+                "locator": "outer:0",
+                "instruction": {
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "accounts": [
+                    "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w",
+                    "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                    "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz"
+                  ],
+                  "data": {
+                    "0": 15,
+                    "1": 0,
+                    "2": 135,
+                    "3": 147,
+                    "4": 3,
+                    "5": 0,
+                    "6": 0,
+                    "7": 0,
+                    "8": 0,
+                    "9": 6
+                  }
+                }
+              },
+              {
+                "locator": "outer:1",
+                "instruction": {
+                  "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                  "accounts": [],
+                  "data": {
+                    "0": 83,
+                    "1": 84,
+                    "2": 77,
+                    "3": 80,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 46,
+                    "8": 122,
+                    "9": 100,
+                    "10": 101,
+                    "11": 109,
+                    "12": 111,
+                    "13": 49,
+                    "14": 101,
+                    "15": 56,
+                    "16": 101,
+                    "17": 56,
+                    "18": 97,
+                    "19": 100,
+                    "20": 99,
+                    "21": 100,
+                    "22": 52,
+                    "23": 48,
+                    "24": 49,
+                    "25": 98,
+                    "26": 98,
+                    "27": 97,
+                    "28": 100,
+                    "29": 54,
+                    "30": 53,
+                    "31": 52,
+                    "32": 98,
+                    "33": 50,
+                    "34": 98,
+                    "35": 101,
+                    "36": 102,
+                    "37": 54,
+                    "38": 98,
+                    "39": 55,
+                    "40": 52,
+                    "41": 99,
+                    "42": 55,
+                    "43": 98,
+                    "44": 57,
+                    "45": 101,
+                    "46": 54,
+                    "47": 49,
+                    "48": 50,
+                    "49": 53,
+                    "50": 97,
+                    "51": 51,
+                    "52": 48,
+                    "53": 53,
+                    "54": 0,
+                    "55": 135,
+                    "56": 147,
+                    "57": 3,
+                    "58": 0,
+                    "59": 0,
+                    "60": 0,
+                    "61": 0,
+                    "62": 201,
+                    "63": 140,
+                    "64": 156,
+                    "65": 25,
+                    "66": 211,
+                    "67": 136,
+                    "68": 40,
+                    "69": 22,
+                    "70": 56,
+                    "71": 5,
+                    "72": 110,
+                    "73": 217,
+                    "74": 45,
+                    "75": 45,
+                    "76": 88,
+                    "77": 252,
+                    "78": 238,
+                    "79": 236,
+                    "80": 221,
+                    "81": 198,
+                    "82": 239,
+                    "83": 22,
+                    "84": 131,
+                    "85": 1,
+                    "86": 14,
+                    "87": 194,
+                    "88": 235,
+                    "89": 18,
+                    "90": 57,
+                    "91": 28,
+                    "92": 127,
+                    "93": 137,
+                    "94": 143,
+                    "95": 170,
+                    "96": 71,
+                    "97": 29,
+                    "98": 46,
+                    "99": 77,
+                    "100": 71,
+                    "101": 69,
+                    "102": 180,
+                    "103": 108,
+                    "104": 200,
+                    "105": 33,
+                    "106": 117,
+                    "107": 13,
+                    "108": 127,
+                    "109": 226
+                  }
+                }
+              }
+            ],
+            "tokenAccounts": {
+              "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w": {
+                "address": "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w",
+                "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                "owner": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+                "amount": "999930000000",
+                "delegate": null,
+                "delegatedAmount": "0",
+                "frozen": false
+              }
+            },
+            "mint": {
+              "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "supply": "796099745000000",
+              "decimals": 6,
+              "initialized": true,
+              "extensions": [],
+              "name": "Proof of Burn",
+              "symbol": "PROOF",
+              "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+              "imageDataUrl": null,
+              "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+              "quoteSymbol": "SPYX",
+              "launchSupply": "1000000000000000",
+              "poolBase": "793100000000000",
+              "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+              "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+              "createdAt": "2026-09-20T21:15:25.033Z"
+            }
+          }
+        },
+        "destination": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "zcashPayloadHex": "53544d500000ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+        "notes": "Another compatible publisher may create a transparent Zcash transaction paying destination and this OP_RETURN. Do not burn again. Paying publication fees is not custody of the burned tokens."
+      },
+      "idempotencyKey": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz:EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS:60000000:zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305:1789938933363",
+      "createdAt": "2026-09-20T21:15:33.364Z",
+      "updatedAt": "2026-09-20T21:15:33.373Z"
+    },
+    "e17a79f4-999d-446e-bac9-631de86486de": {
+      "id": "e17a79f4-999d-446e-bac9-631de86486de",
+      "state": "confirmed",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "owner": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+      "amountBase": "15000000",
+      "decimals": 6,
+      "destination": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "nonce": "a0992e3e9e7a49c1868f05b51c632387",
+      "sourceTx": "2eiacmPE4MNh5Kw5hFHVT8tgWXzFzJtQ155FX55dokyMqqNzaEUe6LJkArhquPYSqyAZDphUhP3TKrZXxx9zGyx2",
+      "burnLocator": "outer:0",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "burnAuthority": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "commitmentHex": "e504a2a2e6d83a355eec9e23425bec273a3fba193eb851685ae854b0581b4af2",
+      "zcashTx": "eb8eeb5e55bdfa0c87a6b50244f852e5bad2661d35c7573d3f78697ad26f8c04",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 134,
+      "confirmations": 2,
+      "rejectReason": null,
+      "rejectMessage": null,
+      "claimPackage": {
+        "protocol": "stamp-exp",
+        "version": 0,
+        "preimage": "stamp-exp\n0\nsolana:demo\nzcash:demo\nEZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS\nTokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\n2eiacmPE4MNh5Kw5hFHVT8tgWXzFzJtQ155FX55dokyMqqNzaEUe6LJkArhquPYSqyAZDphUhP3TKrZXxx9zGyx2\nouter:0\n15000000\n6\nzdemo190faeae7225c06ff8c23149ff15c295b1fc00981\nER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34\nowner\nouter:1\na0992e3e9e7a49c1868f05b51c632387",
+        "commitmentHex": "e504a2a2e6d83a355eec9e23425bec273a3fba193eb851685ae854b0581b4af2",
+        "solana": {
+          "network": "solana:demo",
+          "signature": "2eiacmPE4MNh5Kw5hFHVT8tgWXzFzJtQ155FX55dokyMqqNzaEUe6LJkArhquPYSqyAZDphUhP3TKrZXxx9zGyx2",
+          "transaction": {
+            "signature": "2eiacmPE4MNh5Kw5hFHVT8tgWXzFzJtQ155FX55dokyMqqNzaEUe6LJkArhquPYSqyAZDphUhP3TKrZXxx9zGyx2",
+            "slot": 8,
+            "network": "solana:demo",
+            "commitment": "finalized",
+            "err": null,
+            "signers": [
+              "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34"
+            ],
+            "instructions": [
+              {
+                "locator": "outer:0",
+                "instruction": {
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "accounts": [
+                    "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r",
+                    "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                    "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34"
+                  ],
+                  "data": {
+                    "0": 15,
+                    "1": 192,
+                    "2": 225,
+                    "3": 228,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 0,
+                    "8": 0,
+                    "9": 6
+                  }
+                }
+              },
+              {
+                "locator": "outer:1",
+                "instruction": {
+                  "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                  "accounts": [],
+                  "data": {
+                    "0": 83,
+                    "1": 84,
+                    "2": 77,
+                    "3": 80,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 46,
+                    "8": 122,
+                    "9": 100,
+                    "10": 101,
+                    "11": 109,
+                    "12": 111,
+                    "13": 49,
+                    "14": 57,
+                    "15": 48,
+                    "16": 102,
+                    "17": 97,
+                    "18": 101,
+                    "19": 97,
+                    "20": 101,
+                    "21": 55,
+                    "22": 50,
+                    "23": 50,
+                    "24": 53,
+                    "25": 99,
+                    "26": 48,
+                    "27": 54,
+                    "28": 102,
+                    "29": 102,
+                    "30": 56,
+                    "31": 99,
+                    "32": 50,
+                    "33": 51,
+                    "34": 49,
+                    "35": 52,
+                    "36": 57,
+                    "37": 102,
+                    "38": 102,
+                    "39": 49,
+                    "40": 53,
+                    "41": 99,
+                    "42": 50,
+                    "43": 57,
+                    "44": 53,
+                    "45": 98,
+                    "46": 49,
+                    "47": 102,
+                    "48": 99,
+                    "49": 48,
+                    "50": 48,
+                    "51": 57,
+                    "52": 56,
+                    "53": 49,
+                    "54": 192,
+                    "55": 225,
+                    "56": 228,
+                    "57": 0,
+                    "58": 0,
+                    "59": 0,
+                    "60": 0,
+                    "61": 0,
+                    "62": 201,
+                    "63": 140,
+                    "64": 156,
+                    "65": 25,
+                    "66": 211,
+                    "67": 136,
+                    "68": 40,
+                    "69": 22,
+                    "70": 56,
+                    "71": 5,
+                    "72": 110,
+                    "73": 217,
+                    "74": 45,
+                    "75": 45,
+                    "76": 88,
+                    "77": 252,
+                    "78": 238,
+                    "79": 236,
+                    "80": 221,
+                    "81": 198,
+                    "82": 239,
+                    "83": 22,
+                    "84": 131,
+                    "85": 1,
+                    "86": 14,
+                    "87": 194,
+                    "88": 235,
+                    "89": 18,
+                    "90": 57,
+                    "91": 28,
+                    "92": 127,
+                    "93": 137,
+                    "94": 160,
+                    "95": 153,
+                    "96": 46,
+                    "97": 62,
+                    "98": 158,
+                    "99": 122,
+                    "100": 73,
+                    "101": 193,
+                    "102": 134,
+                    "103": 143,
+                    "104": 5,
+                    "105": 181,
+                    "106": 28,
+                    "107": 99,
+                    "108": 35,
+                    "109": 135
+                  }
+                }
+              }
+            ],
+            "tokenAccounts": {
+              "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r": {
+                "address": "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r",
+                "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                "owner": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+                "amount": "999865000000",
+                "delegate": null,
+                "delegatedAmount": "0",
+                "frozen": false
+              }
+            },
+            "mint": {
+              "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "supply": "796099730000000",
+              "decimals": 6,
+              "initialized": true,
+              "extensions": [],
+              "name": "Proof of Burn",
+              "symbol": "PROOF",
+              "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+              "imageDataUrl": null,
+              "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+              "quoteSymbol": "SPYX",
+              "launchSupply": "1000000000000000",
+              "poolBase": "793100000000000",
+              "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+              "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+              "createdAt": "2026-09-20T21:15:25.033Z"
+            }
+          }
+        },
+        "destination": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "zcashPayloadHex": "53544d500000e504a2a2e6d83a355eec9e23425bec273a3fba193eb851685ae854b0581b4af2",
+        "notes": "Another compatible publisher may create a transparent Zcash transaction paying destination and this OP_RETURN. Do not burn again. Paying publication fees is not custody of the burned tokens."
+      },
+      "idempotencyKey": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34:EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS:15000000:zdemo190faeae7225c06ff8c23149ff15c295b1fc00981:1789938934926",
+      "createdAt": "2026-09-20T21:15:34.928Z",
+      "updatedAt": "2026-09-20T21:15:34.938Z"
+    },
+    "eb912248-ca6b-4a03-9adf-4a9ab7868a5d": {
+      "id": "eb912248-ca6b-4a03-9adf-4a9ab7868a5d",
+      "state": "confirmed",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "owner": "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS",
+      "amountBase": "7000000",
+      "decimals": 6,
+      "destination": "zdemo18aec9cb9e1cf2de15ad192470b7b31a3ec2391ed",
+      "nonce": "d3ad2b3263954b61861f99a05560a924",
+      "sourceTx": "3Mo4LVf7SKtJcgFFKudez9ueeLX41AusFtGZbHCT5CQPbbavCpkc7VbYuVgbkS9A32UcH2wtMH8VXaasWNKGVaB6",
+      "burnLocator": "outer:0",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "burnAuthority": "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "commitmentHex": "299eee00ab6a1eb8ade2808d8dc727e25534ff9c70229bcba886550b4ae2b85a",
+      "zcashTx": "d9587ceaff8aed1f11f944feb7f04271ff03707ad06413262f5df210aaa3b93c",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 135,
+      "confirmations": 2,
+      "rejectReason": null,
+      "rejectMessage": null,
+      "claimPackage": {
+        "protocol": "stamp-exp",
+        "version": 0,
+        "preimage": "stamp-exp\n0\nsolana:demo\nzcash:demo\nEZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS\nTokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\n3Mo4LVf7SKtJcgFFKudez9ueeLX41AusFtGZbHCT5CQPbbavCpkc7VbYuVgbkS9A32UcH2wtMH8VXaasWNKGVaB6\nouter:0\n7000000\n6\nzdemo18aec9cb9e1cf2de15ad192470b7b31a3ec2391ed\nCi5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS\nowner\nouter:1\nd3ad2b3263954b61861f99a05560a924",
+        "commitmentHex": "299eee00ab6a1eb8ade2808d8dc727e25534ff9c70229bcba886550b4ae2b85a",
+        "solana": {
+          "network": "solana:demo",
+          "signature": "3Mo4LVf7SKtJcgFFKudez9ueeLX41AusFtGZbHCT5CQPbbavCpkc7VbYuVgbkS9A32UcH2wtMH8VXaasWNKGVaB6",
+          "transaction": {
+            "signature": "3Mo4LVf7SKtJcgFFKudez9ueeLX41AusFtGZbHCT5CQPbbavCpkc7VbYuVgbkS9A32UcH2wtMH8VXaasWNKGVaB6",
+            "slot": 9,
+            "network": "solana:demo",
+            "commitment": "finalized",
+            "err": null,
+            "signers": [
+              "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS"
+            ],
+            "instructions": [
+              {
+                "locator": "outer:0",
+                "instruction": {
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "accounts": [
+                    "GBRhsve9zu49vpyVxxeSTeg3ZQ63R27JNnjgLQfXZFJv",
+                    "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                    "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS"
+                  ],
+                  "data": {
+                    "0": 15,
+                    "1": 192,
+                    "2": 207,
+                    "3": 106,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 0,
+                    "8": 0,
+                    "9": 6
+                  }
+                }
+              },
+              {
+                "locator": "outer:1",
+                "instruction": {
+                  "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                  "accounts": [],
+                  "data": {
+                    "0": 83,
+                    "1": 84,
+                    "2": 77,
+                    "3": 80,
+                    "4": 0,
+                    "5": 0,
+                    "6": 0,
+                    "7": 46,
+                    "8": 122,
+                    "9": 100,
+                    "10": 101,
+                    "11": 109,
+                    "12": 111,
+                    "13": 49,
+                    "14": 56,
+                    "15": 97,
+                    "16": 101,
+                    "17": 99,
+                    "18": 57,
+                    "19": 99,
+                    "20": 98,
+                    "21": 57,
+                    "22": 101,
+                    "23": 49,
+                    "24": 99,
+                    "25": 102,
+                    "26": 50,
+                    "27": 100,
+                    "28": 101,
+                    "29": 49,
+                    "30": 53,
+                    "31": 97,
+                    "32": 100,
+                    "33": 49,
+                    "34": 57,
+                    "35": 50,
+                    "36": 52,
+                    "37": 55,
+                    "38": 48,
+                    "39": 98,
+                    "40": 55,
+                    "41": 98,
+                    "42": 51,
+                    "43": 49,
+                    "44": 97,
+                    "45": 51,
+                    "46": 101,
+                    "47": 99,
+                    "48": 50,
+                    "49": 51,
+                    "50": 57,
+                    "51": 49,
+                    "52": 101,
+                    "53": 100,
+                    "54": 192,
+                    "55": 207,
+                    "56": 106,
+                    "57": 0,
+                    "58": 0,
+                    "59": 0,
+                    "60": 0,
+                    "61": 0,
+                    "62": 201,
+                    "63": 140,
+                    "64": 156,
+                    "65": 25,
+                    "66": 211,
+                    "67": 136,
+                    "68": 40,
+                    "69": 22,
+                    "70": 56,
+                    "71": 5,
+                    "72": 110,
+                    "73": 217,
+                    "74": 45,
+                    "75": 45,
+                    "76": 88,
+                    "77": 252,
+                    "78": 238,
+                    "79": 236,
+                    "80": 221,
+                    "81": 198,
+                    "82": 239,
+                    "83": 22,
+                    "84": 131,
+                    "85": 1,
+                    "86": 14,
+                    "87": 194,
+                    "88": 235,
+                    "89": 18,
+                    "90": 57,
+                    "91": 28,
+                    "92": 127,
+                    "93": 137,
+                    "94": 211,
+                    "95": 173,
+                    "96": 43,
+                    "97": 50,
+                    "98": 99,
+                    "99": 149,
+                    "100": 75,
+                    "101": 97,
+                    "102": 134,
+                    "103": 31,
+                    "104": 153,
+                    "105": 160,
+                    "106": 85,
+                    "107": 96,
+                    "108": 169,
+                    "109": 36
+                  }
+                }
+              }
+            ],
+            "tokenAccounts": {
+              "GBRhsve9zu49vpyVxxeSTeg3ZQ63R27JNnjgLQfXZFJv": {
+                "address": "GBRhsve9zu49vpyVxxeSTeg3ZQ63R27JNnjgLQfXZFJv",
+                "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                "owner": "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS",
+                "amount": "999993000000",
+                "delegate": null,
+                "delegatedAmount": "0",
+                "frozen": false
+              }
+            },
+            "mint": {
+              "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+              "supply": "799099723000000",
+              "decimals": 6,
+              "initialized": true,
+              "extensions": [],
+              "name": "Proof of Burn",
+              "symbol": "PROOF",
+              "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+              "imageDataUrl": null,
+              "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+              "quoteSymbol": "SPYX",
+              "launchSupply": "1000000000000000",
+              "poolBase": "793100000000000",
+              "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+              "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+              "createdAt": "2026-09-20T21:15:25.033Z"
+            }
+          }
+        },
+        "destination": "zdemo18aec9cb9e1cf2de15ad192470b7b31a3ec2391ed",
+        "zcashPayloadHex": "53544d500000299eee00ab6a1eb8ade2808d8dc727e25534ff9c70229bcba886550b4ae2b85a",
+        "notes": "Another compatible publisher may create a transparent Zcash transaction paying destination and this OP_RETURN. Do not burn again. Paying publication fees is not custody of the burned tokens."
+      },
+      "idempotencyKey": "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS:EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS:7000000:zdemo18aec9cb9e1cf2de15ad192470b7b31a3ec2391ed:1789940421313",
+      "createdAt": "2026-09-20T21:40:21.315Z",
+      "updatedAt": "2026-09-20T21:40:21.327Z"
+    }
+  },
+  "stamps": {
+    "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e": {
+      "id": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "jobId": "eefcfc22-0629-47c1-842b-667471d21d6a",
+      "protocol": "stamp-exp",
+      "version": 0,
+      "sourceNetwork": "solana:demo",
+      "destinationNetwork": "zcash:demo",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "sourceTx": "2jRzTYdN7sTaCM5KCfAoZg5ucePMLE1LmwrrSfar7E2H56u8NCm1uRWDtERhKqTbvJAMJ6LkzxhUtq9nR72yyQn2",
+      "burnLocator": "outer:0",
+      "amountBase": "40000000",
+      "decimals": 6,
+      "destination": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+      "burnAuthority": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "nonce": "e6161f11ea42471192b4b59d554a7698",
+      "commitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "zcashTx": "4220f62324ca8584dc912ebe1e73a4e36329c4f12298b8891f844739096b0dd1",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 101,
+      "confirmations": 2,
+      "createdAt": "2026-09-20T21:15:25.053Z"
+    },
+    "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8": {
+      "id": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "jobId": "74f79264-4e89-469a-940f-7cceac88dad4",
+      "protocol": "stamp-exp",
+      "version": 0,
+      "sourceNetwork": "solana:demo",
+      "destinationNetwork": "zcash:demo",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "sourceTx": "3dZBwVYdkdqqufwYZgMexGxoe9rY9seVpwpYyGiPU5Ark6HDqnhTG7gFCZWPRmasbwRNgrhkUa9WsJRpLaXveMwK",
+      "burnLocator": "outer:0",
+      "amountBase": "10000000",
+      "decimals": 6,
+      "destination": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+      "burnAuthority": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "nonce": "e6042bd1da2c44f797618bf12ac3de41",
+      "commitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "zcashTx": "af15056d0a091fc4e772d79c83bd8deb547c44d6d66606e8c6cc876f70582f88",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 110,
+      "confirmations": 2,
+      "createdAt": "2026-09-20T21:15:27.644Z"
+    },
+    "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29": {
+      "id": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+      "jobId": "1168875e-0da7-4f3a-bcad-af5f58665e1b",
+      "protocol": "stamp-exp",
+      "version": 0,
+      "sourceNetwork": "solana:demo",
+      "destinationNetwork": "zcash:demo",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "sourceTx": "4PMCBJy9fLxrMZBYxSxYwrLo9yxc4vkd2Rq5NBUj5dJH7APaw6dydLYLiGMsRCdbLmvXf2WRUkQts6uzki6VvpA3",
+      "burnLocator": "outer:0",
+      "amountBase": "120000000",
+      "decimals": 6,
+      "destination": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "burnAuthority": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "nonce": "c45c419bb2f84e859ca54dfecb581784",
+      "commitmentHex": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+      "zcashTx": "69500f0f61abcb31f6c27fa391b324cc9cdc6e4ba82ca8a1c9276323786a1b4a",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 123,
+      "confirmations": 2,
+      "createdAt": "2026-09-20T21:15:31.837Z"
+    },
+    "7352f039a9c6f269a8e35fef9d3a678c1e17b74ff22030f0d0f65a7bb18313cf": {
+      "id": "7352f039a9c6f269a8e35fef9d3a678c1e17b74ff22030f0d0f65a7bb18313cf",
+      "jobId": "c09aa860-6243-4ffe-8237-1222b81dc183",
+      "protocol": "stamp-exp",
+      "version": 0,
+      "sourceNetwork": "solana:demo",
+      "destinationNetwork": "zcash:demo",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "sourceTx": "2jdNBhu6mniqJ1j4HeP1DK8EhCjy4WH8V4EwqHcpidcLk2ysn1BdydHu85Zv9uUydxxs8eHBdMh93x8etcYjnyVp",
+      "burnLocator": "outer:0",
+      "amountBase": "25000000",
+      "decimals": 6,
+      "destination": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+      "burnAuthority": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "nonce": "01b5fc42016f4cedb6a62cd28b0f2cbd",
+      "commitmentHex": "7352f039a9c6f269a8e35fef9d3a678c1e17b74ff22030f0d0f65a7bb18313cf",
+      "zcashTx": "84fdaec8ee61204224b4617b32fb2cad0e2b0871f835a5f9dcbaa97556ff42c6",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 128,
+      "confirmations": 2,
+      "createdAt": "2026-09-20T21:15:33.354Z"
+    },
+    "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0": {
+      "id": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+      "jobId": "0d8608c3-f768-4095-a235-9d2cfca008c6",
+      "protocol": "stamp-exp",
+      "version": 0,
+      "sourceNetwork": "solana:demo",
+      "destinationNetwork": "zcash:demo",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "sourceTx": "PYcM7NmRWHzW4ZmbjbKmwsSTenTqmbhkcgqPTsSGjdEBqNdkYR9JFwxRGSM9huVwhrP6LiAV9QzaTa5kYjpQZWa",
+      "burnLocator": "outer:0",
+      "amountBase": "60000000",
+      "decimals": 6,
+      "destination": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+      "burnAuthority": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "nonce": "8faa471d2e4d4745b46cc821750d7fe2",
+      "commitmentHex": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+      "zcashTx": "0be419d551862aa216a754fef50013e82fc0d6f9394a35272d8942083abcbf65",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 129,
+      "confirmations": 2,
+      "createdAt": "2026-09-20T21:15:33.372Z"
+    },
+    "e504a2a2e6d83a355eec9e23425bec273a3fba193eb851685ae854b0581b4af2": {
+      "id": "e504a2a2e6d83a355eec9e23425bec273a3fba193eb851685ae854b0581b4af2",
+      "jobId": "e17a79f4-999d-446e-bac9-631de86486de",
+      "protocol": "stamp-exp",
+      "version": 0,
+      "sourceNetwork": "solana:demo",
+      "destinationNetwork": "zcash:demo",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "sourceTx": "2eiacmPE4MNh5Kw5hFHVT8tgWXzFzJtQ155FX55dokyMqqNzaEUe6LJkArhquPYSqyAZDphUhP3TKrZXxx9zGyx2",
+      "burnLocator": "outer:0",
+      "amountBase": "15000000",
+      "decimals": 6,
+      "destination": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "burnAuthority": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "nonce": "a0992e3e9e7a49c1868f05b51c632387",
+      "commitmentHex": "e504a2a2e6d83a355eec9e23425bec273a3fba193eb851685ae854b0581b4af2",
+      "zcashTx": "eb8eeb5e55bdfa0c87a6b50244f852e5bad2661d35c7573d3f78697ad26f8c04",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 134,
+      "confirmations": 2,
+      "createdAt": "2026-09-20T21:15:34.937Z"
+    },
+    "299eee00ab6a1eb8ade2808d8dc727e25534ff9c70229bcba886550b4ae2b85a": {
+      "id": "299eee00ab6a1eb8ade2808d8dc727e25534ff9c70229bcba886550b4ae2b85a",
+      "jobId": "eb912248-ca6b-4a03-9adf-4a9ab7868a5d",
+      "protocol": "stamp-exp",
+      "version": 0,
+      "sourceNetwork": "solana:demo",
+      "destinationNetwork": "zcash:demo",
+      "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+      "tokenProgram": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      "sourceTx": "3Mo4LVf7SKtJcgFFKudez9ueeLX41AusFtGZbHCT5CQPbbavCpkc7VbYuVgbkS9A32UcH2wtMH8VXaasWNKGVaB6",
+      "burnLocator": "outer:0",
+      "amountBase": "7000000",
+      "decimals": 6,
+      "destination": "zdemo18aec9cb9e1cf2de15ad192470b7b31a3ec2391ed",
+      "burnAuthority": "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS",
+      "authorityRole": "owner",
+      "intentLocator": "outer:1",
+      "nonce": "d3ad2b3263954b61861f99a05560a924",
+      "commitmentHex": "299eee00ab6a1eb8ade2808d8dc727e25534ff9c70229bcba886550b4ae2b85a",
+      "zcashTx": "d9587ceaff8aed1f11f944feb7f04271ff03707ad06413262f5df210aaa3b93c",
+      "zcashOutputIndex": 0,
+      "zcashNullDataIndex": 1,
+      "zcashHeight": 135,
+      "confirmations": 2,
+      "createdAt": "2026-09-20T21:40:21.325Z"
+    }
+  },
+  "listings": {
+    "5608874a-b8d6-440e-9999-0372a8dd39ac": {
+      "id": "5608874a-b8d6-440e-9999-0372a8dd39ac",
+      "stampId": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "sequence": 1,
+      "state": "settled",
+      "sellerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+      "sellerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+      "buyerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+      "buyerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+      "priceZat": "1800000",
+      "hashLockHex": "091e6506daf2d03201fbddcae5729d3993e991a6744a32cc8b8dd8f2cf25ce16",
+      "preimageHex": "0c7eebb251be4cc2c22437916e63bd331eab455e639c5d2fe992ba05d932ec44",
+      "offerArtifact": {
+        "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+        "sequence": 1,
+        "sellerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "buyerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "priceZat": "1800000",
+        "hashLockHex": "091e6506daf2d03201fbddcae5729d3993e991a6744a32cc8b8dd8f2cf25ce16",
+        "expiryHeight": 149,
+        "ownerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+        "signatureHex": "d838fcc74007481e84a35e65caeb9bbe88bf12349ca0496ecc294df020442b3256db61d5d4e3a0a9928787284d4aa26a8e9a0bf327c377d4b595996062cb2702"
+      },
+      "offerTxid": "2bd2c49a21de9579d9ba391e5a9a1dda1f5d3aa83f9c8623ed770f45b02cfd63",
+      "transferArtifact": {
+        "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+        "sequence": 1,
+        "fromAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "toAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "offerHashHex": "964b6c8618445ba46ae723bd8de90624a8cce7a8d9f80bd01246113781f9f659",
+        "preimageHex": "0c7eebb251be4cc2c22437916e63bd331eab455e639c5d2fe992ba05d932ec44",
+        "ownerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+        "signatureHex": "bea686abccdcc996063f5cf6661ddeb6789b14b0034ca22ffa6fbef10f4d0cdc30d55649bcbfebe6a09ee53a028617eeb2cab386af6da0a52957c9bc69fba10e"
+      },
+      "transferTxid": "6e7fbd654beb4437d7928d97e7ebc688a36819ac0e9dc08ec34dabc12c72777f",
+      "escrowId": "0d2e91e9f55f8d0efc2cd3684b5b2ebc",
+      "expiryHeight": 151,
+      "note": "",
+      "createdAt": "2026-09-20T21:15:25.063Z",
+      "updatedAt": "2026-09-20T21:15:26.342Z"
+    },
+    "018b2af0-fd84-4733-b3a3-bdb636e0e292": {
+      "id": "018b2af0-fd84-4733-b3a3-bdb636e0e292",
+      "stampId": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "sequence": 2,
+      "state": "settled",
+      "sellerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+      "sellerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+      "buyerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "buyerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+      "priceZat": "2250000",
+      "hashLockHex": "5a0f3d2a05b3dfe442047f332da8596c9650495e21208553d68f6e8e6fd86b92",
+      "preimageHex": "5aed7acba6d22033cd38d4ddac82a8d33fb8dae31e27767e14a6d4c899434825",
+      "offerArtifact": {
+        "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+        "sequence": 2,
+        "sellerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "buyerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "priceZat": "2250000",
+        "hashLockHex": "5a0f3d2a05b3dfe442047f332da8596c9650495e21208553d68f6e8e6fd86b92",
+        "expiryHeight": 153,
+        "ownerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+        "signatureHex": "5a7a6524a204419b99bb5097004047cf1633c42b029e65c6ed9b7331f3214c874bd58b3d02405f6c7294d76a010587241ad59f30e9a93f157de4743f21880f03"
+      },
+      "offerTxid": "c208edd44e9a00551849078671deb4ed7d995b995ad11dca86ba5f4eec169453",
+      "transferArtifact": {
+        "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+        "sequence": 2,
+        "fromAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "toAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "offerHashHex": "fac1afd3da68c71144c055ed8e12b9da23ebf036808876f60156d81c2056c30d",
+        "preimageHex": "5aed7acba6d22033cd38d4ddac82a8d33fb8dae31e27767e14a6d4c899434825",
+        "ownerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+        "signatureHex": "256ecd621704ce92669df30050877b1b064908b632fc7e5472bf8f6e5206105edae2a50ec8346a010b64b7c1938834aa5c21dc90dfcbcc296bca006036bfd402"
+      },
+      "transferTxid": "1ee9d8e5d3cec4fe64ef8fc9187fa7d0e5346adafc1962b643986ae49f9d3294",
+      "escrowId": "886f9d216d7be0cd75743490eff37c2b",
+      "expiryHeight": 155,
+      "note": "",
+      "createdAt": "2026-09-20T21:15:26.343Z",
+      "updatedAt": "2026-09-20T21:15:27.661Z"
+    },
+    "9c6cab9d-aa3f-4789-a74d-1b97d234f0c8": {
+      "id": "9c6cab9d-aa3f-4789-a74d-1b97d234f0c8",
+      "stampId": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "sequence": 1,
+      "state": "settled",
+      "sellerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+      "sellerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+      "buyerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "buyerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+      "priceZat": "520000",
+      "hashLockHex": "d7de520b447ac95c767b8ef5253532a4ea1bd45af139178044244fd2dea026b2",
+      "preimageHex": "0fa1579a79067e9d73d99fc6ebf9926d6b0cf3c196200d49adbba19beb2e413c",
+      "offerArtifact": {
+        "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "sequence": 1,
+        "sellerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "buyerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "priceZat": "520000",
+        "hashLockHex": "d7de520b447ac95c767b8ef5253532a4ea1bd45af139178044244fd2dea026b2",
+        "expiryHeight": 158,
+        "ownerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+        "signatureHex": "e2f6c181ff0ee6e379a7a0ec487ef9815b8b277dfe9b4e8df6b437698fd30a0ff5744d492412ae3a6f8b2930ca0755a4d929c414062f3ec47b979192afe28909"
+      },
+      "offerTxid": "2c82cb1b13b05ca7014ebccb387294460a31fdf80ae65e4b7177bc94d35355cc",
+      "transferArtifact": {
+        "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "sequence": 1,
+        "fromAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "toAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "offerHashHex": "9fc39c4795d221e423886f29a168936a683caedc22aa8bfaa9d3ce06dd4bfd2c",
+        "preimageHex": "0fa1579a79067e9d73d99fc6ebf9926d6b0cf3c196200d49adbba19beb2e413c",
+        "ownerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+        "signatureHex": "2e88e6962f1384a3fab7112a22ff94450aaa724b32b7d090f7e457e72e33e49edae4f5e4332514004f9165cf6c8155648afd3e5b6a07784cfc3927cb2e437b09"
+      },
+      "transferTxid": "cc5b4cdc7f178db4f110b9ecefabaaccbcc7daafc0c185028594ad85153a705d",
+      "escrowId": "f31dfa60d21d111e8254cb615985607e",
+      "expiryHeight": 160,
+      "note": "",
+      "createdAt": "2026-09-20T21:15:27.661Z",
+      "updatedAt": "2026-09-20T21:15:29.013Z"
+    },
+    "7b79c5d0-afac-439d-b4aa-4257051ddad1": {
+      "id": "7b79c5d0-afac-439d-b4aa-4257051ddad1",
+      "stampId": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "sequence": 2,
+      "state": "settled",
+      "sellerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "sellerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+      "buyerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+      "buyerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+      "priceZat": "610000",
+      "hashLockHex": "e8320b014e3f59eafad1507b592c6ea5b6b2f97c8a1d0d44b83d9957f1f2e3b2",
+      "preimageHex": "024e4ad7d95d8d567da2ea220eea1cc57ac10cb709a4757cb003a9c1ff55402d",
+      "offerArtifact": {
+        "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "sequence": 2,
+        "sellerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "buyerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "priceZat": "610000",
+        "hashLockHex": "e8320b014e3f59eafad1507b592c6ea5b6b2f97c8a1d0d44b83d9957f1f2e3b2",
+        "expiryHeight": 162,
+        "ownerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+        "signatureHex": "08a41238ccbc199d1f22e89d81cb104dd2e4af48795ccdcd0bbb9f3cfffc138c14d23184b175f977d02672d23dc4b82bcfb884712ce2f72b2ef7bfcaf0275b0d"
+      },
+      "offerTxid": "6eec2ebf5300dd84b3613b06af8634167eac4d2c899914674ddac023ce86d686",
+      "transferArtifact": {
+        "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "sequence": 2,
+        "fromAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "toAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "offerHashHex": "6d01fb12e4e67ab898e9872fd5da31c8b0c8ad4e6dc2812a56bac888b8629868",
+        "preimageHex": "024e4ad7d95d8d567da2ea220eea1cc57ac10cb709a4757cb003a9c1ff55402d",
+        "ownerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+        "signatureHex": "2fdf2b001651ddc0179035ae78cfee6a55ac0dd139b215582a2955a289ba5dbcfc74789c3de10833cb6c9e16975b84e6a2c8b964b4d3e0aabbd56a7d8e305404"
+      },
+      "transferTxid": "90d055dc6aa3dc5610479e8b429ce2d7e07c2df9fefa0daf02bee87e1a7dc67e",
+      "escrowId": "4f5e9457f8576fb9853e37645b9c6eca",
+      "expiryHeight": 164,
+      "note": "",
+      "createdAt": "2026-09-20T21:15:29.014Z",
+      "updatedAt": "2026-09-20T21:15:30.412Z"
+    },
+    "00e3ae77-6bc1-4a09-bcfc-6961b90a6534": {
+      "id": "00e3ae77-6bc1-4a09-bcfc-6961b90a6534",
+      "stampId": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "sequence": 3,
+      "state": "settled",
+      "sellerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+      "sellerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+      "buyerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+      "buyerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+      "priceZat": "580000",
+      "hashLockHex": "0de600751cc28aac01842793d6cdcfa6c37a59c6ee546135c8e71699cffb8788",
+      "preimageHex": "311b08e6daaa2ce668f5824e6c10ecda263eb0b9082db1bbd981e24655177885",
+      "offerArtifact": {
+        "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "sequence": 3,
+        "sellerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "buyerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "priceZat": "580000",
+        "hashLockHex": "0de600751cc28aac01842793d6cdcfa6c37a59c6ee546135c8e71699cffb8788",
+        "expiryHeight": 166,
+        "ownerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+        "signatureHex": "649b97b5e5b065e6191a4cf80f7c178c370a893db16ef0d05e87e8a5655e1e24a1d4bc96bbb65395fa15083065e148f173005f349e3a7ad4ec92b4c9374dcd07"
+      },
+      "offerTxid": "e70d05b63339d53e949c1be8177cd3b0900cd0cf0ba79e093b5cf5d38a38878a",
+      "transferArtifact": {
+        "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "sequence": 3,
+        "fromAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "toAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "offerHashHex": "6a6f7072019844229cf5d7cc2e4f476223bb3b8326f6cef60af23c1da72fb210",
+        "preimageHex": "311b08e6daaa2ce668f5824e6c10ecda263eb0b9082db1bbd981e24655177885",
+        "ownerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+        "signatureHex": "2fff3df9bad15aef08fd0a935178c73feaa3925d322d5e0d8e71d6af420304fc2ce6b0e30897a6a12240cb7372cf42ba30497af9f65bf128ae42ca1c3b5bbc0e"
+      },
+      "transferTxid": "100d7957ecb343df23c47809b73d3876f518ee545040e807b1170c8af896b9fc",
+      "escrowId": "5e9ea38731bf74d676b1eedee4a83ba2",
+      "expiryHeight": 168,
+      "note": "",
+      "createdAt": "2026-09-20T21:15:30.413Z",
+      "updatedAt": "2026-09-20T21:15:31.873Z"
+    },
+    "76db5107-8858-47e8-8ea2-73835a683fc4": {
+      "id": "76db5107-8858-47e8-8ea2-73835a683fc4",
+      "stampId": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+      "stampCommitmentHex": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+      "sequence": 1,
+      "state": "settled",
+      "sellerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "sellerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+      "buyerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+      "buyerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+      "priceZat": "4800000",
+      "hashLockHex": "a3995cf6484f1e24ccdf3f8fd74f0f8a7caa58639f965710bcf0d35deca9155a",
+      "preimageHex": "dca41e4183815a51db639fbfca5d5c0fd7d8f9df6a64be73cd14f81e53c4d480",
+      "offerArtifact": {
+        "stampCommitmentHex": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+        "sequence": 1,
+        "sellerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "buyerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "priceZat": "4800000",
+        "hashLockHex": "a3995cf6484f1e24ccdf3f8fd74f0f8a7caa58639f965710bcf0d35deca9155a",
+        "expiryHeight": 171,
+        "ownerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+        "signatureHex": "3e9aa72bdda8d45e2d208ab58838f3794d56b43349894ab95f084b52a3f9cc2be69ce437e5ce437daf202d0b686261bfe9f9b7c7dc8812c7c46914b56364420e"
+      },
+      "offerTxid": "cc78f7d832b6dd96865e68a2055ed59964faa820f380f314dd8f07fa782d06cd",
+      "transferArtifact": {
+        "stampCommitmentHex": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+        "sequence": 1,
+        "fromAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "toAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "offerHashHex": "996d818253a85e4f56edfba6eac491dc096fc66bc5d7a51fb10ac4e65871dfb5",
+        "preimageHex": "dca41e4183815a51db639fbfca5d5c0fd7d8f9df6a64be73cd14f81e53c4d480",
+        "ownerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+        "signatureHex": "aa7ecbfb11d1dffe9effabf21a90981eaec24b25d410c5b48cdedf07af9e2668607837ec81a9702a40058617328fc5d0ea46b3a868604400fd24aa0820144d04"
+      },
+      "transferTxid": "1759cee49d42353bfe4955e4dc19e444d7830429f6d3485b311d6302a76ce775",
+      "escrowId": "36a1c736bfff928e5743ed39b592825f",
+      "expiryHeight": 173,
+      "note": "",
+      "createdAt": "2026-09-20T21:15:31.874Z",
+      "updatedAt": "2026-09-20T21:15:33.412Z"
+    },
+    "5cd8571e-030b-4bc8-9ae9-13891166a09f": {
+      "id": "5cd8571e-030b-4bc8-9ae9-13891166a09f",
+      "stampId": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+      "stampCommitmentHex": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+      "sequence": 1,
+      "state": "settled",
+      "sellerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+      "sellerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+      "buyerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "buyerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+      "priceZat": "3000000",
+      "hashLockHex": "1c504a09d7539a52dc2b701b314536e6a775ef0fdb0012a65f9ffab7320ed2a0",
+      "preimageHex": "671a9609a66e249ae13a642e3d265f8c5e406d5cf890a27663c6dabf277d22a1",
+      "offerArtifact": {
+        "stampCommitmentHex": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+        "sequence": 1,
+        "sellerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "buyerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "priceZat": "3000000",
+        "hashLockHex": "1c504a09d7539a52dc2b701b314536e6a775ef0fdb0012a65f9ffab7320ed2a0",
+        "expiryHeight": 177,
+        "ownerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+        "signatureHex": "7813411af06aeb4d951ee7fab82f16e9fdd67a6a210a55fb2c4812e35a42051395c0f23370cb1553a907d85c3512cee21e25cadfbcf573a56ebdb7cdf5eec702"
+      },
+      "offerTxid": "0d3e12a435761f7cda7a9990e7532c31b25e6e64f0fd9bcddfbab84d3a76b96e",
+      "transferArtifact": {
+        "stampCommitmentHex": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+        "sequence": 1,
+        "fromAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "toAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "offerHashHex": "edce2fa8867268212f3368115e5e14baf15c9391e009c084ac27d689ad9a9248",
+        "preimageHex": "671a9609a66e249ae13a642e3d265f8c5e406d5cf890a27663c6dabf277d22a1",
+        "ownerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+        "signatureHex": "ca8edebc30cf3c74cb303a40a1876e5188bf03235ba7951bdbb17ecff50f298c88c51fabeccfeca0e06725015e222ea4b0ab9a694ee2d23a5c15bb1920f5620e"
+      },
+      "transferTxid": "c250864ccb4df0f40028eb7aa051c9a9fb8bdc9f288ba0cff9e1d74e34895986",
+      "escrowId": "625981acdf9826458e9e1abee56adb59",
+      "expiryHeight": 179,
+      "note": "",
+      "createdAt": "2026-09-20T21:15:33.414Z",
+      "updatedAt": "2026-09-20T21:15:34.997Z"
+    },
+    "32b3c951-c886-40e0-ab34-9bafc574922b": {
+      "id": "32b3c951-c886-40e0-ab34-9bafc574922b",
+      "stampId": "e504a2a2e6d83a355eec9e23425bec273a3fba193eb851685ae854b0581b4af2",
+      "stampCommitmentHex": "e504a2a2e6d83a355eec9e23425bec273a3fba193eb851685ae854b0581b4af2",
+      "sequence": 1,
+      "state": "reserved",
+      "sellerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+      "sellerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+      "buyerAddress": "zdemo1518eb41139b350a691ab64ba829ca4a5621e6ea1",
+      "buyerPublicKeyHex": "c49c9095505d12a939ba7429f7e226d78943a30575ea06a0faf118c7d314ac9d",
+      "priceZat": "900000",
+      "hashLockHex": "ee820abcb98e6703373fb8b43d74ef0f926736a931bf1b84c5ac5b0386e68689",
+      "preimageHex": "5765931623b9ca62a99f83ff722ab7028297a40e029f2252828e7d7dc325b97b",
+      "offerArtifact": null,
+      "offerTxid": null,
+      "transferArtifact": null,
+      "transferTxid": null,
+      "escrowId": null,
+      "expiryHeight": 183,
+      "note": "",
+      "createdAt": "2026-09-20T21:15:35.000Z",
+      "updatedAt": "2026-09-20T21:40:24.602Z"
+    }
+  },
+  "transfers": {
+    "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e:1": {
+      "id": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e:1",
+      "stampId": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "sequence": 1,
+      "listingId": "5608874a-b8d6-440e-9999-0372a8dd39ac",
+      "txid": "6e7fbd654beb4437d7928d97e7ebc688a36819ac0e9dc08ec34dabc12c72777f",
+      "artifact": {
+        "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+        "sequence": 1,
+        "fromAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "toAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "offerHashHex": "964b6c8618445ba46ae723bd8de90624a8cce7a8d9f80bd01246113781f9f659",
+        "preimageHex": "0c7eebb251be4cc2c22437916e63bd331eab455e639c5d2fe992ba05d932ec44",
+        "ownerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+        "signatureHex": "bea686abccdcc996063f5cf6661ddeb6789b14b0034ca22ffa6fbef10f4d0cdc30d55649bcbfebe6a09ee53a028617eeb2cab386af6da0a52957c9bc69fba10e"
+      },
+      "createdAt": "2026-09-20T21:15:25.125Z"
+    },
+    "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e:2": {
+      "id": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e:2",
+      "stampId": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+      "sequence": 2,
+      "listingId": "018b2af0-fd84-4733-b3a3-bdb636e0e292",
+      "txid": "1ee9d8e5d3cec4fe64ef8fc9187fa7d0e5346adafc1962b643986ae49f9d3294",
+      "artifact": {
+        "stampCommitmentHex": "edc338b40cb3b99ede27ee1c9a79f1f422f83adbdf3048f45dfd467ae0aa641e",
+        "sequence": 2,
+        "fromAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "toAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "offerHashHex": "fac1afd3da68c71144c055ed8e12b9da23ebf036808876f60156d81c2056c30d",
+        "preimageHex": "5aed7acba6d22033cd38d4ddac82a8d33fb8dae31e27767e14a6d4c899434825",
+        "ownerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+        "signatureHex": "256ecd621704ce92669df30050877b1b064908b632fc7e5472bf8f6e5206105edae2a50ec8346a010b64b7c1938834aa5c21dc90dfcbcc296bca006036bfd402"
+      },
+      "createdAt": "2026-09-20T21:15:26.423Z"
+    },
+    "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8:1": {
+      "id": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8:1",
+      "stampId": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "sequence": 1,
+      "listingId": "9c6cab9d-aa3f-4789-a74d-1b97d234f0c8",
+      "txid": "cc5b4cdc7f178db4f110b9ecefabaaccbcc7daafc0c185028594ad85153a705d",
+      "artifact": {
+        "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "sequence": 1,
+        "fromAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "toAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "offerHashHex": "9fc39c4795d221e423886f29a168936a683caedc22aa8bfaa9d3ce06dd4bfd2c",
+        "preimageHex": "0fa1579a79067e9d73d99fc6ebf9926d6b0cf3c196200d49adbba19beb2e413c",
+        "ownerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+        "signatureHex": "2e88e6962f1384a3fab7112a22ff94450aaa724b32b7d090f7e457e72e33e49edae4f5e4332514004f9165cf6c8155648afd3e5b6a07784cfc3927cb2e437b09"
+      },
+      "createdAt": "2026-09-20T21:15:27.778Z"
+    },
+    "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8:2": {
+      "id": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8:2",
+      "stampId": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "sequence": 2,
+      "listingId": "7b79c5d0-afac-439d-b4aa-4257051ddad1",
+      "txid": "90d055dc6aa3dc5610479e8b429ce2d7e07c2df9fefa0daf02bee87e1a7dc67e",
+      "artifact": {
+        "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "sequence": 2,
+        "fromAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "toAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "offerHashHex": "6d01fb12e4e67ab898e9872fd5da31c8b0c8ad4e6dc2812a56bac888b8629868",
+        "preimageHex": "024e4ad7d95d8d567da2ea220eea1cc57ac10cb709a4757cb003a9c1ff55402d",
+        "ownerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+        "signatureHex": "2fdf2b001651ddc0179035ae78cfee6a55ac0dd139b215582a2955a289ba5dbcfc74789c3de10833cb6c9e16975b84e6a2c8b964b4d3e0aabbd56a7d8e305404"
+      },
+      "createdAt": "2026-09-20T21:15:29.165Z"
+    },
+    "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8:3": {
+      "id": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8:3",
+      "stampId": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+      "sequence": 3,
+      "listingId": "00e3ae77-6bc1-4a09-bcfc-6961b90a6534",
+      "txid": "100d7957ecb343df23c47809b73d3876f518ee545040e807b1170c8af896b9fc",
+      "artifact": {
+        "stampCommitmentHex": "262e1025e5efea10f09f710e0d3b33533bbbcd4f936a7b12777113e4eb424fa8",
+        "sequence": 3,
+        "fromAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "toAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "offerHashHex": "6a6f7072019844229cf5d7cc2e4f476223bb3b8326f6cef60af23c1da72fb210",
+        "preimageHex": "311b08e6daaa2ce668f5824e6c10ecda263eb0b9082db1bbd981e24655177885",
+        "ownerPublicKeyHex": "15fdf682091348656221d3831e3a5a645c60ade83fe78a02f93322661619faaf",
+        "signatureHex": "2fff3df9bad15aef08fd0a935178c73feaa3925d322d5e0d8e71d6af420304fc2ce6b0e30897a6a12240cb7372cf42ba30497af9f65bf128ae42ca1c3b5bbc0e"
+      },
+      "createdAt": "2026-09-20T21:15:30.600Z"
+    },
+    "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29:1": {
+      "id": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29:1",
+      "stampId": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+      "stampCommitmentHex": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+      "sequence": 1,
+      "listingId": "76db5107-8858-47e8-8ea2-73835a683fc4",
+      "txid": "1759cee49d42353bfe4955e4dc19e444d7830429f6d3485b311d6302a76ce775",
+      "artifact": {
+        "stampCommitmentHex": "0738f7c13079bf07265cebbe02c9be1c398f9ace46565c820a2ade109ee59f29",
+        "sequence": 1,
+        "fromAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "toAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+        "offerHashHex": "996d818253a85e4f56edfba6eac491dc096fc66bc5d7a51fb10ac4e65871dfb5",
+        "preimageHex": "dca41e4183815a51db639fbfca5d5c0fd7d8f9df6a64be73cd14f81e53c4d480",
+        "ownerPublicKeyHex": "c7529e8ab5eb0a2205f1af071d7d67a6329dbc824c81e2820f760f5eadd56c9f",
+        "signatureHex": "aa7ecbfb11d1dffe9effabf21a90981eaec24b25d410c5b48cdedf07af9e2668607837ec81a9702a40058617328fc5d0ea46b3a868604400fd24aa0820144d04"
+      },
+      "createdAt": "2026-09-20T21:15:32.108Z"
+    },
+    "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0:1": {
+      "id": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0:1",
+      "stampId": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+      "stampCommitmentHex": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+      "sequence": 1,
+      "listingId": "5cd8571e-030b-4bc8-9ae9-13891166a09f",
+      "txid": "c250864ccb4df0f40028eb7aa051c9a9fb8bdc9f288ba0cff9e1d74e34895986",
+      "artifact": {
+        "stampCommitmentHex": "ed8cee46725559b6043b9af322a79e0cefa67ecc25c0bfcd63c3988a03fc41d0",
+        "sequence": 1,
+        "fromAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+        "toAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+        "offerHashHex": "edce2fa8867268212f3368115e5e14baf15c9391e009c084ac27d689ad9a9248",
+        "preimageHex": "671a9609a66e249ae13a642e3d265f8c5e406d5cf890a27663c6dabf277d22a1",
+        "ownerPublicKeyHex": "ccde7476b27da5201880f0bb3b45ffac91c071b2f181df2089ce7d01a7179be1",
+        "signatureHex": "ca8edebc30cf3c74cb303a40a1876e5188bf03235ba7951bdbb17ecff50f298c88c51fabeccfeca0e06725015e222ea4b0ab9a694ee2d23a5c15bb1920f5620e"
+      },
+      "createdAt": "2026-09-20T21:15:33.681Z"
+    }
+  },
+  "demo": {
+    "solana": {
+      "slot": 9,
+      "mints": {
+        "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS": {
+          "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+          "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "supply": "800099723000000",
+          "decimals": 6,
+          "initialized": true,
+          "extensions": [],
+          "name": "Proof of Burn",
+          "symbol": "PROOF",
+          "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+          "imageDataUrl": null,
+          "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+          "quoteSymbol": "SPYX",
+          "launchSupply": "1000000000000000",
+          "poolBase": "793100000000000",
+          "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+          "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+          "createdAt": "2026-09-20T21:15:25.033Z"
+        }
+      },
+      "accounts": {
+        "vYHQ62EDzvKDfkoTYe4a9uq7fc5EehERRFtYKLj4xQH": {
+          "address": "vYHQ62EDzvKDfkoTYe4a9uq7fc5EehERRFtYKLj4xQH",
+          "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+          "owner": "441AfbMw6C5kCTSRRqcQ8bwAt6ijtXSqJ7o2BAyRBJEp",
+          "amount": "793100000000000",
+          "delegate": null,
+          "delegatedAmount": "0",
+          "frozen": false
+        },
+        "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg": {
+          "address": "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg",
+          "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+          "owner": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+          "amount": "999935000000",
+          "delegate": null,
+          "delegatedAmount": "0",
+          "frozen": false
+        },
+        "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w": {
+          "address": "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w",
+          "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+          "owner": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+          "amount": "999930000000",
+          "delegate": null,
+          "delegatedAmount": "0",
+          "frozen": false
+        },
+        "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r": {
+          "address": "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r",
+          "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+          "owner": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+          "amount": "999865000000",
+          "delegate": null,
+          "delegatedAmount": "0",
+          "frozen": false
+        },
+        "BH7okwf9ibsauNvWHGjouibYXk6GKAg6Gz8gPhGzW8fq": {
+          "address": "BH7okwf9ibsauNvWHGjouibYXk6GKAg6Gz8gPhGzW8fq",
+          "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+          "owner": "EEVNmzoJ6X4PeumExtnRE1A9xt6CvGJVMXDEiZY9N6rg",
+          "amount": "1000000000000",
+          "delegate": null,
+          "delegatedAmount": "0",
+          "frozen": false
+        },
+        "3eYYsNPCQWRbu9WM4S1YgNodL7DNX8X3jWPRbtKy5BVc": {
+          "address": "3eYYsNPCQWRbu9WM4S1YgNodL7DNX8X3jWPRbtKy5BVc",
+          "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+          "owner": "7GqPYYV4tDKu1HRZ9PxCDzkbn8Dy3bxq9hSpaGF21MPD",
+          "amount": "1000000000000",
+          "delegate": null,
+          "delegatedAmount": "0",
+          "frozen": false
+        },
+        "GBRhsve9zu49vpyVxxeSTeg3ZQ63R27JNnjgLQfXZFJv": {
+          "address": "GBRhsve9zu49vpyVxxeSTeg3ZQ63R27JNnjgLQfXZFJv",
+          "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+          "owner": "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS",
+          "amount": "999993000000",
+          "delegate": null,
+          "delegatedAmount": "0",
+          "frozen": false
+        },
+        "5WzHq86whAhMyi7JzqEorwbw25SNCBrwWNaorkS7YPH4": {
+          "address": "5WzHq86whAhMyi7JzqEorwbw25SNCBrwWNaorkS7YPH4",
+          "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+          "owner": "38RVQuJLs5sLsRGMZDKd19gYjx2Z9kjAXVEAgPzstFh4",
+          "amount": "1000000000000",
+          "delegate": null,
+          "delegatedAmount": "0",
+          "frozen": false
+        }
+      },
+      "txs": {
+        "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs": {
+          "signature": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+          "slot": 2,
+          "network": "solana:demo",
+          "commitment": "finalized",
+          "err": null,
+          "signers": [
+            "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht"
+          ],
+          "instructions": [],
+          "tokenAccounts": {},
+          "mint": {
+            "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "supply": "794100000000000",
+            "decimals": 6,
+            "initialized": true,
+            "extensions": [],
+            "name": "Proof of Burn",
+            "symbol": "PROOF",
+            "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+            "imageDataUrl": null,
+            "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+            "quoteSymbol": "SPYX",
+            "launchSupply": "1000000000000000",
+            "poolBase": "793100000000000",
+            "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+            "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+            "createdAt": "2026-09-20T21:15:25.033Z"
+          }
+        },
+        "2jRzTYdN7sTaCM5KCfAoZg5ucePMLE1LmwrrSfar7E2H56u8NCm1uRWDtERhKqTbvJAMJ6LkzxhUtq9nR72yyQn2": {
+          "signature": "2jRzTYdN7sTaCM5KCfAoZg5ucePMLE1LmwrrSfar7E2H56u8NCm1uRWDtERhKqTbvJAMJ6LkzxhUtq9nR72yyQn2",
+          "slot": 3,
+          "network": "solana:demo",
+          "commitment": "finalized",
+          "err": null,
+          "signers": [
+            "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht"
+          ],
+          "instructions": [
+            {
+              "locator": "outer:0",
+              "instruction": {
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "accounts": [
+                  "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg",
+                  "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                  "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht"
+                ],
+                "data": "DwBaYgIAAAAABg=="
+              }
+            },
+            {
+              "locator": "outer:1",
+              "instruction": {
+                "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                "accounts": [],
+                "data": "U1RNUAAAAC56ZGVtbzE5OWVjMTcxMzRkNGVlOTRhOGFkNWNlYzgyZDBlOWFlNDY4Y2QwOTZjAFpiAgAAAADJjJwZ04goFjgFbtktLVj87uzdxu8WgwEOwusSORx/ieYWHxHqQkcRkrS1nVVKdpg="
+              }
+            }
+          ],
+          "tokenAccounts": {
+            "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg": {
+              "address": "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg",
+              "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "owner": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+              "amount": "999960000000",
+              "delegate": null,
+              "delegatedAmount": "0",
+              "frozen": false
+            }
+          },
+          "mint": {
+            "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "supply": "796099960000000",
+            "decimals": 6,
+            "initialized": true,
+            "extensions": [],
+            "name": "Proof of Burn",
+            "symbol": "PROOF",
+            "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+            "imageDataUrl": null,
+            "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+            "quoteSymbol": "SPYX",
+            "launchSupply": "1000000000000000",
+            "poolBase": "793100000000000",
+            "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+            "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+            "createdAt": "2026-09-20T21:15:25.033Z"
+          }
+        },
+        "3dZBwVYdkdqqufwYZgMexGxoe9rY9seVpwpYyGiPU5Ark6HDqnhTG7gFCZWPRmasbwRNgrhkUa9WsJRpLaXveMwK": {
+          "signature": "3dZBwVYdkdqqufwYZgMexGxoe9rY9seVpwpYyGiPU5Ark6HDqnhTG7gFCZWPRmasbwRNgrhkUa9WsJRpLaXveMwK",
+          "slot": 4,
+          "network": "solana:demo",
+          "commitment": "finalized",
+          "err": null,
+          "signers": [
+            "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz"
+          ],
+          "instructions": [
+            {
+              "locator": "outer:0",
+              "instruction": {
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "accounts": [
+                  "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w",
+                  "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                  "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz"
+                ],
+                "data": "D4CWmAAAAAAABg=="
+              }
+            },
+            {
+              "locator": "outer:1",
+              "instruction": {
+                "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                "accounts": [],
+                "data": "U1RNUAAAAC56ZGVtbzFlOGU4YWRjZDQwMWJiYWQ2NTRiMmJlZjZiNzRjN2I5ZTYxMjVhMzA1gJaYAAAAAADJjJwZ04goFjgFbtktLVj87uzdxu8WgwEOwusSORx/ieYEK9HaLET3l2GL8SrD3kE="
+              }
+            }
+          ],
+          "tokenAccounts": {
+            "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w": {
+              "address": "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w",
+              "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "owner": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+              "amount": "999990000000",
+              "delegate": null,
+              "delegatedAmount": "0",
+              "frozen": false
+            }
+          },
+          "mint": {
+            "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "supply": "796099950000000",
+            "decimals": 6,
+            "initialized": true,
+            "extensions": [],
+            "name": "Proof of Burn",
+            "symbol": "PROOF",
+            "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+            "imageDataUrl": null,
+            "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+            "quoteSymbol": "SPYX",
+            "launchSupply": "1000000000000000",
+            "poolBase": "793100000000000",
+            "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+            "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+            "createdAt": "2026-09-20T21:15:25.033Z"
+          }
+        },
+        "4PMCBJy9fLxrMZBYxSxYwrLo9yxc4vkd2Rq5NBUj5dJH7APaw6dydLYLiGMsRCdbLmvXf2WRUkQts6uzki6VvpA3": {
+          "signature": "4PMCBJy9fLxrMZBYxSxYwrLo9yxc4vkd2Rq5NBUj5dJH7APaw6dydLYLiGMsRCdbLmvXf2WRUkQts6uzki6VvpA3",
+          "slot": 5,
+          "network": "solana:demo",
+          "commitment": "finalized",
+          "err": null,
+          "signers": [
+            "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34"
+          ],
+          "instructions": [
+            {
+              "locator": "outer:0",
+              "instruction": {
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "accounts": [
+                  "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r",
+                  "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                  "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34"
+                ],
+                "data": "DwAOJwcAAAAABg=="
+              }
+            },
+            {
+              "locator": "outer:1",
+              "instruction": {
+                "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                "accounts": [],
+                "data": "U1RNUAAAAC56ZGVtbzE5MGZhZWFlNzIyNWMwNmZmOGMyMzE0OWZmMTVjMjk1YjFmYzAwOTgxAA4nBwAAAADJjJwZ04goFjgFbtktLVj87uzdxu8WgwEOwusSORx/icRcQZuy+E6FnKVN/stYF4Q="
+              }
+            }
+          ],
+          "tokenAccounts": {
+            "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r": {
+              "address": "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r",
+              "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "owner": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+              "amount": "999880000000",
+              "delegate": null,
+              "delegatedAmount": "0",
+              "frozen": false
+            }
+          },
+          "mint": {
+            "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "supply": "796099830000000",
+            "decimals": 6,
+            "initialized": true,
+            "extensions": [],
+            "name": "Proof of Burn",
+            "symbol": "PROOF",
+            "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+            "imageDataUrl": null,
+            "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+            "quoteSymbol": "SPYX",
+            "launchSupply": "1000000000000000",
+            "poolBase": "793100000000000",
+            "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+            "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+            "createdAt": "2026-09-20T21:15:25.033Z"
+          }
+        },
+        "2jdNBhu6mniqJ1j4HeP1DK8EhCjy4WH8V4EwqHcpidcLk2ysn1BdydHu85Zv9uUydxxs8eHBdMh93x8etcYjnyVp": {
+          "signature": "2jdNBhu6mniqJ1j4HeP1DK8EhCjy4WH8V4EwqHcpidcLk2ysn1BdydHu85Zv9uUydxxs8eHBdMh93x8etcYjnyVp",
+          "slot": 6,
+          "network": "solana:demo",
+          "commitment": "finalized",
+          "err": null,
+          "signers": [
+            "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht"
+          ],
+          "instructions": [
+            {
+              "locator": "outer:0",
+              "instruction": {
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "accounts": [
+                  "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg",
+                  "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                  "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht"
+                ],
+                "data": "D0B4fQEAAAAABg=="
+              }
+            },
+            {
+              "locator": "outer:1",
+              "instruction": {
+                "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                "accounts": [],
+                "data": "U1RNUAAAAC56ZGVtbzE5OWVjMTcxMzRkNGVlOTRhOGFkNWNlYzgyZDBlOWFlNDY4Y2QwOTZjQHh9AQAAAADJjJwZ04goFjgFbtktLVj87uzdxu8WgwEOwusSORx/iQG1/EIBb0zttqYs0osPLL0="
+              }
+            }
+          ],
+          "tokenAccounts": {
+            "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg": {
+              "address": "4uzuQqxxNHi1LJyFpvGmx5mUcmUfXBp5VFcA2QW3b2fg",
+              "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "owner": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+              "amount": "999935000000",
+              "delegate": null,
+              "delegatedAmount": "0",
+              "frozen": false
+            }
+          },
+          "mint": {
+            "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "supply": "796099805000000",
+            "decimals": 6,
+            "initialized": true,
+            "extensions": [],
+            "name": "Proof of Burn",
+            "symbol": "PROOF",
+            "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+            "imageDataUrl": null,
+            "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+            "quoteSymbol": "SPYX",
+            "launchSupply": "1000000000000000",
+            "poolBase": "793100000000000",
+            "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+            "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+            "createdAt": "2026-09-20T21:15:25.033Z"
+          }
+        },
+        "PYcM7NmRWHzW4ZmbjbKmwsSTenTqmbhkcgqPTsSGjdEBqNdkYR9JFwxRGSM9huVwhrP6LiAV9QzaTa5kYjpQZWa": {
+          "signature": "PYcM7NmRWHzW4ZmbjbKmwsSTenTqmbhkcgqPTsSGjdEBqNdkYR9JFwxRGSM9huVwhrP6LiAV9QzaTa5kYjpQZWa",
+          "slot": 7,
+          "network": "solana:demo",
+          "commitment": "finalized",
+          "err": null,
+          "signers": [
+            "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz"
+          ],
+          "instructions": [
+            {
+              "locator": "outer:0",
+              "instruction": {
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "accounts": [
+                  "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w",
+                  "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                  "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz"
+                ],
+                "data": "DwCHkwMAAAAABg=="
+              }
+            },
+            {
+              "locator": "outer:1",
+              "instruction": {
+                "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                "accounts": [],
+                "data": "U1RNUAAAAC56ZGVtbzFlOGU4YWRjZDQwMWJiYWQ2NTRiMmJlZjZiNzRjN2I5ZTYxMjVhMzA1AIeTAwAAAADJjJwZ04goFjgFbtktLVj87uzdxu8WgwEOwusSORx/iY+qRx0uTUdFtGzIIXUNf+I="
+              }
+            }
+          ],
+          "tokenAccounts": {
+            "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w": {
+              "address": "AcwydgnqStKj29YbaMZobH97FUp4NzNS4aQr1KbeCk5w",
+              "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "owner": "EniupKDdQtQksZ5qFBwQUAXrAfigFH4bSZ4nfomxHRVz",
+              "amount": "999930000000",
+              "delegate": null,
+              "delegatedAmount": "0",
+              "frozen": false
+            }
+          },
+          "mint": {
+            "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "supply": "796099745000000",
+            "decimals": 6,
+            "initialized": true,
+            "extensions": [],
+            "name": "Proof of Burn",
+            "symbol": "PROOF",
+            "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+            "imageDataUrl": null,
+            "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+            "quoteSymbol": "SPYX",
+            "launchSupply": "1000000000000000",
+            "poolBase": "793100000000000",
+            "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+            "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+            "createdAt": "2026-09-20T21:15:25.033Z"
+          }
+        },
+        "2eiacmPE4MNh5Kw5hFHVT8tgWXzFzJtQ155FX55dokyMqqNzaEUe6LJkArhquPYSqyAZDphUhP3TKrZXxx9zGyx2": {
+          "signature": "2eiacmPE4MNh5Kw5hFHVT8tgWXzFzJtQ155FX55dokyMqqNzaEUe6LJkArhquPYSqyAZDphUhP3TKrZXxx9zGyx2",
+          "slot": 8,
+          "network": "solana:demo",
+          "commitment": "finalized",
+          "err": null,
+          "signers": [
+            "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34"
+          ],
+          "instructions": [
+            {
+              "locator": "outer:0",
+              "instruction": {
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "accounts": [
+                  "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r",
+                  "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                  "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34"
+                ],
+                "data": "D8Dh5AAAAAAABg=="
+              }
+            },
+            {
+              "locator": "outer:1",
+              "instruction": {
+                "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                "accounts": [],
+                "data": "U1RNUAAAAC56ZGVtbzE5MGZhZWFlNzIyNWMwNmZmOGMyMzE0OWZmMTVjMjk1YjFmYzAwOTgxwOHkAAAAAADJjJwZ04goFjgFbtktLVj87uzdxu8WgwEOwusSORx/iaCZLj6eeknBho8FtRxjI4c="
+              }
+            }
+          ],
+          "tokenAccounts": {
+            "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r": {
+              "address": "CQa3eA1z2vApwiEtRtMvrkjhgs22g3FhkxB9Lr8VPR3r",
+              "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "owner": "ER5CeSiye6wAL4Afaq6uJM47zaHDXrNzjyMQ1Cq6Ts34",
+              "amount": "999865000000",
+              "delegate": null,
+              "delegatedAmount": "0",
+              "frozen": false
+            }
+          },
+          "mint": {
+            "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "supply": "796099730000000",
+            "decimals": 6,
+            "initialized": true,
+            "extensions": [],
+            "name": "Proof of Burn",
+            "symbol": "PROOF",
+            "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+            "imageDataUrl": null,
+            "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+            "quoteSymbol": "SPYX",
+            "launchSupply": "1000000000000000",
+            "poolBase": "793100000000000",
+            "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+            "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+            "createdAt": "2026-09-20T21:15:25.033Z"
+          }
+        },
+        "3Mo4LVf7SKtJcgFFKudez9ueeLX41AusFtGZbHCT5CQPbbavCpkc7VbYuVgbkS9A32UcH2wtMH8VXaasWNKGVaB6": {
+          "signature": "3Mo4LVf7SKtJcgFFKudez9ueeLX41AusFtGZbHCT5CQPbbavCpkc7VbYuVgbkS9A32UcH2wtMH8VXaasWNKGVaB6",
+          "slot": 9,
+          "network": "solana:demo",
+          "commitment": "finalized",
+          "err": null,
+          "signers": [
+            "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS"
+          ],
+          "instructions": [
+            {
+              "locator": "outer:0",
+              "instruction": {
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "accounts": [
+                  "GBRhsve9zu49vpyVxxeSTeg3ZQ63R27JNnjgLQfXZFJv",
+                  "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+                  "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS"
+                ],
+                "data": "D8DPagAAAAAABg=="
+              }
+            },
+            {
+              "locator": "outer:1",
+              "instruction": {
+                "programId": "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4",
+                "accounts": [],
+                "data": "U1RNUAAAAC56ZGVtbzE4YWVjOWNiOWUxY2YyZGUxNWFkMTkyNDcwYjdiMzFhM2VjMjM5MWVkwM9qAAAAAADJjJwZ04goFjgFbtktLVj87uzdxu8WgwEOwusSORx/idOtKzJjlUthhh+ZoFVgqSQ="
+              }
+            }
+          ],
+          "tokenAccounts": {
+            "GBRhsve9zu49vpyVxxeSTeg3ZQ63R27JNnjgLQfXZFJv": {
+              "address": "GBRhsve9zu49vpyVxxeSTeg3ZQ63R27JNnjgLQfXZFJv",
+              "mint": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+              "owner": "Ci5QvYVvXWwPMxhXWLV9UwwDL16JZos6f4ZePYvVhCHS",
+              "amount": "999993000000",
+              "delegate": null,
+              "delegatedAmount": "0",
+              "frozen": false
+            }
+          },
+          "mint": {
+            "address": "EZmJb7GXrvoQqMXgtY4yLhhCQXikrwH3waBsvpkLAsyS",
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "supply": "799099723000000",
+            "decimals": 6,
+            "initialized": true,
+            "extensions": [],
+            "name": "Proof of Burn",
+            "symbol": "PROOF",
+            "description": "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
+            "imageDataUrl": null,
+            "quoteMint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+            "quoteSymbol": "SPYX",
+            "launchSupply": "1000000000000000",
+            "poolBase": "793100000000000",
+            "creator": "2UrAjJicrVszZRJ6UeEtBLj8j49wfbVfMd6G3stCJ2Ht",
+            "launchTx": "wDdKp7FM6nwtPpUiD7JkwSDmDmfDW5C9fgTYGMCwArNce6gJY4dv69ukTSEazS8TntgV47WTfTv5eNWvy7CPDZs",
+            "createdAt": "2026-09-20T21:15:25.033Z"
+          }
+        }
+      }
+    },
+    "zcash": {
+      "height": 135,
+      "fundedZat": "999335000",
+      "escrows": {
+        "0d2e91e9f55f8d0efc2cd3684b5b2ebc": {
+          "id": "0d2e91e9f55f8d0efc2cd3684b5b2ebc",
+          "scriptKind": "zip300-p2sh-htlc",
+          "amountZat": "1800000",
+          "hashLockHex": "091e6506daf2d03201fbddcae5729d3993e991a6744a32cc8b8dd8f2cf25ce16",
+          "expiryHeight": 151,
+          "buyerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+          "sellerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+          "state": "claimed",
+          "lockTxid": "0d2e91e9f55f8d0efc2cd3684b5b2ebc4430faaded411f400d95ff2613bd3a40",
+          "claimTxid": "28183357a1dd7e29ad89f8e59c346c7186483fc5067b9caf0c75e3bf69b010ee",
+          "preimageHex": "0c7eebb251be4cc2c22437916e63bd331eab455e639c5d2fe992ba05d932ec44"
+        },
+        "886f9d216d7be0cd75743490eff37c2b": {
+          "id": "886f9d216d7be0cd75743490eff37c2b",
+          "scriptKind": "zip300-p2sh-htlc",
+          "amountZat": "2250000",
+          "hashLockHex": "5a0f3d2a05b3dfe442047f332da8596c9650495e21208553d68f6e8e6fd86b92",
+          "expiryHeight": 155,
+          "buyerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+          "sellerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+          "state": "claimed",
+          "lockTxid": "886f9d216d7be0cd75743490eff37c2be6e11af072fb90274b2f1aa1275e2cd5",
+          "claimTxid": "00d22303f2be4fd6fa3da19fe17b2d026a647bc6bec95a1a03746b09206f0e04",
+          "preimageHex": "5aed7acba6d22033cd38d4ddac82a8d33fb8dae31e27767e14a6d4c899434825"
+        },
+        "f31dfa60d21d111e8254cb615985607e": {
+          "id": "f31dfa60d21d111e8254cb615985607e",
+          "scriptKind": "zip300-p2sh-htlc",
+          "amountZat": "520000",
+          "hashLockHex": "d7de520b447ac95c767b8ef5253532a4ea1bd45af139178044244fd2dea026b2",
+          "expiryHeight": 160,
+          "buyerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+          "sellerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+          "state": "claimed",
+          "lockTxid": "f31dfa60d21d111e8254cb615985607e9fa26e19ae148de84e4f2d7f24578ef5",
+          "claimTxid": "ab403f9a8d98c8e7d527b956ffdec701a5bba7c3ddebfb3fd19ca572bf1e955e",
+          "preimageHex": "0fa1579a79067e9d73d99fc6ebf9926d6b0cf3c196200d49adbba19beb2e413c"
+        },
+        "4f5e9457f8576fb9853e37645b9c6eca": {
+          "id": "4f5e9457f8576fb9853e37645b9c6eca",
+          "scriptKind": "zip300-p2sh-htlc",
+          "amountZat": "610000",
+          "hashLockHex": "e8320b014e3f59eafad1507b592c6ea5b6b2f97c8a1d0d44b83d9957f1f2e3b2",
+          "expiryHeight": 164,
+          "buyerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+          "sellerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+          "state": "claimed",
+          "lockTxid": "4f5e9457f8576fb9853e37645b9c6eca77ea6488b2f997e82ddae45ffb71646c",
+          "claimTxid": "ee56752d1ee60471517eeffe3d52dae0877a1062b2df9d8c422305f7f2cd645b",
+          "preimageHex": "024e4ad7d95d8d567da2ea220eea1cc57ac10cb709a4757cb003a9c1ff55402d"
+        },
+        "5e9ea38731bf74d676b1eedee4a83ba2": {
+          "id": "5e9ea38731bf74d676b1eedee4a83ba2",
+          "scriptKind": "zip300-p2sh-htlc",
+          "amountZat": "580000",
+          "hashLockHex": "0de600751cc28aac01842793d6cdcfa6c37a59c6ee546135c8e71699cffb8788",
+          "expiryHeight": 168,
+          "buyerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+          "sellerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+          "state": "claimed",
+          "lockTxid": "5e9ea38731bf74d676b1eedee4a83ba22af2ac658ac7984087b3a22b31c843ec",
+          "claimTxid": "9f04a4846d89474b505fd4d7701e3ad04cc5c5713671ec7e3a7ca2e7161dac2a",
+          "preimageHex": "311b08e6daaa2ce668f5824e6c10ecda263eb0b9082db1bbd981e24655177885"
+        },
+        "36a1c736bfff928e5743ed39b592825f": {
+          "id": "36a1c736bfff928e5743ed39b592825f",
+          "scriptKind": "zip300-p2sh-htlc",
+          "amountZat": "4800000",
+          "hashLockHex": "a3995cf6484f1e24ccdf3f8fd74f0f8a7caa58639f965710bcf0d35deca9155a",
+          "expiryHeight": 173,
+          "buyerAddress": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+          "sellerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+          "state": "claimed",
+          "lockTxid": "36a1c736bfff928e5743ed39b592825fb746da8b4361d6d2ab5045352c731902",
+          "claimTxid": "ddf91c551c47d204fc2d9811a8a77b375fb11db7703cd99ed637fbe072e2adc4",
+          "preimageHex": "dca41e4183815a51db639fbfca5d5c0fd7d8f9df6a64be73cd14f81e53c4d480"
+        },
+        "625981acdf9826458e9e1abee56adb59": {
+          "id": "625981acdf9826458e9e1abee56adb59",
+          "scriptKind": "zip300-p2sh-htlc",
+          "amountZat": "3000000",
+          "hashLockHex": "1c504a09d7539a52dc2b701b314536e6a775ef0fdb0012a65f9ffab7320ed2a0",
+          "expiryHeight": 179,
+          "buyerAddress": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+          "sellerAddress": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+          "state": "claimed",
+          "lockTxid": "625981acdf9826458e9e1abee56adb591e515346a230e0e50e9157be13ce96fc",
+          "claimTxid": "eab56de4813e96796233e5956edb1db684c98b66a2048bf11e5c493159365af6",
+          "preimageHex": "671a9609a66e249ae13a642e3d265f8c5e406d5cf890a27663c6dabf277d22a1"
+        }
+      },
+      "txs": {
+        "4220f62324ca8584dc912ebe1e73a4e36329c4f12298b8891f844739096b0dd1": {
+          "txid": "4220f62324ca8584dc912ebe1e73a4e36329c4f12298b8891f844739096b0dd1",
+          "network": "zcash:demo",
+          "height": 101,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNUAAA7cM4tAyzuZ7eJ+4cmnnx9CL4OtvfMEj0Xf1GeuCqZB4="
+            }
+          ]
+        },
+        "2bd2c49a21de9579d9ba391e5a9a1dda1f5d3aa83f9c8623ed770f45b02cfd63": {
+          "txid": "2bd2c49a21de9579d9ba391e5a9a1dda1f5d3aa83f9c8623ed770f45b02cfd63",
+          "network": "zcash:demo",
+          "height": 102,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNTwEA7cM4tAyzuZ7eJ+4cmnnx9CL4OtvfMEj0Xf1GeuCqZB4BAAAAlktshhhEW6Rq5yO9jekGJKjM56jZ+AvQEkYRN4H59lk="
+            }
+          ]
+        },
+        "6e7fbd654beb4437d7928d97e7ebc688a36819ac0e9dc08ec34dabc12c72777f": {
+          "txid": "6e7fbd654beb4437d7928d97e7ebc688a36819ac0e9dc08ec34dabc12c72777f",
+          "network": "zcash:demo",
+          "height": 104,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNWAEA7cM4tAyzuZ7eJ+4cmnnx9CL4OtvfMEj0Xf1GeuCqZB4BAAAA8wqp2JD81EjklPmFbU9zguc/zvbbVmACHe9RQAEaUo8="
+            }
+          ]
+        },
+        "c208edd44e9a00551849078671deb4ed7d995b995ad11dca86ba5f4eec169453": {
+          "txid": "c208edd44e9a00551849078671deb4ed7d995b995ad11dca86ba5f4eec169453",
+          "network": "zcash:demo",
+          "height": 106,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNTwEA7cM4tAyzuZ7eJ+4cmnnx9CL4OtvfMEj0Xf1GeuCqZB4CAAAA+sGv09poxxFEwFXtjhK52iPr8DaAiHb2AVbYHCBWww0="
+            }
+          ]
+        },
+        "1ee9d8e5d3cec4fe64ef8fc9187fa7d0e5346adafc1962b643986ae49f9d3294": {
+          "txid": "1ee9d8e5d3cec4fe64ef8fc9187fa7d0e5346adafc1962b643986ae49f9d3294",
+          "network": "zcash:demo",
+          "height": 108,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNWAEA7cM4tAyzuZ7eJ+4cmnnx9CL4OtvfMEj0Xf1GeuCqZB4CAAAAH4/ipRmRYc3V3X3QVofVtMepkuDjjlLJJ5xcBE9jNCY="
+            }
+          ]
+        },
+        "af15056d0a091fc4e772d79c83bd8deb547c44d6d66606e8c6cc876f70582f88": {
+          "txid": "af15056d0a091fc4e772d79c83bd8deb547c44d6d66606e8c6cc876f70582f88",
+          "network": "zcash:demo",
+          "height": 110,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNUAAAJi4QJeXv6hDwn3EODTszUzu7zU+TansSd3ET5OtCT6g="
+            }
+          ]
+        },
+        "2c82cb1b13b05ca7014ebccb387294460a31fdf80ae65e4b7177bc94d35355cc": {
+          "txid": "2c82cb1b13b05ca7014ebccb387294460a31fdf80ae65e4b7177bc94d35355cc",
+          "network": "zcash:demo",
+          "height": 111,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNTwEAJi4QJeXv6hDwn3EODTszUzu7zU+TansSd3ET5OtCT6gBAAAAn8OcR5XSIeQjiG8poWiTamg8rtwiqov6qdPOBt1L/Sw="
+            }
+          ]
+        },
+        "cc5b4cdc7f178db4f110b9ecefabaaccbcc7daafc0c185028594ad85153a705d": {
+          "txid": "cc5b4cdc7f178db4f110b9ecefabaaccbcc7daafc0c185028594ad85153a705d",
+          "network": "zcash:demo",
+          "height": 113,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNWAEAJi4QJeXv6hDwn3EODTszUzu7zU+TansSd3ET5OtCT6gBAAAA8QgtjIFVFEKNzF45OzLq83EJ9BaqFO/XpdhIv3pzL8c="
+            }
+          ]
+        },
+        "6eec2ebf5300dd84b3613b06af8634167eac4d2c899914674ddac023ce86d686": {
+          "txid": "6eec2ebf5300dd84b3613b06af8634167eac4d2c899914674ddac023ce86d686",
+          "network": "zcash:demo",
+          "height": 115,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNTwEAJi4QJeXv6hDwn3EODTszUzu7zU+TansSd3ET5OtCT6gCAAAAbQH7EuTmeriY6Ycv1doxyLDIrU5twoEqVrrIiLhimGg="
+            }
+          ]
+        },
+        "90d055dc6aa3dc5610479e8b429ce2d7e07c2df9fefa0daf02bee87e1a7dc67e": {
+          "txid": "90d055dc6aa3dc5610479e8b429ce2d7e07c2df9fefa0daf02bee87e1a7dc67e",
+          "network": "zcash:demo",
+          "height": 117,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNWAEAJi4QJeXv6hDwn3EODTszUzu7zU+TansSd3ET5OtCT6gCAAAAUpHtaSutoVKjhUXLvC1J9PIEUp4SI2Cq6b4bFno9mmc="
+            }
+          ]
+        },
+        "e70d05b63339d53e949c1be8177cd3b0900cd0cf0ba79e093b5cf5d38a38878a": {
+          "txid": "e70d05b63339d53e949c1be8177cd3b0900cd0cf0ba79e093b5cf5d38a38878a",
+          "network": "zcash:demo",
+          "height": 119,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNTwEAJi4QJeXv6hDwn3EODTszUzu7zU+TansSd3ET5OtCT6gDAAAAam9wcgGYRCKc9dfMLk9HYiO7O4Mm9s72CvI8HacvshA="
+            }
+          ]
+        },
+        "100d7957ecb343df23c47809b73d3876f518ee545040e807b1170c8af896b9fc": {
+          "txid": "100d7957ecb343df23c47809b73d3876f518ee545040e807b1170c8af896b9fc",
+          "network": "zcash:demo",
+          "height": 121,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNWAEAJi4QJeXv6hDwn3EODTszUzu7zU+TansSd3ET5OtCT6gDAAAAUKTOrJwSbK0cl65Wo5XjdDxbuMrOtTll0ZxSoKQTfdo="
+            }
+          ]
+        },
+        "69500f0f61abcb31f6c27fa391b324cc9cdc6e4ba82ca8a1c9276323786a1b4a": {
+          "txid": "69500f0f61abcb31f6c27fa391b324cc9cdc6e4ba82ca8a1c9276323786a1b4a",
+          "network": "zcash:demo",
+          "height": 123,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNUAAABzj3wTB5vwcmXOu+Asm+HDmPms5GVlyCCireEJ7lnyk="
+            }
+          ]
+        },
+        "cc78f7d832b6dd96865e68a2055ed59964faa820f380f314dd8f07fa782d06cd": {
+          "txid": "cc78f7d832b6dd96865e68a2055ed59964faa820f380f314dd8f07fa782d06cd",
+          "network": "zcash:demo",
+          "height": 124,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNTwEABzj3wTB5vwcmXOu+Asm+HDmPms5GVlyCCireEJ7lnykBAAAAmW2BglOoXk9W7fum6sSR3AlvxmvF16UfsQrE5lhx37U="
+            }
+          ]
+        },
+        "1759cee49d42353bfe4955e4dc19e444d7830429f6d3485b311d6302a76ce775": {
+          "txid": "1759cee49d42353bfe4955e4dc19e444d7830429f6d3485b311d6302a76ce775",
+          "network": "zcash:demo",
+          "height": 126,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNWAEABzj3wTB5vwcmXOu+Asm+HDmPms5GVlyCCireEJ7lnykBAAAA7Sq3wjIHwEz1V+3WRRlJAIyCIbra8uwbwwKCnjhP5B4="
+            }
+          ]
+        },
+        "84fdaec8ee61204224b4617b32fb2cad0e2b0871f835a5f9dcbaa97556ff42c6": {
+          "txid": "84fdaec8ee61204224b4617b32fb2cad0e2b0871f835a5f9dcbaa97556ff42c6",
+          "network": "zcash:demo",
+          "height": 128,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo199ec17134d4ee94a8ad5cec82d0e9ae468cd096c",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNUAAAc1LwOanG8mmo41/vnTpnjB4Xt0/yIDDw0PZae7GDE88="
+            }
+          ]
+        },
+        "0be419d551862aa216a754fef50013e82fc0d6f9394a35272d8942083abcbf65": {
+          "txid": "0be419d551862aa216a754fef50013e82fc0d6f9394a35272d8942083abcbf65",
+          "network": "zcash:demo",
+          "height": 129,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo1e8e8adcd401bbad654b2bef6b74c7b9e6125a305",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNUAAA7YzuRnJVWbYEO5rzIqeeDO+mfswlwL/NY8OYigP8QdA="
+            }
+          ]
+        },
+        "0d3e12a435761f7cda7a9990e7532c31b25e6e64f0fd9bcddfbab84d3a76b96e": {
+          "txid": "0d3e12a435761f7cda7a9990e7532c31b25e6e64f0fd9bcddfbab84d3a76b96e",
+          "network": "zcash:demo",
+          "height": 130,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNTwEA7YzuRnJVWbYEO5rzIqeeDO+mfswlwL/NY8OYigP8QdABAAAA7c4vqIZyaCEvM2gRXl4UuvFck5HgCcCErCfWia2akkg="
+            }
+          ]
+        },
+        "c250864ccb4df0f40028eb7aa051c9a9fb8bdc9f288ba0cff9e1d74e34895986": {
+          "txid": "c250864ccb4df0f40028eb7aa051c9a9fb8bdc9f288ba0cff9e1d74e34895986",
+          "network": "zcash:demo",
+          "height": 132,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNWAEA7YzuRnJVWbYEO5rzIqeeDO+mfswlwL/NY8OYigP8QdABAAAAsuEtwat3w9E6RdiAWtgFCpVoSRjWdFbFmtYIbrxJmr8="
+            }
+          ]
+        },
+        "eb8eeb5e55bdfa0c87a6b50244f852e5bad2661d35c7573d3f78697ad26f8c04": {
+          "txid": "eb8eeb5e55bdfa0c87a6b50244f852e5bad2661d35c7573d3f78697ad26f8c04",
+          "network": "zcash:demo",
+          "height": 134,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo190faeae7225c06ff8c23149ff15c295b1fc00981",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNUAAA5QSioubYOjVe7J4jQlvsJzo/uhk+uFFoWuhUsFgbSvI="
+            }
+          ]
+        },
+        "d9587ceaff8aed1f11f944feb7f04271ff03707ad06413262f5df210aaa3b93c": {
+          "txid": "d9587ceaff8aed1f11f944feb7f04271ff03707ad06413262f5df210aaa3b93c",
+          "network": "zcash:demo",
+          "height": 135,
+          "confirmations": 7,
+          "inBestChain": true,
+          "outputs": [
+            {
+              "index": 0,
+              "valueZat": "10000",
+              "address": "zdemo18aec9cb9e1cf2de15ad192470b7b31a3ec2391ed",
+              "nullData": null
+            },
+            {
+              "index": 1,
+              "valueZat": "0",
+              "address": null,
+              "nullData": "U1RNUAAAKZ7uAKtqHrit4oCNjccn4lU0/5xwIpvLqIZVC0riuFo="
+            }
+          ]
+        }
+      }
+    }
+  }
+}

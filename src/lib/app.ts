@@ -7,6 +7,7 @@ import {
 import { credit, eligibleBalance, launchDemoMint } from "./solana/demo";
 import { getPairs, getPricing, getStats, getToken, stonkTokenUrl } from "./stonk/client";
 import { getStore, type JobRow, type LaunchRow, type StampRow } from "./store";
+import { memoryStateInfo } from "./store/memory";
 import { publicationFeeQuote, submitDemoBurn } from "./jobs/processor";
 import { FIXTURE_PAIRS, FIXTURE_PRICING } from "./stonk/fixtures";
 
@@ -24,6 +25,8 @@ export async function statusPayload() {
     banner: f.mode === "demo" ? "DEMO LEDGER" : f.mode === "testnet" ? "TESTNET" : "MAINNET",
     networks: { source: f.sourceNetwork, destination: f.destNetwork },
     store: f.store,
+    statePersistence:
+      f.store === "postgres" ? "durable" : memoryStateInfo().ephemeral ? "ephemeral" : "file",
     flags: {
       stonkReadLive: f.stonkReadLive,
       allowLiveLaunch: f.allowLiveLaunch,

@@ -61,6 +61,7 @@ export default function ExplorePage() {
   const [sales, setSales] = useState<Sale[]>([]);
   const [status, setStatus] = useState<{
     mode?: string;
+    statePersistence?: string;
     stonk?: { paidLaunchesEnabled?: boolean };
   } | null>(null);
   const [tab, setTab] = useState<Tab>("stamps");
@@ -423,6 +424,14 @@ export default function ExplorePage() {
               <dd className="mono">{String(status?.stonk?.paidLaunchesEnabled ?? false)}</dd>
               <dt>Stamp protocol</dt>
               <dd className="mono">stamp-exp/0 issuance · stamp-exp/1 ownership</dd>
+              <dt>State</dt>
+              <dd>
+                {status?.statePersistence === "ephemeral"
+                  ? "This instance keeps its ledger in temporary storage. Anything you do here is lost when the instance restarts."
+                  : status?.statePersistence === "durable"
+                    ? "Stored in Postgres."
+                    : "Stored in a local file."}
+              </dd>
               <dt>State source</dt>
               <dd>
                 <Link className="linky" href="/api/indexer">
