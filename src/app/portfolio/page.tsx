@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useWallet } from "@/components/Wallet";
+import { useWallet, walletStateLine } from "@/components/Wallet";
 import { CoinRow, StampCard, type StampCardData } from "@/components/AssetCards";
 import { Badge, Empty, Loading, Note, Panel, Tech } from "@/components/ui";
 import { formatUnits, humanState, shortId, stampNumbers } from "@/lib/format";
+import { PHANTOM_SITE } from "@/lib/wallet/provider";
+import { truncateKey } from "@/lib/wallet/session";
 
 interface Balance {
   mint: string;
@@ -40,7 +42,7 @@ interface Job {
 }
 
 export default function PortfolioPage() {
-  const { wallet, connect, ready } = useWallet();
+  const { wallet, phase, connect, ready, zcashDestination } = useWallet();
   const [data, setData] = useState<{
     balances: Balance[];
     stamps: StampView[];
@@ -75,13 +77,13 @@ export default function PortfolioPage() {
 
   const load = useCallback(async () => {
     if (!wallet) return;
-    const res = await fetch(
-      `/api/portfolio?owner=${wallet.publicKey}&zcashAddress=${wallet.zcashAddress}`,
-    );
+    const query = new URLSearchParams({ owner: wallet.publicKey });
+    if (zcashDestination) query.set("zcashAddress", zcashDestination);
+    const res = await fetch(`/api/portfolio?${query}`);
     const json = await res.json();
     if (json.error) setError(json.error.message);
     else setData(json.data);
-  }, [wallet]);
+  }, [wallet, zcashDestination]);
 
   useEffect(() => {
     void load();
@@ -96,7 +98,7 @@ export default function PortfolioPage() {
   if (!ready) {
     return (
       <Panel>
-        <Loading label="Restoring wallet" />
+        <Loading label="Looking for Phantom" />
       </Panel>
     );
   }
@@ -106,12 +108,32 @@ export default function PortfolioPage() {
       <Panel>
         <h1>Portfolio</h1>
         <p className="lede muted" style={{ marginTop: 6 }}>
-          Connect a wallet to see balances, stamps and issuance jobs. Keys are generated in your
-          browser and never leave it; no seed phrase is requested.
+          Balances, stamps and issuance jobs are keyed to your Phantom public key, so this screen
+          stays empty until that key has been proved.
         </p>
-        <button className="btn btn--primary" style={{ marginTop: 14 }} onClick={() => void connect()}>
-          Connect wallet
-        </button>
+        <p className="tiny muted" style={{ marginTop: 8 }}>
+          {walletStateLine(phase)}
+        </p>
+        {phase === "unavailable" ? (
+          <a
+            className="btn btn--primary"
+            style={{ marginTop: 14 }}
+            href={PHANTOM_SITE}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Install Phantom
+          </a>
+        ) : (
+          <button
+            className="btn btn--primary"
+            style={{ marginTop: 14 }}
+            disabled={phase === "connecting" || phase === "verifying"}
+            onClick={() => void connect()}
+          >
+            {phase === "unverified" ? "Prove ownership" : "Connect wallet"}
+          </button>
+        )}
       </Panel>
     );
   }
@@ -121,8 +143,9 @@ export default function PortfolioPage() {
     mint: s.mint,
     amountBase: s.amountBase,
     decimals: s.decimals,
-    collection: collections.get(s.mint)?.name ?? "Unlisted collection",
+    name: collections.get(s.mint)?.name ?? "Untitled stamp",
     symbol: collections.get(s.mint)?.symbol ?? "",
+    imageDataUrl: collections.get(s.mint)?.imageDataUrl ?? null,
     number: numbers.get(s.id) ?? 1,
     listing: s.listing,
     lastSale: lastSales.get(s.id) ?? null,
@@ -134,13 +157,23 @@ export default function PortfolioPage() {
       <Panel>
         <div className="panel__head">
           <h1>Portfolio</h1>
-          <Badge tone="live">{wallet.label}</Badge>
+          <Badge tone="live">{truncateKey(wallet.publicKey)}</Badge>
         </div>
         <dl className="kv" style={{ marginTop: 6 }}>
-          <dt>Solana wallet</dt>
+          <dt>Phantom wallet</dt>
           <dd className="mono">{wallet.publicKey}</dd>
           <dt>Stamp destination</dt>
-          <dd className="mono">{wallet.zcashAddress}</dd>
+          <dd className="mono">
+            {zcashDestination ?? (
+              <span className="dim">
+                Not set. Name a Zcash address on{" "}
+                <Link className="linky" href="/convert">
+                  Convert
+                </Link>{" "}
+                and it is remembered for this wallet.
+              </span>
+            )}
+          </dd>
         </dl>
       </Panel>
 

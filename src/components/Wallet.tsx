@@ -1,148 +1,332 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+/**
+ * Phantom, connected through the injected provider.
+ *
+ * No keys are generated here and no identity is invented: the app's identity is
+ * the Solana public key Phantom reports, and it is only adopted after the wallet
+ * signs a statement that the server verifies. The provider can be supplied as a
+ * prop so the flow can be exercised without a browser extension.
+ */
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { ConnectError, connectPhantom, type NonceGrant } from "@/lib/wallet/connect";
+import { readDestination, writeDestination } from "@/lib/wallet/destination";
+import {
+  PHANTOM_SITE,
+  detectPhantom,
+  isUserRejection,
+  keyTextOf,
+  publicKeyOf,
+  readSignature,
+  subscribe,
+  type PhantomProvider,
+  type PhantomWindow,
+} from "@/lib/wallet/provider";
+import { toHex, truncateKey, type SessionProof, type VerifiedSession } from "@/lib/wallet/session";
 
-export interface Identity {
-  label: string;
-  /** Solana-style base58 public key used as the burn authority. */
-  publicKey: string;
-  publicKeyHex: string;
-  /** Protocol-managed Zcash destination derived from the same key. */
-  zcashAddress: string;
-}
+export type WalletPhase =
+  | "detecting"
+  | "unavailable"
+  | "disconnected"
+  | "connecting"
+  | "verifying"
+  | "unverified"
+  | "connected";
 
-interface StoredKey {
-  label: string;
-  publicKey: string;
-  secret: string;
-}
-
-const STORAGE = "stamp.identities";
-const ACTIVE = "stamp.active";
+export type Identity = VerifiedSession;
 
 interface WalletApi {
-  wallet: Identity | null;
-  identities: Identity[];
-  activeIndex: number;
+  phase: WalletPhase;
+  /** True once we know whether Phantom is in this browser. */
   ready: boolean;
+  installed: boolean;
+  /** The verified wallet, or null until a signature has been checked. */
+  wallet: Identity | null;
+  /** Phantom's selected account, which may not be verified yet. */
+  account: string | null;
+  notice: string | null;
   connect: () => Promise<void>;
-  addIdentity: () => Promise<void>;
-  select: (index: number) => void;
-  disconnect: () => void;
-  sign: (preimage: string, index?: number) => Promise<{ signatureHex: string; publicKeyHex: string }>;
+  disconnect: () => Promise<void>;
+  sign: (preimage: string) => Promise<{ signatureHex: string; publicKeyHex: string }>;
+  /** Zcash t-address this wallet last used, remembered locally. */
+  zcashDestination: string | null;
+  setZcashDestination: (address: string | null) => void;
 }
 
 const Ctx = createContext<WalletApi>({
-  wallet: null,
-  identities: [],
-  activeIndex: 0,
+  phase: "detecting",
   ready: false,
+  installed: false,
+  wallet: null,
+  account: null,
+  notice: null,
   connect: async () => undefined,
-  addIdentity: async () => undefined,
-  select: () => undefined,
-  disconnect: () => undefined,
-  sign: async () => ({ signatureHex: "", publicKeyHex: "" }),
+  disconnect: async () => undefined,
+  sign: async () => {
+    throw new Error("No wallet is connected.");
+  },
+  zcashDestination: null,
+  setZcashDestination: () => undefined,
 });
 
-function readKeys(): StoredKey[] {
+async function requestNonce(): Promise<NonceGrant> {
+  const res = await fetch("/api/wallet/nonce", { method: "POST" });
+  const json = await res.json();
+  if (!res.ok || json.error) {
+    throw new Error(json.error?.message ?? "This site could not issue a connect nonce.");
+  }
+  return { nonce: json.data.nonce as string, domain: json.data.domain as string };
+}
+
+async function verifyProof(proof: SessionProof): Promise<VerifiedSession> {
+  const res = await fetch("/api/wallet/session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(proof),
+  });
+  const json = await res.json();
+  if (!res.ok || json.error) {
+    throw new Error(json.error?.message ?? "The signature could not be verified.");
+  }
+  return json.data.session as VerifiedSession;
+}
+
+async function readServerSession(): Promise<VerifiedSession | null> {
   try {
-    return JSON.parse(sessionStorage.getItem(STORAGE) ?? "[]") as StoredKey[];
+    const json = await (await fetch("/api/wallet/session")).json();
+    return (json.data?.session as VerifiedSession | null) ?? null;
   } catch {
-    return [];
+    return null;
   }
 }
 
-function toHex(bytes: Uint8Array): string {
-  return Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+function dropServerSession(): void {
+  void fetch("/api/wallet/session", { method: "DELETE" }).catch(() => undefined);
 }
 
-async function demoAddress(publicKeyHex: string): Promise<string> {
-  const bytes = Uint8Array.from(publicKeyHex.match(/.{2}/g)!.map((h) => parseInt(h, 16)));
-  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
-  return `zdemo1${toHex(digest.subarray(0, 20))}`;
-}
+export function WalletProvider({
+  children,
+  provider: injected,
+}: {
+  children: React.ReactNode;
+  provider?: PhantomProvider | null;
+}) {
+  const [provider, setProvider] = useState<PhantomProvider | null>(injected ?? null);
+  const [ready, setReady] = useState(injected !== undefined);
+  const [account, setAccount] = useState<string | null>(null);
+  const [wallet, setWallet] = useState<Identity | null>(null);
+  const [busy, setBusy] = useState<"connecting" | "verifying" | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [zcashDestination, setDestination] = useState<string | null>(null);
 
-async function toIdentity(key: StoredKey): Promise<Identity> {
-  const bs58 = (await import("bs58")).default;
-  const publicKeyHex = toHex(bs58.decode(key.publicKey));
-  return {
-    label: key.label,
-    publicKey: key.publicKey,
-    publicKeyHex,
-    zcashAddress: await demoAddress(publicKeyHex),
-  };
-}
+  // Phantom usually injects before hydration, but it can arrive late and
+  // announces itself when it does.
+  useEffect(() => {
+    if (injected !== undefined) {
+      setProvider(injected);
+      setReady(true);
+      return;
+    }
+    let done = false;
+    const find = () => {
+      if (done) return true;
+      const found = detectPhantom(window as unknown as PhantomWindow);
+      if (!found) return false;
+      done = true;
+      setProvider(found);
+      setReady(true);
+      return true;
+    };
+    if (find()) return;
+    const onInjected = () => void find();
+    window.addEventListener("phantom#initialized", onInjected);
+    const timer = window.setTimeout(() => {
+      if (!find()) setReady(true);
+    }, 800);
+    return () => {
+      window.removeEventListener("phantom#initialized", onInjected);
+      window.clearTimeout(timer);
+    };
+  }, [injected]);
 
-export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const [identities, setIdentities] = useState<Identity[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [ready, setReady] = useState(false);
-
-  const hydrate = useCallback(async () => {
-    const keys = readKeys();
-    setIdentities(await Promise.all(keys.map(toIdentity)));
-    setActiveIndex(Number(sessionStorage.getItem(ACTIVE) ?? 0));
-    setReady(true);
-  }, []);
+  // Eager reconnect: silent, and only when Phantom already trusts this site and
+  // the server still holds a session for that same account.
+  useEffect(() => {
+    if (!provider) return;
+    let cancelled = false;
+    void (async () => {
+      const trusted = await provider
+        .connect({ onlyIfTrusted: true })
+        .then(() => publicKeyOf(provider))
+        .catch(() => null);
+      const session = await readServerSession();
+      if (cancelled) return;
+      if (!trusted) {
+        if (session) dropServerSession();
+        return;
+      }
+      setAccount(trusted);
+      if (session?.publicKey === trusted) setWallet(session);
+      else if (session) dropServerSession();
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [provider]);
 
   useEffect(() => {
-    void hydrate();
-  }, [hydrate]);
-
-  const createKey = useCallback(async (label: string) => {
-    const nacl = (await import("tweetnacl")).default;
-    const bs58 = (await import("bs58")).default;
-    const kp = nacl.sign.keyPair();
-    const key: StoredKey = {
-      label,
-      publicKey: bs58.encode(kp.publicKey),
-      secret: bs58.encode(kp.secretKey),
+    if (!provider) return;
+    const offConnect = subscribe(provider, "connect", () => {
+      const key = publicKeyOf(provider);
+      if (key) setAccount(key);
+    });
+    const offDisconnect = subscribe(provider, "disconnect", () => {
+      setAccount(null);
+      setWallet(null);
+      setNotice("Phantom disconnected this site.");
+      dropServerSession();
+    });
+    const offChanged = subscribe(provider, "accountChanged", (payload) => {
+      const next = keyTextOf(payload) ?? publicKeyOf(provider);
+      dropServerSession();
+      setWallet(null);
+      setAccount(next);
+      setNotice(
+        next
+          ? `Phantom switched to ${truncateKey(next)}. Prove ownership of that account to use it here.`
+          : "Phantom has no account selected for this site.",
+      );
+    });
+    return () => {
+      offConnect();
+      offDisconnect();
+      offChanged();
     };
-    const keys = [...readKeys(), key];
-    sessionStorage.setItem(STORAGE, JSON.stringify(keys));
-    return keys.length - 1;
-  }, []);
+  }, [provider]);
+
+  useEffect(() => {
+    setDestination(wallet ? readDestination(wallet.publicKey, window.localStorage) : null);
+  }, [wallet]);
+
+  const connect = useCallback(async () => {
+    if (!provider) {
+      setNotice("Phantom isn't in this browser. StampPad signs with your Phantom key.");
+      return;
+    }
+    setNotice(null);
+    setBusy("connecting");
+    try {
+      const session = await connectPhantom({
+        provider,
+        requestNonce,
+        verify: async (proof) => {
+          setBusy("verifying");
+          return verifyProof(proof);
+        },
+      });
+      if (session) {
+        setWallet(session);
+        setAccount(session.publicKey);
+      }
+    } catch (error) {
+      setWallet(null);
+      setNotice(
+        error instanceof ConnectError || error instanceof Error
+          ? error.message
+          : "Phantom could not complete the connection.",
+      );
+    } finally {
+      setBusy(null);
+    }
+  }, [provider]);
+
+  const disconnect = useCallback(async () => {
+    try {
+      await provider?.disconnect();
+    } catch {
+      /* Phantom may already consider the site disconnected. */
+    }
+    dropServerSession();
+    setWallet(null);
+    setAccount(null);
+    setNotice(null);
+  }, [provider]);
+
+  const sign = useCallback(
+    async (preimage: string) => {
+      if (!provider || !wallet) {
+        throw new Error("Connect Phantom and prove ownership before signing.");
+      }
+      try {
+        const signature = readSignature(
+          await provider.signMessage(new TextEncoder().encode(preimage), "utf8"),
+        );
+        return { signatureHex: toHex(signature), publicKeyHex: wallet.publicKeyHex };
+      } catch (error) {
+        if (isUserRejection(error)) throw new Error("You declined the signature in Phantom.");
+        throw error;
+      }
+    },
+    [provider, wallet],
+  );
+
+  const setZcashDestination = useCallback(
+    (address: string | null) => {
+      if (!wallet) return;
+      writeDestination(wallet.publicKey, address, window.localStorage);
+      setDestination(address?.trim() ? address.trim() : null);
+    },
+    [wallet],
+  );
+
+  const phase: WalletPhase = !ready
+    ? "detecting"
+    : !provider
+      ? "unavailable"
+      : busy === "connecting"
+        ? "connecting"
+        : busy === "verifying"
+          ? "verifying"
+          : wallet
+            ? "connected"
+            : account
+              ? "unverified"
+              : "disconnected";
 
   const api = useMemo<WalletApi>(
     () => ({
-      wallet: identities[activeIndex] ?? null,
-      identities,
-      activeIndex,
+      phase,
       ready,
-      async connect() {
-        if (readKeys().length === 0) await createKey("Wallet A");
-        await hydrate();
-      },
-      async addIdentity() {
-        const index = await createKey(`Wallet ${String.fromCharCode(65 + readKeys().length)}`);
-        sessionStorage.setItem(ACTIVE, String(index));
-        await hydrate();
-        setActiveIndex(index);
-      },
-      select(index: number) {
-        sessionStorage.setItem(ACTIVE, String(index));
-        setActiveIndex(index);
-      },
-      disconnect() {
-        sessionStorage.removeItem(STORAGE);
-        sessionStorage.removeItem(ACTIVE);
-        setIdentities([]);
-        setActiveIndex(0);
-      },
-      async sign(preimage: string, index?: number) {
-        const keys = readKeys();
-        const key = keys[index ?? activeIndex];
-        if (!key) throw new Error("No wallet is connected.");
-        const nacl = (await import("tweetnacl")).default;
-        const bs58 = (await import("bs58")).default;
-        const secret = bs58.decode(key.secret);
-        const signature = nacl.sign.detached(new TextEncoder().encode(preimage), secret);
-        return { signatureHex: toHex(signature), publicKeyHex: toHex(bs58.decode(key.publicKey)) };
-      },
+      installed: Boolean(provider),
+      wallet,
+      account,
+      notice,
+      connect,
+      disconnect,
+      sign,
+      zcashDestination,
+      setZcashDestination,
     }),
-    [identities, activeIndex, ready, createKey, hydrate],
+    [
+      phase,
+      ready,
+      provider,
+      wallet,
+      account,
+      notice,
+      connect,
+      disconnect,
+      sign,
+      zcashDestination,
+      setZcashDestination,
+    ],
   );
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;
@@ -152,41 +336,95 @@ export function useWallet() {
   return useContext(Ctx);
 }
 
+/** One sentence per state, for the panels that gate on a connected wallet. */
+export function walletStateLine(phase: WalletPhase): string {
+  switch (phase) {
+    case "detecting":
+      return "Looking for Phantom in this browser.";
+    case "unavailable":
+      return "Phantom is not installed in this browser. StampPad signs with Phantom's Solana key, so there is no way to connect without it.";
+    case "connecting":
+      return "Waiting for you to approve StampPad in Phantom.";
+    case "verifying":
+      return "Checking the signature that proves you hold this key.";
+    case "unverified":
+      return "Phantom is connected but has not proved ownership of this key yet. One signature does it; nothing moves and no SOL is spent.";
+    case "connected":
+      return "Connected and verified.";
+    default:
+      return "Connect Phantom to sign with your own Solana key.";
+  }
+}
+
 export function WalletButton() {
-  const { wallet, identities, activeIndex, connect, addIdentity, select, disconnect } = useWallet();
-  if (!wallet) {
-    return (
-      <div className="wallet">
+  const { phase, wallet, account, notice, connect, disconnect } = useWallet();
+
+  return (
+    <div className="wallet">
+      {phase === "detecting" && (
+        <button className="btn btn--sm" disabled aria-live="polite">
+          Connect wallet
+        </button>
+      )}
+
+      {/* A missing extension is explained on click, not made the label. */}
+      {(phase === "disconnected" || phase === "unavailable") && (
         <button className="btn btn--sm" onClick={() => void connect()}>
           Connect wallet
         </button>
-      </div>
-    );
-  }
-  return (
-    <div className="wallet">
-      <select
-        aria-label="Active wallet"
-        value={activeIndex}
-        onChange={(e) => select(Number(e.target.value))}
-      >
-        {identities.map((id, i) => (
-          <option key={id.publicKey} value={i}>
-            {id.label} · {id.publicKey.slice(0, 4)}…{id.publicKey.slice(-4)}
-          </option>
-        ))}
-      </select>
-      <button
-        className="btn btn--sm"
-        onClick={() => void addIdentity()}
-        title="Add a second wallet to hold or buy stamps"
-        aria-label="Add another wallet"
-      >
-        +
-      </button>
-      <button className="btn btn--sm" onClick={disconnect} aria-label="Disconnect wallet">
-        Exit
-      </button>
+      )}
+
+      {phase === "connecting" && (
+        <button className="btn btn--sm" disabled aria-live="polite">
+          Approve in Phantom…
+        </button>
+      )}
+
+      {phase === "verifying" && (
+        <button className="btn btn--sm" disabled aria-live="polite">
+          Verifying signature…
+        </button>
+      )}
+
+      {phase === "unverified" && (
+        <>
+          <span className="wallet__key mono" title={account ?? undefined}>
+            {truncateKey(account ?? "")}
+          </span>
+          <button className="btn btn--sm" onClick={() => void connect()}>
+            Prove ownership
+          </button>
+        </>
+      )}
+
+      {phase === "connected" && wallet && (
+        <>
+          <span className="wallet__key mono" title={wallet.publicKey}>
+            {truncateKey(wallet.publicKey)}
+          </span>
+          <button
+            className="btn btn--sm"
+            onClick={() => void disconnect()}
+            aria-label="Disconnect wallet"
+          >
+            Disconnect
+          </button>
+        </>
+      )}
+
+      {notice && (
+        <p className="wallet__note tiny" role="status">
+          {notice}
+          {phase === "unavailable" && (
+            <>
+              {" "}
+              <a className="linky" href={PHANTOM_SITE} target="_blank" rel="noreferrer">
+                Get Phantom
+              </a>
+            </>
+          )}
+        </p>
+      )}
     </div>
   );
 }

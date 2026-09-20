@@ -1,10 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useWallet } from "@/components/Wallet";
+import { useWallet, walletStateLine } from "@/components/Wallet";
 import { Loading, Note, Panel, Tech } from "@/components/ui";
 import { formatUnits } from "@/lib/format";
+import { describeTransparent, validateTransparentAddress } from "@/lib/protocol/taddr";
+import { PHANTOM_SITE } from "@/lib/wallet/provider";
+import { truncateKey } from "@/lib/wallet/session";
 
 export default function ConvertPage() {
   // useSearchParams opts the subtree out of prerendering; keep that to one child
@@ -23,7 +26,7 @@ export default function ConvertPage() {
 }
 
 function Convert() {
-  const { wallet, connect } = useWallet();
+  const { wallet, phase, connect, zcashDestination, setZcashDestination } = useWallet();
   const router = useRouter();
   const search = useSearchParams();
   const [mint, setMint] = useState(search.get("mint") ?? "");
@@ -35,9 +38,10 @@ function Convert() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // The address this wallet used last time, never one derived on its behalf.
   useEffect(() => {
-    if (wallet && !touchedDestination) setDestination(wallet.zcashAddress);
-  }, [wallet, touchedDestination]);
+    if (!touchedDestination) setDestination(zcashDestination ?? "");
+  }, [zcashDestination, touchedDestination]);
 
   useEffect(() => {
     if (!mint) return;
@@ -49,6 +53,12 @@ function Convert() {
         else setInfo(j.data);
       });
   }, [mint, wallet]);
+
+  const destinationCheck = useMemo(
+    () => (destination ? validateTransparentAddress(destination) : null),
+    [destination],
+  );
+  const destinationReady = Boolean(destinationCheck?.ok && destinationCheck.network === "zcash:main");
 
   // Any edit invalidates the confirmed preview, so nobody authorizes stale numbers.
   function edited<T>(setter: (value: T) => void) {
@@ -71,6 +81,7 @@ function Convert() {
       setPreview(null);
       setError(json.error.message);
     } else {
+      setZcashDestination(destination);
       setPreview(json.data);
     }
   }
@@ -90,12 +101,12 @@ function Convert() {
       setError(json.error.message);
       return;
     }
+    setZcashDestination(destination);
     router.push(`/jobs/${json.data.job.id}`);
   }
 
   const decimals = Number(info?.decimals ?? 0);
   const symbol = String(info?.symbol ?? "");
-  const managed = Boolean(wallet && destination === wallet.zcashAddress);
 
   return (
     <div className="split">
@@ -104,6 +115,17 @@ function Convert() {
         <p className="lede muted" style={{ marginTop: 6 }}>
           Burning destroys supply on Solana and issues one Zcash stamp for the destroyed quantity.
         </p>
+
+        {!wallet && (
+          <Note tone="quiet">
+            {walletStateLine(phase)}{" "}
+            {phase === "unavailable" && (
+              <a className="linky" href={PHANTOM_SITE} target="_blank" rel="noreferrer">
+                Install Phantom
+              </a>
+            )}
+          </Note>
+        )}
 
         <form
           style={{ marginTop: 16 }}
@@ -127,7 +149,7 @@ function Convert() {
                   {symbol}
                   {wallet
                     ? ` · you hold ${formatUnits(String(info.eligibleBase ?? "0"), decimals)} ${symbol}`
-                    : " · connect a wallet to see your balance"}
+                    : " · connect Phantom to read your balance"}
                 </span>
               ) : (
                 <span className="hint">{String(info.reason)}</span>
@@ -150,10 +172,13 @@ function Convert() {
           </div>
 
           <div className="field">
-            <label htmlFor="dest">Zcash destination</label>
+            <label htmlFor="dest">Your Zcash address</label>
             <input
               id="dest"
               className="mono"
+              placeholder="t1…"
+              autoComplete="off"
+              spellCheck={false}
               value={destination}
               onChange={(e) => {
                 setTouchedDestination(true);
@@ -162,9 +187,23 @@ function Convert() {
               required
             />
             <span className="hint">
-              {managed
-                ? "Your wallet's managed destination. Stamps sent here can be transferred or listed."
-                : "An outside destination still receives a verifiable stamp, but this build cannot prove control of it, so that stamp cannot be transferred or sold."}
+              Phantom holds Solana keys and no Zcash keys, so the stamp needs a transparent Zcash
+              address that you control as its destination.
+            </span>
+            {destinationCheck && (
+              <span className="hint">
+                {destinationReady
+                  ? `Checksum valid — ${describeTransparent(destinationCheck)}.${
+                      wallet ? ` Remembered for ${truncateKey(wallet.publicKey)}.` : ""
+                    }`
+                  : destinationCheck.ok
+                    ? "That is a testnet address. Use a Zcash mainnet transparent address."
+                    : destinationCheck.message}
+              </span>
+            )}
+            <span className="hint">
+              This build cannot prove control of an outside transparent address, so a stamp sent
+              there is verifiable but cannot be transferred or listed here.
             </span>
           </div>
 
@@ -189,7 +228,11 @@ function Convert() {
           )}
 
           <div className="cluster" style={{ marginTop: 14 }}>
-            <button className="btn btn--primary" disabled={busy} type="submit">
+            <button
+              className="btn btn--primary"
+              disabled={busy || (Boolean(wallet) && !destinationReady)}
+              type="submit"
+            >
               {!wallet
                 ? "Connect wallet"
                 : preview
@@ -208,6 +251,8 @@ function Convert() {
           <div style={{ marginTop: 14 }}>
             <Tech>
               <dl className="kv">
+                <dt>Burn authority</dt>
+                <dd className="mono">{wallet?.publicKey ?? "not connected"}</dd>
                 <dt>Base units</dt>
                 <dd className="mono">{String(preview.amountBase)}</dd>
                 <dt>Display units</dt>
@@ -216,6 +261,8 @@ function Convert() {
                 <dd className="mono">{decimals}</dd>
                 <dt>Destination</dt>
                 <dd className="mono">{destination}</dd>
+                <dt>Destination check</dt>
+                <dd>{String(preview.destinationCheck)}</dd>
               </dl>
             </Tech>
           </div>
@@ -242,6 +289,11 @@ function Convert() {
           <p className="tiny dim" style={{ marginTop: 10 }}>
             The two chains are not atomic. A finalized burn can sit waiting for publication; the job
             page shows exactly where it is.
+          </p>
+          <p className="tiny dim" style={{ marginTop: 10 }}>
+            Live burns are disabled in this build, so the burn and the inscription are recorded on
+            this deployment&apos;s in-process ledger, not on Solana mainnet or the Zcash chain. The
+            destination you name is carried through unchanged.
           </p>
         </Panel>
       </aside>
