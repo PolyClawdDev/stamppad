@@ -8,9 +8,10 @@ import { credit, eligibleBalance, launchDemoMint } from "./solana/demo";
 import { getPairs, getPricing, getStats, getToken, stonkTokenUrl } from "./stonk/client";
 import { getStore, type JobRow, type LaunchRow, type StampRow } from "./store";
 import { publicationFeeQuote, submitDemoBurn } from "./jobs/processor";
-import { FIXTURE_PRICING } from "./stonk/fixtures";
+import { FIXTURE_PAIRS, FIXTURE_PRICING } from "./stonk/fixtures";
 
 const SEED_MINT_SYMBOL = "PROOF";
+const SEED_QUOTE = FIXTURE_PAIRS.find((p) => p.symbol === "ZEC") ?? FIXTURE_PAIRS[0];
 
 export async function statusPayload() {
   const f = flags();
@@ -167,8 +168,8 @@ export async function ensureDemoWallet(owner: string) {
       symbol: SEED_MINT_SYMBOL,
       description: "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
       imageDataUrl: null,
-      quoteMint: FIXTURE_PRICING.quote.mint,
-      quoteSymbol: "SPYX",
+      quoteMint: SEED_QUOTE.mint,
+      quoteSymbol: SEED_QUOTE.symbol,
       supply: BigInt(FIXTURE_PRICING.curve.supply),
       totalSellA: BigInt(FIXTURE_PRICING.curve.totalSellA),
       decimals: 6,

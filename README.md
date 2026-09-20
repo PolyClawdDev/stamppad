@@ -37,8 +37,8 @@ Live mainnet burns, LaunchLab sends, Zcash publication, and real sales are **off
 | Token | `/launches/:mint` | Original supply, current supply, eligible burns, pending issuance, confirmed stamp units, and Solana market data labeled as not a stamp price. |
 | Convert | `/convert` | Burn preview in base units, destination check, irreversibility notice, then the job. |
 | Portfolio | `/portfolio` | Demo balances, stamps whose ownership resolves to your destination, and issuance jobs. |
-| Marketplace | `/market` | Whole-stamp listings, the settlement steps, confirmed sales from the indexer, and the settlement disclosure. |
-| Stamp | `/stamps/:id` | Full issuance record, ownership history, pending and rejected ownership records, transfer and listing actions. |
+| Marketplace | `/market` | A grid of postage-stamp cards with asking price and last sale kept apart, then the settlement steps, confirmed sales from the indexer, and the settlement disclosure. |
+| Stamp | `/collections/:mint/stamps/:id` | Artwork, catalogue number, represented quantity, copyable inscription ID, the stamp's completed-sale chart, recent sales, and the trade panel. `/stamps/:id` redirects here. |
 
 ## Architecture
 
@@ -100,6 +100,13 @@ Rebuild the protocol ledger from persisted chain data (two independent runs must
 
 ```bash
 npm run ledger:rebuild
+```
+
+Fill the demo ledger with several stamps and completed sales, so the charts
+have something real to plot (demo mode only, drives the public HTTP API):
+
+```bash
+npm run seed:market -- http://127.0.0.1:3477
 ```
 
 The same replay is served at `/api/indexer` so anyone can diff it against their own.
