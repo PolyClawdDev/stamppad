@@ -192,7 +192,7 @@ export default function LaunchPage() {
                 </dd>
                 <dt>Venue fee</dt>
                 <dd>{String(costs?.launchVenue)}</dd>
-                <dt>Stamppad fee</dt>
+                <dt>StampPad fee</dt>
                 <dd>None. This app takes no cut of a launch.</dd>
                 <dt>Network cost</dt>
                 <dd>{String(costs?.network)}</dd>

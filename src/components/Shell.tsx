@@ -23,7 +23,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <div className="shell masthead__in">
             <Link href="/" className="brand">
               <StampMark className="brand__mark" />
-              <span className="brand__word">Stamppad</span>
+              <span className="brand__word">StampPad</span>
             </Link>
             <nav className="nav" aria-label="Primary">
               {NAV.map((item) => (

@@ -196,7 +196,7 @@ export default function ExplorePage() {
       <Panel className="intro-panel">
         <div className="intro">
           <div className="intro__copy">
-            <p className="eyebrow">Stamppad · post office for onchain assets</p>
+            <p className="eyebrow">StampPad · post office for onchain assets</p>
             <h1>Small stamps. Big ideas.</h1>
             <p className="lede muted">
               Discover Solana coins and Zcash stamps. Burn a coin to issue a stamp on Zcash, then

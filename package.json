@@ -2,7 +2,7 @@
   "name": "stamp",
   "version": "0.1.0",
   "private": true,
-  "description": "Stamppad — launch on Solana, stamp on Zcash. Experimental burn-and-issue protocol.",
+  "description": "StampPad — launch on Solana, stamp on Zcash. Experimental burn-and-issue protocol.",
   "scripts": {
     "dev": "next dev -H 127.0.0.1 -p 3477",
     "build": "next build",
