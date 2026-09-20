@@ -199,7 +199,13 @@ export default function ExplorePage() {
           <div className="intro__copy">
             <p className="eyebrow">Stamppad · post office for onchain assets</p>
             <h1>Small stamps. Big ideas.</h1>
-            <p className="lede muted">Discover Solana coins and Zcash stamps.</p>
+            <p className="lede muted">
+              Discover Solana coins and Zcash stamps. Burn a coin to issue a stamp on Zcash, then
+              own it, send it, or sell the whole stamp for ZEC.
+            </p>
+            <p className="tiny muted" style={{ marginTop: 8 }}>
+              Tradable for ZEC · Records the exact quantity burned · Published on Zcash
+            </p>
             <div className="cluster" style={{ marginTop: 14 }}>
               <a className="btn btn--primary" href="#assets">
                 Explore assets
@@ -262,7 +268,7 @@ export default function ExplorePage() {
 
             <p className="tiny muted" style={{ marginTop: 10 }}>
               {tab === "stamps"
-                ? "Stamps are transparent Zcash inscriptions. Prices below are stamp listings in ZEC, unrelated to any Solana market price."
+                ? "Stamps are transparent Zcash inscriptions, traded whole and never split. Prices below are stamp listings in ZEC, unrelated to any Solana market price."
                 : "Coins trade on their Solana venue. Stamp listings are a separate market and are not shown here."}
             </p>
           </Panel>
@@ -357,10 +363,22 @@ export default function ExplorePage() {
         <aside className="stack">
           <Panel>
             <h2>How it works</h2>
+            <p className="tiny muted" style={{ marginTop: 8 }}>
+              A stamp is a collectible asset on Zcash that records a coin burn. One stamp, one
+              owner, one exact quantity.
+            </p>
             <ol className="howto" style={{ marginTop: 10 }}>
-              <li>Launch or choose a coin.</li>
-              <li>Convert tokens into stamps.</li>
-              <li>Collect, or trade where supported.</li>
+              <li>
+                Launch or choose a coin. Coins trade on Solana, quoted in ZEC.
+              </li>
+              <li>
+                Convert tokens into a stamp. The tokens are destroyed and the stamp is published on
+                Zcash with the amount it represents.
+              </li>
+              <li>
+                Collect or trade. Stamps move to a new owner as a whole, priced in ZEC
+                {demo ? ", settled here on a simulated ledger" : ""}.
+              </li>
             </ol>
             <div className="cluster" style={{ marginTop: 14 }}>
               <Link className="btn btn--sm btn--primary" href="/convert">
