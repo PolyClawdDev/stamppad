@@ -39,7 +39,7 @@ const REAL_BURN: ObservedBurn = {
   amountBase: AMOUNT,
   decimals: 6,
   authority: AUTHORITY,
-  memos: [{ text: RECIPIENT, signer: AUTHORITY }],
+  memos: [{ text: RECIPIENT, signers: [AUTHORITY] }],
 };
 
 const PAYLOAD: StampPayload = {
@@ -123,7 +123,7 @@ describe("stamp set", () => {
   it("refuses a memo signed by someone other than the burn authority", () => {
     const burn: ObservedBurn = {
       ...REAL_BURN,
-      memos: [{ text: RECIPIENT, signer: "SomeOtherSignerEntirely1111111111111111111" }],
+      memos: [{ text: RECIPIENT, signers: ["SomeOtherSignerEntirely1111111111111111111"] }],
     };
     const set = index([REAL_STAMP], [burn]);
     expect(set.rejected[0].reason).toBe("recipient_unauthorized");

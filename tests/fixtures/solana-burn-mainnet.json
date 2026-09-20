@@ -1,0 +1,137 @@
+{
+  "slot": 448759562,
+  "transaction": {
+    "signatures": [
+      "RcxGYhJtLLmZAwhA1EeMqRCVEeC2edFSYb32Qjca1or4SzKNppf1nZS3czWL27Jf741rbZfPHUMp2PHLusG7x8M"
+    ],
+    "message": {
+      "accountKeys": [
+        {
+          "pubkey": "CkYBWStJkXMDM1XqyBTukYHxivjDmhBv8A7i1wcMgj3o",
+          "writable": true,
+          "signer": true,
+          "source": "transaction"
+        },
+        {
+          "pubkey": "3wbaQNg7QYnNV5izLUTqoGXeFDGj657T6HnbQmAap9Ye",
+          "writable": true,
+          "signer": false,
+          "source": "transaction"
+        },
+        {
+          "pubkey": "GquAMCenGErjNvJo8NezUvrQDW9JM963ajuiHKEw1Q4Y",
+          "writable": true,
+          "signer": false,
+          "source": "transaction"
+        },
+        {
+          "pubkey": "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr",
+          "writable": false,
+          "signer": false,
+          "source": "transaction"
+        },
+        {
+          "pubkey": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+          "writable": false,
+          "signer": false,
+          "source": "transaction"
+        }
+      ],
+      "recentBlockhash": "ALzULcbo6TsKAUdNEh68ETd5MXv2aUDV64ZTF7AFJ6eM",
+      "instructions": [
+        {
+          "program": "spl-token",
+          "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+          "parsed": {
+            "type": "burnChecked",
+            "info": {
+              "account": "GquAMCenGErjNvJo8NezUvrQDW9JM963ajuiHKEw1Q4Y",
+              "authority": "CkYBWStJkXMDM1XqyBTukYHxivjDmhBv8A7i1wcMgj3o",
+              "mint": "3wbaQNg7QYnNV5izLUTqoGXeFDGj657T6HnbQmAap9Ye",
+              "tokenAmount": {
+                "amount": "1500000000000",
+                "decimals": 6,
+                "uiAmount": 1500000,
+                "uiAmountString": "1500000"
+              }
+            }
+          },
+          "stackHeight": 1
+        },
+        {
+          "program": "spl-memo",
+          "programId": "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr",
+          "parsed": "t1P2GcxGhzeM5tPk3r3JsGh1tEVArD4C2fB",
+          "stackHeight": 1
+        }
+      ]
+    }
+  },
+  "meta": {
+    "err": null,
+    "status": {
+      "Ok": null
+    },
+    "fee": 5000,
+    "preBalances": [
+      47389360,
+      1066800,
+      1513840,
+      523015135,
+      70128638
+    ],
+    "postBalances": [
+      47384360,
+      1066800,
+      1513840,
+      523015135,
+      70128638
+    ],
+    "innerInstructions": [],
+    "logMessages": [
+      "Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [1]",
+      "Program log: Instruction: BurnChecked",
+      "Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 1433 of 400000 compute units",
+      "Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success",
+      "Program MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr invoke [1]",
+      "Program log: Signed by CkYBWStJkXMDM1XqyBTukYHxivjDmhBv8A7i1wcMgj3o",
+      "Program log: Memo (len 35): \"t1P2GcxGhzeM5tPk3r3JsGh1tEVArD4C2fB\"",
+      "Program MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr consumed 27413 of 398567 compute units",
+      "Program MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr success"
+    ],
+    "preTokenBalances": [
+      {
+        "accountIndex": 2,
+        "mint": "3wbaQNg7QYnNV5izLUTqoGXeFDGj657T6HnbQmAap9Ye",
+        "uiTokenAmount": {
+          "uiAmount": 1000000000,
+          "decimals": 6,
+          "amount": "1000000000000000",
+          "uiAmountString": "1000000000"
+        },
+        "owner": "CkYBWStJkXMDM1XqyBTukYHxivjDmhBv8A7i1wcMgj3o",
+        "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+      }
+    ],
+    "postTokenBalances": [
+      {
+        "accountIndex": 2,
+        "mint": "3wbaQNg7QYnNV5izLUTqoGXeFDGj657T6HnbQmAap9Ye",
+        "uiTokenAmount": {
+          "uiAmount": 998500000,
+          "decimals": 6,
+          "amount": "998500000000000",
+          "uiAmountString": "998500000"
+        },
+        "owner": "CkYBWStJkXMDM1XqyBTukYHxivjDmhBv8A7i1wcMgj3o",
+        "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+      }
+    ],
+    "rewards": [],
+    "computeUnitsConsumed": 28846,
+    "costUnits": 30837
+  },
+  "blockTime": 1789914730,
+  "transactionIndex": 467,
+  "version": "legacy"
+}

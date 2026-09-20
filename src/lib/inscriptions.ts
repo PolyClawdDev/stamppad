@@ -36,11 +36,12 @@ export interface ObservedBurn {
   mint: string;
   /** Destroyed amount in base units. */
   amountBase: string;
-  decimals: number;
+  /** Null for a plain burn, which carries no decimals. Display only. */
+  decimals: number | null;
   /** Authority that signed the burn instruction. */
   authority: string;
-  /** Memos carried by the same transaction, with the account that signed each. */
-  memos: Array<{ text: string; signer: string }>;
+  /** Memos in the same transaction, each with the keys that signed for it. */
+  memos: Array<{ text: string; signers: string[] }>;
 }
 
 export type RejectionReason =
@@ -121,7 +122,14 @@ function canonicalOrder(a: ObservedInscription, b: ObservedInscription): number 
 }
 
 export function indexInscriptions(options: IndexOptions): StampSet {
-  const burns = new Map(options.burns.map((burn) => [burn.signature, burn]));
+  // One transaction can destroy several mints, so a signature maps to a list
+  // and the stamp's own mint selects from it.
+  const burns = new Map<string, ObservedBurn[]>();
+  for (const burn of options.burns) {
+    const existing = burns.get(burn.signature);
+    if (existing) existing.push(burn);
+    else burns.set(burn.signature, [burn]);
+  }
   const accepted: AcceptedStamp[] = [];
   const rejected: RejectedStamp[] = [];
   const pending: PendingStamp[] = [];
@@ -156,9 +164,21 @@ export function indexInscriptions(options: IndexOptions): StampSet {
       continue;
     }
 
-    const burn = burns.get(payload.burn);
-    if (!burn) {
+    const candidates = burns.get(payload.burn);
+    if (!candidates || candidates.length === 0) {
       reject(item, "burn_not_found", "The burn this stamp cites is not on Solana.", payload);
+      continue;
+    }
+    const burn = candidates.find((entry) => entry.mint === payload.mint);
+    if (!burn) {
+      reject(
+        item,
+        "mint_mismatch",
+        `Stamp names ${payload.mint} but that transaction destroyed ${candidates
+          .map((entry) => entry.mint)
+          .join(", ")}.`,
+        payload,
+      );
       continue;
     }
     if (burn.err !== null) {
@@ -167,15 +187,6 @@ export function indexInscriptions(options: IndexOptions): StampSet {
     }
     if (!burn.finalized) {
       reject(item, "burn_unconfirmed", "The cited burn is not finalized.", payload);
-      continue;
-    }
-    if (burn.mint !== payload.mint) {
-      reject(
-        item,
-        "mint_mismatch",
-        `Stamp names ${payload.mint} but the burn destroyed ${burn.mint}.`,
-        payload,
-      );
       continue;
     }
     if (burn.amountBase !== payload.amt) {
@@ -191,7 +202,7 @@ export function indexInscriptions(options: IndexOptions): StampSet {
     // The burner chose the destination by memoing it in the burn transaction,
     // signed by the same authority. Anything else is recipient substitution.
     const authorized = burn.memos.some(
-      (memo) => memo.text.trim() === payload.to && memo.signer === burn.authority,
+      (memo) => memo.text.trim() === payload.to && memo.signers.includes(burn.authority),
     );
     if (!authorized) {
       reject(
