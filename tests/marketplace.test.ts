@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import nacl from "tweetnacl";
-import { convert, ensureDemoWallet } from "../src/lib/app";
+import { convert } from "../src/lib/app";
 import { indexFromStore } from "../src/lib/indexer";
 import {
   advanceListing,
@@ -19,6 +19,7 @@ import {
 import { demoAddressForKey, encodeBase58, toHex } from "../src/lib/protocol";
 import { getStore, setStoreForTests } from "../src/lib/store";
 import { MemoryStore } from "../src/lib/store/memory";
+import { launchFundedCoin } from "./helpers";
 
 function identity(seed: string) {
   const kp = nacl.sign.keyPair.fromSeed(Buffer.alloc(32, seed));
@@ -36,9 +37,9 @@ function identity(seed: string) {
 type Identity = ReturnType<typeof identity>;
 
 async function mintStamp(owner: Identity, amountDisplay = "5", destination = owner.address) {
-  const seed = await ensureDemoWallet(owner.solana);
+  const coin = await launchFundedCoin(owner.solana);
   const job = await convert({
-    mint: seed.mint,
+    mint: coin.mint,
     owner: owner.solana,
     amountDisplay,
     destination,

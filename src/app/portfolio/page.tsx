@@ -106,11 +106,11 @@ export default function PortfolioPage() {
       <Panel>
         <h1>Portfolio</h1>
         <p className="lede muted" style={{ marginTop: 6 }}>
-          Connect the demo wallet to see balances, stamps and issuance jobs. Keys are generated in
-          your browser and never leave it; no seed phrase is requested.
+          Connect a wallet to see balances, stamps and issuance jobs. Keys are generated in your
+          browser and never leave it; no seed phrase is requested.
         </p>
         <button className="btn btn--primary" style={{ marginTop: 14 }} onClick={() => void connect()}>
-          Connect demo wallet
+          Connect wallet
         </button>
       </Panel>
     );
@@ -172,7 +172,7 @@ export default function PortfolioPage() {
           ) : (
             <div className="stampgrid">
               {stampCards.map((s) => (
-                <StampCard key={s.id} stamp={s} demo />
+                <StampCard key={s.id} stamp={s} />
               ))}
             </div>
           )}
@@ -187,7 +187,7 @@ export default function PortfolioPage() {
                 </Link>
               }
             >
-              Balances on the demo Solana ledger appear here.
+              Launching a coin credits your optional initial purchase here, ready to burn.
             </Empty>
           ) : (
             <div className="coinlist">

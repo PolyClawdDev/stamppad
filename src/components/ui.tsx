@@ -97,20 +97,27 @@ export function Tech({
   );
 }
 
+/**
+ * An empty surface is a real state, not a failure. `art` promotes it to the
+ * centred variant used where a whole section has nothing in it yet.
+ */
 export function Empty({
   title,
   children,
   action,
+  art,
 }: {
   title: string;
   children?: React.ReactNode;
   action?: React.ReactNode;
+  art?: React.ReactNode;
 }) {
   return (
-    <div className="empty">
+    <div className={`empty${art ? " empty--feature" : ""}`}>
+      {art && <div className="empty__art">{art}</div>}
       <h3>{title}</h3>
       {children && <p className="tiny muted">{children}</p>}
-      {action}
+      {action && <div className="cluster empty__actions">{action}</div>}
     </div>
   );
 }

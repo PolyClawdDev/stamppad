@@ -14,7 +14,7 @@ const NAV = [
   { href: "/portfolio", label: "Portfolio", match: (p: string) => p.startsWith("/portfolio") },
 ];
 
-export function Shell({ children, banner }: { children: React.ReactNode; banner: string }) {
+export function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   return (
     <WalletProvider>
@@ -24,7 +24,6 @@ export function Shell({ children, banner }: { children: React.ReactNode; banner:
             <Link href="/" className="brand">
               <StampMark className="brand__mark" />
               <span className="brand__word">Stamppad</span>
-              <span className="badge badge--onink">{banner}</span>
             </Link>
             <nav className="nav" aria-label="Primary">
               {NAV.map((item) => (
@@ -47,7 +46,7 @@ export function Shell({ children, banner }: { children: React.ReactNode; banner:
         <footer className="foot">
           <div className="shell foot__in">
             <span>
-              Stamppad — burn on Solana, inscribe on Zcash. Experimental, unaffiliated with Stonk,
+              StampPad — burn on Solana, inscribe on Zcash. Experimental, unaffiliated with Stonk,
               Solana or Zcash.
             </span>
             <span className="cluster">

@@ -198,8 +198,8 @@ export default function LaunchDetailPage() {
               </dd>
             </dl>
             <p className="tiny dim" style={{ marginTop: 10 }}>
-              Adoption on the venue is independent of this deployment; demo mints are not mainnet
-              launches.
+              Adoption on the venue is independent of this deployment. A coin launched here is not
+              a mainnet launch.
             </p>
           </Tech>
         </aside>

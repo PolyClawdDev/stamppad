@@ -168,7 +168,7 @@ export default function LaunchPage() {
           )}
 
           <button className="btn btn--primary" disabled={busy} type="submit">
-            {wallet ? "Launch on demo ledger" : "Connect and launch"}
+            {wallet ? "Launch coin" : "Connect and launch"}
           </button>
         </form>
       </Panel>
@@ -215,8 +215,8 @@ export default function LaunchPage() {
 
         <Note tone="warn" title="Mainnet launching is off">
           The venue&apos;s paid launch endpoint returned 503 (paid launches disabled), and the
-          self-build path would spend real SOL on mainnet. This screen writes to the demo ledger
-          only.
+          self-build path would spend real SOL on mainnet. A coin launched here is recorded on this
+          deployment&apos;s ledger and no SOL is spent.
         </Note>
 
         <Tech>

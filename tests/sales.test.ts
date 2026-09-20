@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import nacl from "tweetnacl";
-import { convert, ensureDemoWallet } from "../src/lib/app";
+import { convert } from "../src/lib/app";
 import {
   advanceListing,
   createListing,
@@ -15,6 +15,7 @@ import { demoAddressForKey, encodeBase58, toHex } from "../src/lib/protocol";
 import { saleHistory, unitPrice } from "../src/lib/sales";
 import { setStoreForTests } from "../src/lib/store";
 import { MemoryStore } from "../src/lib/store/memory";
+import { launchFundedCoin } from "./helpers";
 
 function identity(seed: string) {
   const kp = nacl.sign.keyPair.fromSeed(Buffer.alloc(32, seed));
@@ -32,9 +33,9 @@ function identity(seed: string) {
 type Identity = ReturnType<typeof identity>;
 
 async function mintStamp(owner: Identity, amountDisplay: string) {
-  const seed = await ensureDemoWallet(owner.solana);
+  const coin = await launchFundedCoin(owner.solana);
   const job = await convert({
-    mint: seed.mint,
+    mint: coin.mint,
     owner: owner.solana,
     amountDisplay,
     destination: owner.address,
@@ -84,7 +85,7 @@ describe("completed sale history", () => {
     const stampId = await mintStamp(seller, "40");
     await settleSale(seller, buyer, stampId, "1800000");
 
-    const { sales, simulated } = await saleHistory();
+    const { sales, note } = await saleHistory();
     expect(sales).toHaveLength(1);
     const sale = sales[0]!;
     expect(sale.stampId).toBe(stampId);
@@ -93,7 +94,7 @@ describe("completed sale history", () => {
     expect(sale.buyer).toBe(buyer.address);
     expect(sale.settledAt).not.toBeNull();
     expect(sale.timeSource).toBe("record_published");
-    expect(simulated).toBe(true);
+    expect(note).toMatch(/no external trade history is imported/i);
   });
 
   it("keeps an asking price out of the history until it settles", async () => {

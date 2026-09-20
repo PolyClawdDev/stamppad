@@ -3,7 +3,6 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { emptyChain } from "../solana/demo";
 import { emptyZcash } from "../zcash/demo";
-import demoSnapshot from "./demo-snapshot.json";
 import { deserializeDemo, serializeDemo } from "./serialize";
 import type { JobRow, LaunchRow, ListingRow, StampRow, Store, TransferRow } from "./types";
 
@@ -39,13 +38,8 @@ export function memoryStateInfo(): { path: string; ephemeral: boolean } {
   return { path: DEFAULT_PATH, ephemeral: HOSTED };
 }
 
-/**
- * A hosted instance starts from the committed demo ledger so every visitor
- * sees the same simulated stamps and sales instead of an empty page. Local
- * runs and tests still start empty.
- */
-export function initialState(fromSnapshot: boolean): MemoryShape {
-  if (fromSnapshot) return structuredClone(demoSnapshot) as unknown as MemoryShape;
+/** Every instance opens on an empty ledger and fills up from real activity. */
+export function initialState(): MemoryShape {
   return {
     launches: {},
     jobs: {},
@@ -57,18 +51,14 @@ export function initialState(fromSnapshot: boolean): MemoryShape {
 }
 
 export class MemoryStore implements Store {
-  private readonly seeded: boolean;
-
-  constructor(private readonly path = DEFAULT_PATH) {
-    this.seeded = HOSTED && path === DEFAULT_PATH;
-  }
+  constructor(private readonly path = DEFAULT_PATH) {}
 
   private read(): MemoryShape {
     let data: MemoryShape;
     try {
       data = JSON.parse(readFileSync(this.path, "utf8")) as MemoryShape;
     } catch {
-      data = initialState(this.seeded);
+      data = initialState();
     }
     data.listings ??= {};
     data.transfers ??= {};

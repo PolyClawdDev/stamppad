@@ -1,10 +1,10 @@
-# Stamppad
+# StampPad
 
 **Small stamps. Big ideas.** Discover Solana coins and Zcash stamps.
 
 Burn Solana tokens to create verifiable Zcash inscriptions. This is a burn-and-issue protocol, not a custodial reserve-backed wrapper.
 
-Stamppad is an experimental application protocol (`stamp-exp` version 0). Zcash consensus does not enforce issuance or ownership. Independent validators do. This product is not affiliated with Stonk, Raydium, Solana, Zcash, or their developers.
+StampPad is an experimental application protocol (`stamp-exp` version 0). Zcash consensus does not enforce issuance or ownership. Independent validators do. This product is not affiliated with Stonk, Raydium, Solana, Zcash, or their developers.
 
 Ordinary stamps are transparent inscriptions. They are not Shielded Assets, not private, and not redeemable. One-for-one quantity does not mean price parity. ZIP 226/227 ZSA migration is conditional on future network support and a separate specification — it is not automatic.
 
@@ -14,7 +14,9 @@ Ownership transfers and whole-stamp listings exist as `stamp-exp/1` and run on t
 
 ## What works here
 
-In **demo mode** (the default) you can:
+In **demo mode** (the default) the two chains run in process. Nothing is
+pre-populated: a fresh instance has no coins, no stamps, no listings and no
+sales until someone makes them. What you can do:
 
 1. Connect a browser-generated Solana keypair. The secret stays in `sessionStorage`. No seed phrase is requested.
 2. Launch a coin whose supply and decimals come from the LaunchLab path Stonk publishes (1 billion tokens, 6 decimals).
@@ -36,7 +38,7 @@ Live mainnet burns, LaunchLab sends, Zcash publication, and real sales are **off
 | Launch | `/launch` | Launch form with the venue's fixed supply and decimals, separated costs, and real post-launch balances. |
 | Token | `/launches/:mint` | Original supply, current supply, eligible burns, pending issuance, confirmed stamp units, and Solana market data labeled as not a stamp price. |
 | Convert | `/convert` | Burn preview in base units, destination check, irreversibility notice, then the job. |
-| Portfolio | `/portfolio` | Demo balances, stamps whose ownership resolves to your destination, and issuance jobs. |
+| Portfolio | `/portfolio` | Token balances, stamps whose ownership resolves to your destination, and issuance jobs. |
 | Marketplace | `/market` | A grid of postage-stamp cards with asking price and last sale kept apart, then the settlement steps, confirmed sales from the indexer, and the settlement disclosure. |
 | Stamp | `/collections/:mint/stamps/:id` | Artwork, catalogue number, represented quantity, copyable inscription ID, the stamp's completed-sale chart, recent sales, and the trade panel. `/stamps/:id` redirects here. |
 
@@ -64,7 +66,7 @@ npm test
 npm run dev
 ```
 
-Open http://127.0.0.1:3477. The default store is an on-disk JSON file (`.stamp-memory.json`) so jobs survive a process restart. The UI banner says `DEMO LEDGER`.
+Open http://127.0.0.1:3477. The default store is an on-disk JSON file (`.stamp-memory.json`) so jobs survive a process restart. Every instance opens on an empty ledger: nothing is seeded, so the marketplace stays empty until someone launches a coin and burns it.
 
 `dev` and `start` bind to `127.0.0.1:3477`. The explicit host matters: without it
 Next enumerates network interfaces to print a LAN URL, which fails under a
@@ -100,13 +102,6 @@ Rebuild the protocol ledger from persisted chain data (two independent runs must
 
 ```bash
 npm run ledger:rebuild
-```
-
-Fill the demo ledger with several stamps and completed sales, so the charts
-have something real to plot (demo mode only, drives the public HTTP API):
-
-```bash
-npm run seed:market -- http://127.0.0.1:3477
 ```
 
 The same replay is served at `/api/indexer` so anyone can diff it against their own.

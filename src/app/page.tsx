@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BlankStampArt } from "@/components/art/PixelArt";
+import { BlankStampArt, CoinArt } from "@/components/art/PixelArt";
 import { PostOffice } from "@/components/art/PostOffice";
 import { CoinRow, StampCard, type StampCardData } from "@/components/AssetCards";
-import { Badge, Empty, Note, Panel, Tech } from "@/components/ui";
+import { Empty, Note, Panel, Tech } from "@/components/ui";
 import { formatUnits, formatZec, shortId, stampNumbers } from "@/lib/format";
 
 interface Launch {
@@ -60,7 +60,6 @@ export default function ExplorePage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
   const [status, setStatus] = useState<{
-    mode?: string;
     statePersistence?: string;
     stonk?: { paidLaunchesEnabled?: boolean };
   } | null>(null);
@@ -93,7 +92,6 @@ export default function ExplorePage() {
     };
   }, []);
 
-  const demo = status?.mode === "demo";
   const collections = useMemo(
     () => new Map(launches.map((l) => [l.mint, l])),
     [launches],
@@ -287,29 +285,39 @@ export default function ExplorePage() {
                     </div>
                   ))}
                 </div>
-              ) : visibleStamps.length === 0 ? (
+              ) : stampCards.length === 0 ? (
                 <Empty
-                  title={stampCards.length === 0 ? "No stamps issued yet" : "Nothing matches"}
+                  art={<BlankStampArt />}
+                  title="No stamps issued yet"
                   action={
-                    stampCards.length === 0 ? (
+                    <>
                       <Link className="btn btn--primary" href="/convert">
-                        Convert tokens to a stamp
+                        Issue a stamp
                       </Link>
-                    ) : (
-                      <button className="btn" onClick={() => setQuery("")}>
-                        Clear search
-                      </button>
-                    )
+                      <Link className="btn" href="/launch">
+                        Launch a coin
+                      </Link>
+                    </>
                   }
                 >
-                  {stampCards.length === 0
-                    ? "Burning tokens on the Convert screen issues the first stamp on this instance."
-                    : "No stamp on this instance matches that search."}
+                  Every stamp starts as a coin burn, and nobody has burned anything here yet. Burn
+                  tokens you already hold, or launch a coin first and stamp that.
+                </Empty>
+              ) : visibleStamps.length === 0 ? (
+                <Empty
+                  title="Nothing matches"
+                  action={
+                    <button className="btn" onClick={() => setQuery("")}>
+                      Clear search
+                    </button>
+                  }
+                >
+                  No stamp on this instance matches that search.
                 </Empty>
               ) : (
                 <div className="stampgrid">
                   {visibleStamps.map((s) => (
-                    <StampCard key={s.id} stamp={s} demo={demo} />
+                    <StampCard key={s.id} stamp={s} />
                   ))}
                   {visibleStamps.length < 3 && (
                     <Link className="stampcard stampcard--ghost" href="/convert">
@@ -333,14 +341,23 @@ export default function ExplorePage() {
             <section aria-label="Solana coins" className="coinlist">
               {visibleCoins.length === 0 ? (
                 <Empty
-                  title="No coins on this instance"
+                  art={<CoinArt seed="stamppad" />}
+                  title={launches.length === 0 ? "No coins launched yet" : "Nothing matches"}
                   action={
-                    <Link className="btn btn--primary" href="/launch">
-                      Launch a coin
-                    </Link>
+                    launches.length === 0 ? (
+                      <Link className="btn btn--primary" href="/launch">
+                        Launch a coin
+                      </Link>
+                    ) : (
+                      <button className="btn" onClick={() => setQuery("")}>
+                        Clear search
+                      </button>
+                    )
                   }
                 >
-                  Every coin listed here was launched on this deployment.
+                  {launches.length === 0
+                    ? "Every coin listed here was launched on this deployment, quoted against Zcash. Yours would be the first."
+                    : "No coin on this instance matches that search."}
                 </Empty>
               ) : (
                 visibleCoins.map((l) => (
@@ -376,10 +393,7 @@ export default function ExplorePage() {
                 Convert tokens into a stamp. The tokens are destroyed and the stamp is published on
                 Zcash with the amount it represents.
               </li>
-              <li>
-                Collect or trade. Stamps move to a new owner as a whole, priced in ZEC
-                {demo ? ", settled here on a simulated ledger" : ""}.
-              </li>
+              <li>Collect or trade. Stamps move to a new owner as a whole, priced in ZEC.</li>
             </ol>
             <div className="cluster" style={{ marginTop: 14 }}>
               <Link className="btn btn--sm btn--primary" href="/convert">
@@ -392,12 +406,12 @@ export default function ExplorePage() {
           </Panel>
 
           <Panel>
-            <div className="panel__head">
-              <h2>Activity</h2>
-              {demo && <Badge>Simulated</Badge>}
-            </div>
+            <h2>Activity</h2>
             {activity.length === 0 ? (
-              <p className="tiny muted">Nothing has happened on this instance yet.</p>
+              <p className="tiny muted" style={{ marginTop: 8 }}>
+                Nothing has happened here yet. Launches, burns and sales appear the moment someone
+                makes one.
+              </p>
             ) : (
               <div className="activity">
                 {activity.map((a) => (
@@ -408,18 +422,13 @@ export default function ExplorePage() {
                 ))}
               </div>
             )}
-            {demo && (
-              <p className="tiny dim" style={{ marginTop: 10 }}>
-                Every event above was produced by this deployment&apos;s simulated ledgers. No
-                external activity is imported.
-              </p>
-            )}
+            <p className="tiny dim" style={{ marginTop: 10 }}>
+              Every event listed is one this deployment recorded. No external activity is imported.
+            </p>
           </Panel>
 
           <Tech>
             <dl className="kv">
-              <dt>Mode</dt>
-              <dd className="mono">{status?.mode ?? "…"}</dd>
               <dt>Stonk paid launches</dt>
               <dd className="mono">{String(status?.stonk?.paidLaunchesEnabled ?? false)}</dd>
               <dt>Stamp protocol</dt>

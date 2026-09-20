@@ -1,3 +1,4 @@
+import { createDemoLaunch } from "../src/lib/app";
 import {
   BURN_CHECKED_IX,
   BURN_IX,
@@ -14,11 +15,36 @@ import {
   type SourceNetwork,
   type TokenAccountView,
 } from "../src/lib/protocol";
+import { FIXTURE_PAIRS } from "../src/lib/stonk/fixtures";
+
+/** Launches are always quoted in Zcash, so the fixture pair list has to carry ZEC. */
+export const ZEC_QUOTE_MINT = FIXTURE_PAIRS.find((p) => p.symbol === "ZEC")!.mint;
 
 export const OWNER = "StampOwner11111111111111111111111111111111".slice(0, 43);
 export const MINT = "StampMint111111111111111111111111111111111".slice(0, 43);
 export const ATA = "StampAta1111111111111111111111111111111111".slice(0, 43);
 export const DEST = "zdemo1holderdestination0001";
+
+/**
+ * A coin whose creator holds something to burn. Pool inventory is never the
+ * creator's, so the optional initial purchase is the only burnable balance and
+ * every issuance test has to start by launching one.
+ */
+export async function launchFundedCoin(
+  owner: string,
+  buyDisplay = "1000000",
+): Promise<{ mint: string; decimals: number }> {
+  const launched = await createDemoLaunch({
+    owner,
+    name: "Test Coin",
+    symbol: "TEST",
+    description: "",
+    imageDataUrl: null,
+    quoteMint: ZEC_QUOTE_MINT,
+    buyDisplay,
+  });
+  return { mint: launched.launch.mint, decimals: launched.launch.decimals };
+}
 
 export function pubkey(label: string): string {
   const buf = Buffer.alloc(32, 0);

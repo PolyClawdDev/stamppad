@@ -2,16 +2,12 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { convert, createDemoLaunch, ensureDemoWallet, launchView } from "../src/lib/app";
+import { convert, createDemoLaunch, launchView } from "../src/lib/app";
 import { processDueJobs } from "../src/lib/jobs/processor";
 import { MemoryStore } from "../src/lib/store/memory";
 import { setStoreForTests } from "../src/lib/store";
 import { orphanTx } from "../src/lib/zcash/demo";
-import { FIXTURE_PAIRS } from "../src/lib/stonk/fixtures";
-import { KEYS } from "./helpers";
-
-/** Launches are always quoted in Zcash, so the fixture pair list has to carry ZEC. */
-const ZEC_QUOTE_MINT = FIXTURE_PAIRS.find((p) => p.symbol === "ZEC")!.mint;
+import { KEYS, ZEC_QUOTE_MINT, launchFundedCoin } from "./helpers";
 
 function tempStore() {
   const dir = mkdtempSync(join(tmpdir(), "stamp-"));
@@ -20,7 +16,7 @@ function tempStore() {
   return store;
 }
 
-describe("demo issuance worker", () => {
+describe("issuance worker", () => {
   beforeEach(() => {
     process.env.STAMP_MODE = "demo";
     process.env.STAMP_STORE = "memory";
@@ -32,7 +28,6 @@ describe("demo issuance worker", () => {
 
   it("launches, burns owned units, and confirms a stamp", async () => {
     const owner = KEYS.owner;
-    await ensureDemoWallet(owner);
     const launched = await createDemoLaunch({
       owner,
       name: "Unit Coin",
@@ -78,10 +73,9 @@ describe("demo issuance worker", () => {
 
   it("rejects a failed burn and does not issue", async () => {
     const owner = KEYS.owner;
-    await ensureDemoWallet(owner);
-    const seed = await ensureDemoWallet(owner);
+    const coin = await launchFundedCoin(owner);
     const job = await convert({
-      mint: seed.mint,
+      mint: coin.mint,
       owner,
       amountDisplay: "1",
       destination: "zdemo1holderdestination0001",
@@ -93,9 +87,9 @@ describe("demo issuance worker", () => {
 
   it("resumes publication after restart once the burn is finalized", async () => {
     const owner = KEYS.owner;
-    const seed = await ensureDemoWallet(owner);
+    const coin = await launchFundedCoin(owner);
     const job = await convert({
-      mint: seed.mint,
+      mint: coin.mint,
       owner,
       amountDisplay: "2",
       destination: "zdemo1holderdestination0001",
@@ -119,9 +113,9 @@ describe("demo issuance worker", () => {
 
   it("returns to publication_pending if the Zcash tx is orphaned", async () => {
     const owner = KEYS.owner;
-    const seed = await ensureDemoWallet(owner);
+    const coin = await launchFundedCoin(owner);
     const job = await convert({
-      mint: seed.mint,
+      mint: coin.mint,
       owner,
       amountDisplay: "3",
       destination: "zdemo1holderdestination0001",

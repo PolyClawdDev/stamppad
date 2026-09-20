@@ -61,10 +61,3 @@ export function liveMoneyMovementBlocked(
   }
   return null;
 }
-
-export function demoBanner(): string {
-  const f = flags();
-  if (f.mode === "demo") return "DEMO LEDGER";
-  if (f.mode === "testnet") return "TESTNET";
-  return "MAINNET — live money movement disabled";
-}

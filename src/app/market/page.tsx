@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWallet } from "@/components/Wallet";
-import { StampArt } from "@/components/art/PixelArt";
+import { BlankStampArt, StampArt } from "@/components/art/PixelArt";
 import {
   ListingStateBadge,
   StampCard,
   stampHref,
   type StampCardData,
 } from "@/components/AssetCards";
-import { Badge, Empty, Note, Panel, Tech } from "@/components/ui";
+import { Empty, Note, Panel, Tech } from "@/components/ui";
 import { formatUnits, formatZec, humanState, shortId, stampNumbers } from "@/lib/format";
 
 interface Listing {
@@ -203,11 +203,6 @@ export default function MarketPage() {
     }
   }
 
-  async function mine() {
-    await fetch("/api/demo/tick", { method: "POST" });
-    await load();
-  }
-
   function actionsFor(listing: Listing) {
     const isSeller = wallet?.zcashAddress === listing.sellerAddress;
     const isBuyer = wallet?.zcashAddress === listing.buyerAddress;
@@ -249,16 +244,11 @@ export default function MarketPage() {
     return out;
   }
 
-  const demo = disclosure?.adapter.startsWith("demo") ?? true;
-
   return (
     <>
       <Panel>
-        <div className="panel__head">
-          <h1>Market</h1>
-          {demo && <Badge tone="live">Demo trading</Badge>}
-        </div>
-        <p className="lede muted">
+        <h1>Market</h1>
+        <p className="lede muted" style={{ marginTop: 6 }}>
           Whole stamps, priced in ZEC. Every listing here was created on this deployment; no
           external order flow or price history is imported.
         </p>
@@ -291,29 +281,31 @@ export default function MarketPage() {
             </div>
           ) : cards.length === 0 ? (
             <Empty
-              title="No stamps yet"
+              art={<BlankStampArt />}
+              title="Nothing has been issued yet"
               action={
-                <Link className="btn btn--primary" href="/convert">
-                  Convert tokens
-                </Link>
+                <>
+                  <Link className="btn btn--primary" href="/convert">
+                    Issue a stamp
+                  </Link>
+                  <Link className="btn" href="/launch">
+                    Launch a coin
+                  </Link>
+                </>
               }
             >
-              Burning tokens issues the first inscription this marketplace can trade.
+              This marketplace only trades stamps that were issued here. Burning tokens creates the
+              first one.
             </Empty>
           ) : (
             <div className="stampgrid">
               {cards.map((c) => (
-                <StampCard key={c.id} stamp={c} demo={demo} />
+                <StampCard key={c.id} stamp={c} />
               ))}
             </div>
           )}
 
-          <div className="spread" style={{ marginTop: 6 }}>
-            <h2>Open listings</h2>
-            <button className="btn btn--sm" onClick={() => void mine()}>
-              Advance demo chain
-            </button>
-          </div>
+          <h2 style={{ marginTop: 6 }}>Open listings</h2>
 
           {listings.length === 0 ? (
             <Empty
@@ -345,7 +337,6 @@ export default function MarketPage() {
                       </div>
                       <div className="cluster">
                         <span className="price">{formatZec(l.priceZat)} ZEC</span>
-                        {demo && <Badge>Demo sale</Badge>}
                         {l.stamp && (
                           <span className="tiny muted">
                             represents {formatUnits(l.stamp.amountBase, l.stamp.decimals)}{" "}

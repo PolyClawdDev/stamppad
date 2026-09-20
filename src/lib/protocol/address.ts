@@ -15,12 +15,12 @@ export function validateDestination(
 ): { ok: boolean; message: string } {
   if (network === "zcash:demo") {
     if (/^zdemo1[0-9a-z]{20,80}$/.test(address)) {
-      return { ok: true, message: "demo transparent destination" };
+      return { ok: true, message: "transparent destination" };
     }
     return {
       ok: false,
       message:
-        "Demo destinations look like zdemo1… (20–80 lowercase characters). Shielded z-addresses are not accepted.",
+        "Destinations on this network look like zdemo1… (20–80 lowercase characters). Shielded z-addresses are not accepted.",
     };
   }
 

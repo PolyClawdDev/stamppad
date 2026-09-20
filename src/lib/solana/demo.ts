@@ -174,7 +174,7 @@ export function executeDemoBurn(input: {
   network?: SourceNetwork;
 }): CanonicalSolanaTx {
   const mint = input.chain.mints[input.mint];
-  if (!mint) throw new Error("Unknown mint on the demo ledger.");
+  if (!mint) throw new Error("Unknown mint on this deployment's ledger.");
   const address = ataAddress(input.owner, input.mint);
   const account = input.chain.accounts[address];
   if (!account || account.amount < input.amountBase) {

@@ -188,7 +188,7 @@ export function verifyOwnerSignature(input: {
     return {
       ok: false,
       message:
-        "Ownership operations require a protocol-managed demo destination. Stamps issued to an external transparent address have no verified key binding in this build, so they cannot be transferred or sold.",
+        "Ownership operations require a protocol-managed destination. Stamps issued to an external transparent address have no verified key binding in this build, so they cannot be transferred or sold.",
     };
   }
   if (!demoAddressMatchesKey(input.address, input.publicKeyHex)) {

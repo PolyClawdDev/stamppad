@@ -11,7 +11,6 @@
  * not consensus: `timeSource` says which of the two a caller is looking at.
  */
 import { indexFromStore, type IndexedState } from "./indexer";
-import { stampMode } from "./mode";
 import { getStore, type LaunchRow, type StampRow } from "./store";
 
 export interface CompletedSale {
@@ -35,12 +34,10 @@ export interface CompletedSale {
   height: number;
   settledAt: string | null;
   timeSource: "record_published" | "block_height_only";
-  simulated: boolean;
 }
 
 export interface SaleHistory {
   sales: CompletedSale[];
-  simulated: boolean;
   note: string;
 }
 
@@ -87,7 +84,6 @@ export async function saleHistory(state?: IndexedState): Promise<SaleHistory> {
     }
   }
 
-  const simulated = stampMode() === "demo";
   const seen = new Set<string>();
   const sales: CompletedSale[] = [];
 
@@ -119,7 +115,6 @@ export async function saleHistory(state?: IndexedState): Promise<SaleHistory> {
       height: sale.height,
       settledAt,
       timeSource: settledAt ? "record_published" : "block_height_only",
-      simulated,
     });
   }
 
@@ -127,10 +122,7 @@ export async function saleHistory(state?: IndexedState): Promise<SaleHistory> {
 
   return {
     sales,
-    simulated,
-    note: simulated
-      ? "Every sale below was settled against this deployment's simulated Zcash ledger. No external trade history is imported."
-      : "Sales are derived from accepted ownership records replayed by the indexer.",
+    note: "Sales are derived from accepted ownership records replayed by the indexer. No external trade history is imported.",
   };
 }
 

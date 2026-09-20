@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { demoBanner } from "@/lib/mode";
 import { Shell } from "@/components/Shell";
 import "./globals.css";
 
-const TITLE = "Stamppad — small stamps, big ideas";
+const TITLE = "StampPad — small stamps, big ideas";
 const DESCRIPTION =
   "Discover Solana coins and Zcash stamps. Burn a coin to issue a stamp on Zcash, then own it, send it, or sell the whole stamp for ZEC.";
 
@@ -20,10 +19,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: TITLE,
   description: DESCRIPTION,
-  applicationName: "Stamppad",
+  applicationName: "StampPad",
   openGraph: {
     type: "website",
-    siteName: "Stamppad",
+    siteName: "StampPad",
     url: SITE,
     title: TITLE,
     description: DESCRIPTION,
@@ -39,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <Shell banner={demoBanner()}>{children}</Shell>
+        <Shell>{children}</Shell>
       </body>
     </html>
   );

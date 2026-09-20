@@ -34,7 +34,6 @@ interface Sale {
   txid: string;
   height: number;
   settledAt: string | null;
-  simulated: boolean;
 }
 
 interface StampView {
@@ -97,7 +96,6 @@ export default function StampDetailPage() {
   const [number, setNumber] = useState<number | null>(null);
   const [sales, setSales] = useState<Sale[]>([]);
   const [collectionSales, setCollectionSales] = useState<Sale[]>([]);
-  const [simulated, setSimulated] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -120,7 +118,6 @@ export default function StampDetailPage() {
     const all: Sale[] = sale.data?.sales ?? [];
     setCollectionSales(all);
     setSales(all.filter((x) => x.stampId === id));
-    setSimulated(sale.data?.simulated ?? true);
     if (coll.data?.launch) {
       setCollection({ name: coll.data.launch.name, symbol: coll.data.launch.symbol });
     }
@@ -271,7 +268,6 @@ export default function StampDetailPage() {
         <Link className="linky" href="/market">
           ← Back to marketplace
         </Link>
-        {simulated && <Badge>Demo ledger</Badge>}
       </div>
 
       <Panel>
@@ -291,7 +287,6 @@ export default function StampDetailPage() {
             <div className="cluster">
               <h1>{name}</h1>
               <Badge state={liveListing?.state}>{statusLabel}</Badge>
-              {simulated && <Badge>Demo</Badge>}
             </div>
             <p className="muted">
               {number ? `Stamp No. ${number} · ` : ""}represents{" "}
@@ -421,12 +416,10 @@ export default function StampDetailPage() {
                   : ` Points, not candles: candles need at least ${12} completed sales spread over several buckets, and this collection has ${collectionSales.length}.`}
               </Note>
             )}
-            {simulated && (
-              <p className="tiny dim">
-                Demo ledger. Prices come from settlements this deployment produced; no external
-                market data is imported, and no percentage change is inferred.
-              </p>
-            )}
+            <p className="tiny dim">
+              Prices come from settlements this deployment recorded; no external market data is
+              imported, and no percentage change is inferred.
+            </p>
           </Panel>
 
           <Panel>
@@ -511,10 +504,7 @@ export default function StampDetailPage() {
 
         <aside className="stack">
           <Panel>
-            <div className="panel__head">
-              <h2>{isOwner ? "Your stamp" : "Trade"}</h2>
-              {simulated && <Badge>Demo</Badge>}
-            </div>
+            <h2>{isOwner ? "Your stamp" : "Trade"}</h2>
 
             <dl className="kv" style={{ marginTop: 8 }}>
               <dt>Asking</dt>
@@ -557,7 +547,7 @@ export default function StampDetailPage() {
                 </button>
                 <p className="tiny muted" style={{ marginTop: 8 }}>
                   Reserves this stamp for your wallet, then the seller signs the offer and
-                  authorization. {simulated ? "No ZEC moves: this settles against the simulated ledger." : ""}
+                  authorization. Real ZEC never moves in this build.
                 </p>
               </>
             )}

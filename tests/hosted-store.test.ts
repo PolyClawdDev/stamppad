@@ -5,37 +5,31 @@ import { describe, expect, it } from "vitest";
 import { initialState, MemoryStore } from "../src/lib/store/memory";
 
 /**
- * A read-only serverless filesystem forces the ledger into temporary storage,
- * where it starts from the committed demo snapshot. Everywhere else still
- * starts empty.
+ * Nothing is ever pre-filled. A read-only serverless filesystem pushes the
+ * ledger into temporary storage, but it still opens empty and only fills up
+ * from activity that actually happened on the instance.
  */
-describe("hosted memory store", () => {
-  it("starts from the demo snapshot when seeding is on", () => {
-    const seeded = initialState(true);
-    expect(Object.keys(seeded.launches).length).toBeGreaterThan(0);
-    expect(Object.keys(seeded.stamps).length).toBeGreaterThan(0);
-    expect(seeded.demo).toBeTruthy();
+describe("memory store", () => {
+  it("starts empty", () => {
+    const state = initialState();
+    expect(Object.keys(state.launches)).toHaveLength(0);
+    expect(Object.keys(state.stamps)).toHaveLength(0);
+    expect(Object.keys(state.listings)).toHaveLength(0);
+    expect(Object.keys(state.transfers)).toHaveLength(0);
+    expect(Object.keys(state.jobs)).toHaveLength(0);
   });
 
-  it("starts empty otherwise", () => {
-    const empty = initialState(false);
-    expect(Object.keys(empty.launches)).toHaveLength(0);
-    expect(Object.keys(empty.stamps)).toHaveLength(0);
-    expect(Object.keys(empty.transfers)).toHaveLength(0);
+  it("carries an empty pair of ledgers rather than no ledger at all", () => {
+    const state = initialState();
+    expect(state.demo).toBeTruthy();
+    expect(Object.keys(state.demo.solana.mints)).toHaveLength(0);
+    expect(Object.keys(state.demo.zcash.txs)).toHaveLength(0);
   });
 
-  it("does not seed a store opened at an explicit path", async () => {
+  it("opens empty at an explicit path", async () => {
     const store = new MemoryStore(join(mkdtempSync(join(tmpdir(), "stamp-hosted-")), "state.json"));
     expect(await store.listLaunches()).toHaveLength(0);
     expect(await store.listStamps()).toHaveLength(0);
-  });
-
-  it("snapshot rows carry the fields the marketplace reads", () => {
-    const seeded = initialState(true);
-    for (const stamp of Object.values(seeded.stamps)) {
-      expect(stamp.mint).toBeTruthy();
-      expect(stamp.amountBase).toBeTruthy();
-      expect(typeof stamp.decimals).toBe("number");
-    }
+    expect(await store.listListings()).toHaveLength(0);
   });
 });

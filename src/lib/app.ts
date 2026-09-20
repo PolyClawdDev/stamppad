@@ -4,25 +4,20 @@ import {
   TOKEN_PROGRAM_ID,
   validateDestination,
 } from "./protocol";
-import { credit, eligibleBalance, launchDemoMint } from "./solana/demo";
+import { eligibleBalance, launchDemoMint } from "./solana/demo";
 import { getPairs, getPricing, getStats, getToken, stonkTokenUrl } from "./stonk/client";
 import { getStore, type JobRow, type LaunchRow, type StampRow } from "./store";
 import { memoryStateInfo } from "./store/memory";
 import { publicationFeeQuote, submitDemoBurn } from "./jobs/processor";
-import { FIXTURE_PAIRS, FIXTURE_PRICING } from "./stonk/fixtures";
-
-const SEED_MINT_SYMBOL = "PROOF";
-const SEED_QUOTE = FIXTURE_PAIRS.find((p) => p.symbol === "ZEC") ?? FIXTURE_PAIRS[0];
 
 export async function statusPayload() {
   const f = flags();
   const stats = await getStats();
   return {
-    product: "Stamppad",
+    product: "StampPad",
     positioning: "Small stamps. Big ideas.",
     explanation: "Burn Solana tokens to create verifiable Zcash inscriptions.",
     mode: f.mode,
-    banner: f.mode === "demo" ? "DEMO LEDGER" : f.mode === "testnet" ? "TESTNET" : "MAINNET",
     networks: { source: f.sourceNetwork, destination: f.destNetwork },
     store: f.store,
     statePersistence:
@@ -77,7 +72,7 @@ export async function quoteLaunch(quoteMint: string) {
         : "Stonk paid launch path disabled (503 on 2026-09-20). LaunchLab self-build has no Stonk launch fee.",
       initialPurchase: "Optional and only if you hold the quote asset. Does not execute a later trade.",
       stampFee: "0",
-      network: "Solana rent + priority fee paid by the creator wallet. Demo ledger does not charge SOL.",
+      network: "Solana rent + priority fee paid by the creator wallet. This build's ledger does not charge SOL.",
       publication: publicationFeeQuote(),
     },
   };
@@ -132,7 +127,7 @@ export async function createDemoLaunch(input: {
     creator: input.owner,
     launchTx: launched.tx.signature,
     stonkUrl: stonkTokenUrl(launched.mint.address),
-    source: `demo launch mirroring ${quote.source}`,
+    source: `launched on this deployment, mirroring ${quote.source}`,
     createdAt: launched.mint.createdAt,
   };
   await store.upsertLaunch(row);
@@ -159,60 +154,6 @@ export async function createDemoLaunch(input: {
   };
 }
 
-export async function ensureDemoWallet(owner: string) {
-  const store = getStore();
-  const { solana, zcash } = await store.loadDemo();
-  const existing = Object.values(solana.mints).find((m) => m.symbol === SEED_MINT_SYMBOL);
-  if (!existing) {
-    const launched = launchDemoMint({
-      chain: solana,
-      creator: owner,
-      name: "Proof of Burn",
-      symbol: SEED_MINT_SYMBOL,
-      description: "Seeded demo mint. 1,000,000 display units credited to the connecting wallet so Convert can be exercised without a live launch.",
-      imageDataUrl: null,
-      quoteMint: SEED_QUOTE.mint,
-      quoteSymbol: SEED_QUOTE.symbol,
-      supply: BigInt(FIXTURE_PRICING.curve.supply),
-      totalSellA: BigInt(FIXTURE_PRICING.curve.totalSellA),
-      decimals: 6,
-      buyBase: 0n,
-    });
-    credit(solana, launched.mint, owner, 1_000_000_000_000n);
-    await store.saveDemo(solana, zcash);
-    await store.upsertLaunch({
-      mint: launched.mint.address,
-      name: launched.mint.name,
-      symbol: launched.mint.symbol,
-      description: launched.mint.description,
-      imageDataUrl: null,
-      quoteMint: launched.mint.quoteMint,
-      quoteSymbol: launched.mint.quoteSymbol,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      decimals: 6,
-      launchSupply: launched.mint.launchSupply,
-      poolBase: launched.mint.poolBase,
-      currentSupply: launched.mint.supply.toString(10),
-      creator: owner,
-      launchTx: launched.tx.signature,
-      stonkUrl: stonkTokenUrl(launched.mint.address),
-      source: "demo seed — not a Stonk mainnet launch",
-      createdAt: launched.mint.createdAt,
-    });
-  } else if (eligibleBalance(solana, owner, existing.address) === 0n) {
-    credit(solana, existing, owner, 1_000_000_000_000n);
-    await store.saveDemo(solana, zcash);
-  }
-  const { solana: next } = await store.loadDemo();
-  const mint = Object.values(next.mints).find((m) => m.symbol === SEED_MINT_SYMBOL)!;
-  return {
-    mint: mint.address,
-    symbol: mint.symbol,
-    decimals: mint.decimals,
-    eligibleBase: eligibleBalance(next, owner, mint.address).toString(10),
-  };
-}
-
 export async function inspectMint(mint: string, owner?: string) {
   const store = getStore();
   const launch = await store.getLaunch(mint);
@@ -223,13 +164,13 @@ export async function inspectMint(mint: string, owner?: string) {
     if (!live.token) {
       return {
         supported: false,
-        reason: live.error ?? "Mint is not on the demo ledger and live Stonk/Solana data was not available.",
+        reason: live.error ?? "Mint is not on this deployment's ledger and live Stonk/Solana data was not available.",
       };
     }
     return {
       supported: false,
       reason:
-        "Live mint inspection is read-only. Burning a mainnet mint is disabled. Switch to demo or supply a demo mint.",
+        "Live mint inspection is read-only. Burning a mainnet mint is disabled. Supply a mint that was launched on this deployment.",
       token: live.token,
       source: live.source,
     };
@@ -368,7 +309,7 @@ export function publicStamp(stamp: StampRow) {
     originalRecipient: stamp.destination,
     ownership:
       "Original recipient is the authorized destination. v0 has no transfer rules, so this is not labeled current owner.",
-    validation: { ok: true, reason: "Accepted by stamp-exp/0 against the demo ledgers." },
+    validation: { ok: true, reason: "Accepted by stamp-exp/0 against this deployment's ledgers." },
   };
 }
 

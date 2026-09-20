@@ -41,7 +41,10 @@ export class DemoWalletAdapter implements WalletAdapter {
 
   capability(address: string): OwnerCapability {
     if (isDemoManagedAddress(address)) {
-      return { canAuthorize: true, reason: "Demo destination with a verifiable key binding." };
+      return {
+        canAuthorize: true,
+        reason: "Protocol-managed destination with a verifiable key binding.",
+      };
     }
     return {
       canAuthorize: false,

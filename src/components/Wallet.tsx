@@ -7,7 +7,7 @@ export interface Identity {
   /** Solana-style base58 public key used as the burn authority. */
   publicKey: string;
   publicKeyHex: string;
-  /** Protocol-managed demo destination derived from the same key. */
+  /** Protocol-managed Zcash destination derived from the same key. */
   zcashAddress: string;
 }
 
@@ -102,11 +102,6 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     };
     const keys = [...readKeys(), key];
     sessionStorage.setItem(STORAGE, JSON.stringify(keys));
-    await fetch("/api/demo/connect", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ owner: key.publicKey }),
-    });
     return keys.length - 1;
   }, []);
 
@@ -118,14 +113,6 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       ready,
       async connect() {
         if (readKeys().length === 0) await createKey("Wallet A");
-        else {
-          const keys = readKeys();
-          await fetch("/api/demo/connect", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ owner: keys[0]!.publicKey }),
-          });
-        }
         await hydrate();
       },
       async addIdentity() {
@@ -147,7 +134,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       async sign(preimage: string, index?: number) {
         const keys = readKeys();
         const key = keys[index ?? activeIndex];
-        if (!key) throw new Error("No demo wallet is connected.");
+        if (!key) throw new Error("No wallet is connected.");
         const nacl = (await import("tweetnacl")).default;
         const bs58 = (await import("bs58")).default;
         const secret = bs58.decode(key.secret);
@@ -179,7 +166,7 @@ export function WalletButton() {
   return (
     <div className="wallet">
       <select
-        aria-label="Active demo wallet"
+        aria-label="Active wallet"
         value={activeIndex}
         onChange={(e) => select(Number(e.target.value))}
       >
@@ -192,12 +179,12 @@ export function WalletButton() {
       <button
         className="btn btn--sm"
         onClick={() => void addIdentity()}
-        title="Add a second demo wallet to test transfers and sales"
-        aria-label="Add another demo wallet"
+        title="Add a second wallet to hold or buy stamps"
+        aria-label="Add another wallet"
       >
         +
       </button>
-      <button className="btn btn--sm" onClick={disconnect} aria-label="Disconnect demo wallet">
+      <button className="btn btn--sm" onClick={disconnect} aria-label="Disconnect wallet">
         Exit
       </button>
     </div>

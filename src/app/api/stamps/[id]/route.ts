@@ -12,6 +12,6 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     ...(await stampWithOwnership(stamp)),
     listings,
     settlement: settlementDisclosure(),
-    validation: { ok: true, reason: "Accepted by stamp-exp/0 against the demo ledgers." },
+    validation: { ok: true, reason: "Accepted by stamp-exp/0 against this deployment's ledgers." },
   });
 }

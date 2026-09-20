@@ -29,7 +29,7 @@ export function stampHref(stamp: { mint: string; id: string }): string {
  * collection, catalogue number, represented quantity, and a price block that
  * keeps "asking" and "sold" visually distinct.
  */
-export function StampCard({ stamp, demo }: { stamp: StampCardData; demo: boolean }) {
+export function StampCard({ stamp }: { stamp: StampCardData }) {
   const listing = stamp.listing && !CLOSED.includes(stamp.listing.state) ? stamp.listing : null;
   const pending = listing && listing.state !== "listed";
   const status = listing ? (pending ? "Pending" : "Listed") : "Unlisted";
@@ -72,10 +72,7 @@ export function StampCard({ stamp, demo }: { stamp: StampCardData; demo: boolean
       </div>
 
       <div className="stampcard__foot">
-        <span className="cluster" style={{ gap: 6 }}>
-          <Badge state={listing?.state}>{status}</Badge>
-          {demo && <Badge>Demo</Badge>}
-        </span>
+        <Badge state={listing?.state}>{status}</Badge>
         <span className="linky">{action}</span>
       </div>
     </Link>

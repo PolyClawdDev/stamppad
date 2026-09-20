@@ -129,14 +129,14 @@ export async function marketOverview() {
     history: rows.filter((r) => !isLive(r as unknown as ListingRow)),
     confirmedSales: state.ownership.sales,
     note:
-      "Listings and sales shown here are records this deployment produced. No external order flow, liquidity, or trade history is imported or simulated.",
+      "Listings and sales shown here are records this deployment produced. No external order flow, liquidity, or trade history is imported.",
   };
 }
 
 export function settlementDisclosure() {
   const f = flags();
   return {
-    adapter: f.mode === "demo" ? "demo-escrowless-htlc" : "live (disabled)",
+    adapter: f.mode === "demo" ? "escrowless-htlc (this deployment)" : "live (disabled)",
     liveSalesEnabled: false,
     custody: "None. The app never holds a stamp or the buyer's ZEC.",
     mechanism:
