@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { StampMark } from "@/components/art/StampMark";
+import { XMark } from "@/components/art/XMark";
 import { WalletButton, WalletProvider } from "./Wallet";
 
 const NAV = [
@@ -50,6 +51,16 @@ export function Shell({ children }: { children: React.ReactNode }) {
               Solana or Zcash.
             </span>
             <span className="cluster">
+              <a
+                className="linky"
+                href="https://x.com/StampPaddotfun"
+                target="_blank"
+                rel="noreferrer"
+                style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+              >
+                <XMark />
+                StampPad
+              </a>
               <Link className="linky" href="/api/indexer">
                 Indexer replay
               </Link>
