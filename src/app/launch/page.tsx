@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useWallet } from "@/components/Wallet";
+import { useWallet, walletStateLine } from "@/components/Wallet";
 import { Note, Panel, Tech } from "@/components/ui";
 import { formatUnits } from "@/lib/format";
+import { describeTransparent, validateTransparentAddress } from "@/lib/protocol/taddr";
 
 /**
- * Every coin here is quoted in Zcash. Verified launchable and LaunchLab-ready on
+ * Issuing a stamp launches a ZEC-paired token on the venue and burns the whole
+ * creator allocation into the inscription. The token is machinery, so it is
+ * described under technical details rather than in the flow.
+ *
+ * Verified launchable and LaunchLab-ready on
  * https://www.stonkfun.xyz/api/public/v1/pairs on 2026-09-20.
  */
 const ZEC_QUOTE = {
@@ -16,17 +21,21 @@ const ZEC_QUOTE = {
   name: "Zcash",
 };
 
-export default function LaunchPage() {
-  const { wallet, connect } = useWallet();
+type Step = "idle" | "issuing" | "stamping";
+
+export default function IssuePage() {
+  const { wallet, phase, connect, zcashDestination, setZcashDestination } = useWallet();
   const router = useRouter();
   const [quote, setQuote] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [step, setStep] = useState<Step>("idle");
+  const [touchedDestination, setTouchedDestination] = useState(false);
   const [form, setForm] = useState({
     name: "",
     symbol: "",
     description: "",
-    buyDisplay: "",
+    denomination: "",
+    destination: "",
     imageDataUrl: "" as string | null,
   });
 
@@ -46,14 +55,28 @@ export default function LaunchPage() {
       });
   }, []);
 
+  useEffect(() => {
+    if (!touchedDestination && zcashDestination) {
+      setForm((f) => ({ ...f, destination: zcashDestination }));
+    }
+  }, [zcashDestination, touchedDestination]);
+
   const parameters = quote?.parameters as
     | { decimals: number; supplyDisplay: number; supplyBase: string; poolBase: string; note: string }
     | undefined;
   const costs = quote?.costs as Record<string, unknown> | undefined;
 
+  const destinationCheck = useMemo(
+    () => (form.destination ? validateTransparentAddress(form.destination) : null),
+    [form.destination],
+  );
+  const destinationReady = Boolean(
+    destinationCheck?.ok && destinationCheck.network === "zcash:main",
+  );
+
   async function onImage(file: File) {
     if (file.size > 512 * 1024) {
-      setError("Image must be 512 KB or smaller.");
+      setError("Artwork must be 512 KB or smaller.");
       return;
     }
     const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -72,8 +95,9 @@ export default function LaunchPage() {
       await connect();
       return;
     }
-    setBusy(true);
-    const res = await fetch("/api/launches", {
+
+    setStep("issuing");
+    const launchRes = await fetch("/api/launches", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -83,24 +107,51 @@ export default function LaunchPage() {
         description: form.description,
         imageDataUrl: form.imageDataUrl,
         quoteMint: ZEC_QUOTE.mint,
-        buyDisplay: form.buyDisplay || undefined,
+        buyDisplay: form.denomination,
       }),
     });
-    const json = await res.json();
-    setBusy(false);
-    if (json.error) {
-      setError(json.error.message);
+    const launched = await launchRes.json();
+    if (launched.error) {
+      setStep("idle");
+      setError(launched.error.message);
       return;
     }
-    router.push(`/launches/${json.data.launch.mint}`);
+
+    // The allocation exists only now, so the burn is a second call.
+    setStep("stamping");
+    const stampRes = await fetch("/api/convert/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mint: launched.data.launch.mint,
+        owner: wallet.publicKey,
+        amountDisplay: form.denomination,
+        destination: form.destination,
+      }),
+    });
+    const stamped = await stampRes.json();
+    if (stamped.error) {
+      setStep("idle");
+      setError(
+        `${stamped.error.message} The token was created, so you can finish this from Convert.`,
+      );
+      return;
+    }
+
+    setZcashDestination(form.destination);
+    router.push(`/jobs/${stamped.data.job.id}`);
   }
+
+  const busy = step !== "idle";
+  const ready = Boolean(wallet) && destinationReady && form.denomination.trim().length > 0;
 
   return (
     <div className="split">
       <Panel>
-        <h1>Launch a coin</h1>
+        <h1>Issue a stamp</h1>
         <p className="lede muted" style={{ marginTop: 6 }}>
-          Supply and decimals come from the venue&apos;s published launch path, not from you.
+          A stamp carries the artwork, name and ticker you give it, and records the exact
+          denomination it represents. One stamp, one owner, one amount.
         </p>
 
         <form style={{ marginTop: 16 }} onSubmit={(e) => void submit(e)}>
@@ -115,7 +166,10 @@ export default function LaunchPage() {
                 if (file) void onImage(file);
               }}
             />
-            <span className="hint">Optional. 512 KB maximum.</span>
+            <span className="hint">
+              Optional, 512 KB maximum. This is the face of the stamp. Without one it gets
+              generated pixel art.
+            </span>
           </div>
           <div className="field">
             <label htmlFor="name">Name</label>
@@ -128,7 +182,7 @@ export default function LaunchPage() {
             />
           </div>
           <div className="field">
-            <label htmlFor="symbol">Symbol</label>
+            <label htmlFor="symbol">Ticker</label>
             <input
               id="symbol"
               maxLength={10}
@@ -136,6 +190,7 @@ export default function LaunchPage() {
               value={form.symbol}
               onChange={(e) => setForm({ ...form, symbol: e.target.value })}
             />
+            <span className="hint">Shown on the stamp beside its denomination.</span>
           </div>
           <div className="field">
             <label htmlFor="desc">Description</label>
@@ -147,86 +202,128 @@ export default function LaunchPage() {
             />
           </div>
           <div className="field">
-            <label htmlFor="buy">Initial purchase</label>
+            <label htmlFor="denomination">Denomination</label>
             <input
-              id="buy"
+              id="denomination"
               inputMode="decimal"
-              placeholder="optional"
-              value={form.buyDisplay}
-              onChange={(e) => setForm({ ...form, buyDisplay: e.target.value })}
+              required
+              value={form.denomination}
+              onChange={(e) => setForm({ ...form, denomination: e.target.value })}
             />
             <span className="hint">
-              Display units of the new token. Only this purchase is yours to burn later; pool
-              inventory is not credited to you.
+              The quantity this stamp represents. It is destroyed permanently to cut the stamp and
+              cannot be redeemed.
+            </span>
+          </div>
+          <div className="field">
+            <label htmlFor="destination">Zcash address</label>
+            <input
+              id="destination"
+              className="mono"
+              placeholder="t1…"
+              autoComplete="off"
+              spellCheck={false}
+              required
+              value={form.destination}
+              onChange={(e) => {
+                setTouchedDestination(true);
+                setForm({ ...form, destination: e.target.value.trim() });
+              }}
+            />
+            <span className="hint">
+              Where the stamp is delivered. A transparent address you control, since the
+              inscription is transparent.
+            </span>
+            {destinationCheck && (
+              <span className="hint">
+                {destinationReady
+                  ? `Checksum valid — ${describeTransparent(destinationCheck)}.`
+                  : destinationCheck.ok
+                    ? "That is a testnet address. Use a Zcash mainnet transparent address."
+                    : destinationCheck.message}
+              </span>
+            )}
+            <span className="hint">
+              This build cannot prove control of an outside transparent address, so check it
+              carefully. A stamp delivered to the wrong address cannot be recovered.
             </span>
           </div>
 
           {error && (
-            <Note tone="error" title="Cannot launch">
+            <Note tone="error" title="Cannot issue">
               {error}
             </Note>
           )}
 
-          <button className="btn btn--primary" disabled={busy} type="submit">
-            {wallet ? "Launch coin" : "Connect and launch"}
+          <button className="btn btn--primary" disabled={busy || (Boolean(wallet) && !ready)} type="submit">
+            {!wallet
+              ? "Connect Phantom and issue"
+              : step === "issuing"
+                ? "Creating…"
+                : step === "stamping"
+                  ? "Cutting the stamp…"
+                  : "Issue stamp"}
           </button>
+          {!wallet && (
+            <p className="tiny muted" style={{ marginTop: 8 }}>
+              {walletStateLine(phase)}
+            </p>
+          )}
         </form>
       </Panel>
 
       <aside className="stack">
         <Panel>
-          <h2>Launch path</h2>
-          <dl className="kv" style={{ marginTop: 10 }}>
-            <dt>Quote asset</dt>
-            <dd>
-              {ZEC_QUOTE.symbol} — {ZEC_QUOTE.name}. Every coin launched here is paired against
-              Zcash. Not a choice.
-            </dd>
-            {parameters && (
-              <>
-                <dt>Supply</dt>
-                <dd className="num">{parameters.supplyDisplay.toLocaleString()} tokens</dd>
-                <dt>Pool / curve</dt>
-                <dd className="num">
-                  {formatUnits(parameters.poolBase, parameters.decimals)} tokens
-                </dd>
-                <dt>Venue fee</dt>
-                <dd>{String(costs?.launchVenue)}</dd>
-                <dt>StampPad fee</dt>
-                <dd>None. This app takes no cut of a launch.</dd>
-                <dt>Network cost</dt>
-                <dd>{String(costs?.network)}</dd>
-              </>
-            )}
-          </dl>
+          <h2>What you get</h2>
+          <ol className="howto" style={{ marginTop: 10 }}>
+            <li>A stamp on Zcash carrying your artwork, name and ticker.</li>
+            <li>An inscription recording the exact denomination, destroyed to cut it.</li>
+            <li>An asset you can hold, send, or sell whole for ZEC.</li>
+          </ol>
+          {parameters && (
+            <dl className="kv" style={{ marginTop: 12 }}>
+              <dt>Priced in</dt>
+              <dd>
+                {ZEC_QUOTE.symbol} — {ZEC_QUOTE.name}. Not a choice.
+              </dd>
+              <dt>Venue fee</dt>
+              <dd>{String(costs?.launchVenue)}</dd>
+              <dt>StampPad fee</dt>
+              <dd>None. This app takes no cut.</dd>
+              <dt>Network cost</dt>
+              <dd>{String(costs?.network)}</dd>
+            </dl>
+          )}
           {!parameters && (
             <p className="tiny muted" style={{ marginTop: 10 }}>
               {error
                 ? "The venue did not return published parameters for the ZEC pair."
-                : "Reading the published parameters for the ZEC pair…"}
-            </p>
-          )}
-          {parameters?.note && (
-            <p className="tiny dim" style={{ marginTop: 10 }}>
-              {parameters.note}
+                : "Reading the published parameters…"}
             </p>
           )}
         </Panel>
 
-        <Note tone="warn" title="Mainnet launching is off">
-          The venue&apos;s paid launch endpoint returned 503 (paid launches disabled), and the
-          self-build path would spend real SOL on mainnet. A coin launched here is recorded on this
-          deployment&apos;s ledger and no SOL is spent.
+        <Note tone="warn" title="Mainnet issuance is off">
+          The venue&apos;s paid launch endpoint returned 503, and the self-build path would spend
+          real SOL on mainnet. A stamp issued here is recorded on this deployment&apos;s ledger, no
+          SOL is spent, and nothing is written to Zcash mainnet.
         </Note>
 
         <Tech>
-          <dl className="kv">
+          <p className="tiny muted">
+            Under the stamp: issuing creates a ZEC-paired token on the venue and burns your whole
+            allocation into the inscription. Supply and decimals come from the venue&apos;s
+            published launch path, not from you.
+          </p>
+          <dl className="kv" style={{ marginTop: 10 }}>
             <dt>Decimals</dt>
             <dd className="mono">{parameters?.decimals ?? "—"}</dd>
             <dt>Supply (base)</dt>
             <dd className="mono">{parameters?.supplyBase ?? "—"}</dd>
             <dt>Pool (base)</dt>
-            <dd className="mono">{parameters?.poolBase ?? "—"}</dd>
+            <dd className="mono">
+              {parameters ? formatUnits(parameters.poolBase, parameters.decimals) : "—"}
+            </dd>
             <dt>Quote mint</dt>
             <dd className="mono">{ZEC_QUOTE.mint}</dd>
             <dt>Pairs source</dt>
