@@ -294,7 +294,7 @@ export default function MarketPage() {
               title="Nothing has been issued yet"
               action={
                 <Link className="btn btn--primary" href="/convert">
-                  Issue a stamp
+                  Launch a stamp
                 </Link>
               }
             >

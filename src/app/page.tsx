@@ -182,7 +182,7 @@ export default function ExplorePage() {
                 Explore stamps
               </a>
               <Link className="btn" href="/convert">
-                Issue a stamp
+                Launch a stamp
               </Link>
             </div>
           </div>
@@ -244,7 +244,7 @@ export default function ExplorePage() {
                 title="No stamps issued yet"
                 action={
                   <Link className="btn btn--primary" href="/convert">
-                    Issue a stamp
+                    Launch a stamp
                   </Link>
                 }
               >
@@ -281,7 +281,7 @@ export default function ExplorePage() {
                       <BlankStampArt />
                     </div>
                     <div className="stampcard__body">
-                      <span className="stampcard__name">Issue a stamp</span>
+                      <span className="stampcard__name">Launch a stamp</span>
                       <span className="tiny muted">Your artwork, your ticker, your stamp.</span>
                     </div>
                     <div className="stampcard__foot">
@@ -303,7 +303,7 @@ export default function ExplorePage() {
               denomination.
             </p>
             <ol className="howto" style={{ marginTop: 10 }}>
-              <li>Issue a stamp with the name, ticker and artwork you want it to carry.</li>
+              <li>Launch a stamp with the name, ticker and artwork you want it to carry.</li>
               <li>
                 It is published on Zcash as a transparent inscription recording the denomination it
                 represents.
@@ -312,7 +312,7 @@ export default function ExplorePage() {
             </ol>
             <div className="cluster" style={{ marginTop: 14 }}>
               <Link className="btn btn--sm btn--primary" href="/convert">
-                Issue a stamp
+                Launch a stamp
               </Link>
               <Link className="btn btn--sm" href="/market">
                 Market

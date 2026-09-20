@@ -148,7 +148,7 @@ export default function IssuePage() {
   return (
     <div className="split">
       <Panel>
-        <h1>Issue a stamp</h1>
+        <h1>Launch a stamp</h1>
         <p className="lede muted" style={{ marginTop: 6 }}>
           A stamp carries the artwork, name and ticker you give it, and records the exact
           denomination it represents. One stamp, one owner, one amount.
@@ -257,12 +257,12 @@ export default function IssuePage() {
 
           <button className="btn btn--primary" disabled={busy || (Boolean(wallet) && !ready)} type="submit">
             {!wallet
-              ? "Connect Phantom and issue"
+              ? "Connect Phantom and launch"
               : step === "issuing"
                 ? "Creating…"
                 : step === "stamping"
                   ? "Cutting the stamp…"
-                  : "Issue stamp"}
+                  : "Launch stamp"}
           </button>
           {!wallet && (
             <p className="tiny muted" style={{ marginTop: 8 }}>
@@ -303,10 +303,34 @@ export default function IssuePage() {
           )}
         </Panel>
 
-        <Note tone="warn" title="Mainnet issuance is off">
+        <Panel tone="ink">
+          <h2>What a stamp is not</h2>
+          <ul className="tiny" style={{ marginTop: 8 }}>
+            <li>Not a wrapper. Nothing is held in reserve.</li>
+            <li>Not redeemable. Matching quantity is not price parity.</li>
+            <li>Not shielded. Stamps are transparent Zcash inscriptions.</li>
+            <li>Not a future shielded asset. Migration is disabled and unverified.</li>
+          </ul>
+        </Panel>
+
+        <Panel>
+          <h2>How a launch runs</h2>
+          <ol className="howto" style={{ marginTop: 10 }}>
+            <li>You authorize the burn and name the destination.</li>
+            <li>The burn must finalize on Solana before anything is published.</li>
+            <li>The inscription is published to Zcash and then confirmed.</li>
+          </ol>
+          <p className="tiny dim" style={{ marginTop: 10 }}>
+            The two chains are not atomic. A finalized burn can sit waiting for publication; the
+            job page shows exactly where it is.
+          </p>
+        </Panel>
+
+        <Note tone="warn" title="Mainnet launching is off">
           The venue&apos;s paid launch endpoint returned 503, and the self-build path would spend
-          real SOL on mainnet. A stamp issued here is recorded on this deployment&apos;s ledger, no
-          SOL is spent, and nothing is written to Zcash mainnet.
+          real SOL on mainnet. Live burns are disabled too, so the burn and the inscription are
+          recorded on this deployment&apos;s in-process ledger, not on Solana mainnet or the Zcash
+          chain. The destination you name is carried through unchanged.
         </Note>
 
         <Tech>

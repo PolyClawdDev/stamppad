@@ -9,7 +9,7 @@ import { WalletButton, WalletProvider } from "./Wallet";
 const NAV = [
   { href: "/", label: "Explore", match: (p: string) => p === "/" },
   // /launches/[mint] is the underlying token, not the Issue screen.
-  { href: "/launch", label: "Issue", match: (p: string) => p === "/launch" },
+  { href: "/launch", label: "Launch", match: (p: string) => p === "/launch" },
   { href: "/market", label: "Market", match: (p: string) => p.startsWith("/market") },
   { href: "/portfolio", label: "Portfolio", match: (p: string) => p.startsWith("/portfolio") },
 ];
