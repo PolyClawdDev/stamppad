@@ -1,0 +1,264 @@
+"use client";
+
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useWallet } from "@/components/Wallet";
+import { CoinRow, StampCard, type StampCardData } from "@/components/AssetCards";
+import { Badge, Empty, Loading, Note, Panel, Tech } from "@/components/ui";
+import { formatUnits, humanState, shortId, stampNumbers } from "@/lib/format";
+
+interface Balance {
+  mint: string;
+  symbol: string;
+  name: string;
+  decimals: number;
+  amountBase: string;
+}
+
+interface StampView {
+  id: string;
+  mint: string;
+  amountBase: string;
+  decimals: number;
+  currentOwner: string;
+  originalRecipient: string;
+  sequence: number;
+  transferable: boolean;
+  transferabilityNote: string;
+  isCurrentOwner: boolean;
+  zcashHeight: number;
+  listing: { id: string; state: string; priceZat: string } | null;
+}
+
+interface Job {
+  id: string;
+  state: string;
+  mint: string;
+  amountBase: string;
+  decimals?: number;
+  rejectMessage: string | null;
+}
+
+export default function PortfolioPage() {
+  const { wallet, connect, ready } = useWallet();
+  const [data, setData] = useState<{
+    balances: Balance[];
+    stamps: StampView[];
+    jobs: Job[];
+    launches: Array<{ mint: string; name: string; symbol: string; imageDataUrl?: string | null }>;
+  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  // The portfolio payload only carries launches this wallet created, so stamps
+  // from someone else's collection need the public launch list for their names.
+  const [catalogue, setCatalogue] = useState<
+    Array<{ mint: string; name: string; symbol: string; imageDataUrl?: string | null }>
+  >([]);
+
+  const [lastSales, setLastSales] = useState<
+    Map<string, { priceZat: string; settledAt: string | null; height: number }>
+  >(new Map());
+
+  useEffect(() => {
+    void fetch("/api/launches")
+      .then((r) => r.json())
+      .then((j) => setCatalogue(j.data?.launches ?? []));
+    void fetch("/api/sales")
+      .then((r) => r.json())
+      .then((j) => {
+        const map = new Map<string, { priceZat: string; settledAt: string | null; height: number }>();
+        for (const s of j.data?.sales ?? []) {
+          map.set(s.stampId, { priceZat: s.priceZat, settledAt: s.settledAt, height: s.height });
+        }
+        setLastSales(map);
+      });
+  }, []);
+
+  const load = useCallback(async () => {
+    if (!wallet) return;
+    const res = await fetch(
+      `/api/portfolio?owner=${wallet.publicKey}&zcashAddress=${wallet.zcashAddress}`,
+    );
+    const json = await res.json();
+    if (json.error) setError(json.error.message);
+    else setData(json.data);
+  }, [wallet]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const collections = useMemo(
+    () => new Map([...catalogue, ...(data?.launches ?? [])].map((l) => [l.mint, l])),
+    [data, catalogue],
+  );
+  const numbers = useMemo(() => stampNumbers(data?.stamps ?? []), [data]);
+
+  if (!ready) {
+    return (
+      <Panel>
+        <Loading label="Restoring wallet" />
+      </Panel>
+    );
+  }
+
+  if (!wallet) {
+    return (
+      <Panel>
+        <h1>Portfolio</h1>
+        <p className="lede muted" style={{ marginTop: 6 }}>
+          Connect the demo wallet to see balances, stamps and issuance jobs. Keys are generated in
+          your browser and never leave it; no seed phrase is requested.
+        </p>
+        <button className="btn btn--primary" style={{ marginTop: 14 }} onClick={() => void connect()}>
+          Connect demo wallet
+        </button>
+      </Panel>
+    );
+  }
+
+  const stampCards: StampCardData[] = (data?.stamps ?? []).map((s) => ({
+    id: s.id,
+    mint: s.mint,
+    amountBase: s.amountBase,
+    decimals: s.decimals,
+    collection: collections.get(s.mint)?.name ?? "Unlisted collection",
+    symbol: collections.get(s.mint)?.symbol ?? "",
+    number: numbers.get(s.id) ?? 1,
+    listing: s.listing,
+    lastSale: lastSales.get(s.id) ?? null,
+    ownedByViewer: s.isCurrentOwner,
+  }));
+
+  return (
+    <>
+      <Panel>
+        <div className="panel__head">
+          <h1>Portfolio</h1>
+          <Badge tone="live">{wallet.label}</Badge>
+        </div>
+        <dl className="kv" style={{ marginTop: 6 }}>
+          <dt>Solana wallet</dt>
+          <dd className="mono">{wallet.publicKey}</dd>
+          <dt>Stamp destination</dt>
+          <dd className="mono">{wallet.zcashAddress}</dd>
+        </dl>
+      </Panel>
+
+      {error && (
+        <Note tone="error" title="Could not load portfolio">
+          {error}
+        </Note>
+      )}
+
+      <div className="columns">
+        <div className="stack">
+          <div className="spread">
+            <h2>Stamps</h2>
+            <Link className="linky" href="/market">
+              Market
+            </Link>
+          </div>
+          {stampCards.length === 0 ? (
+            <Empty
+              title="No stamps yet"
+              action={
+                <Link className="btn btn--primary" href="/convert">
+                  Convert tokens
+                </Link>
+              }
+            >
+              Stamps appear here when ownership resolves to this wallet&apos;s destination.
+            </Empty>
+          ) : (
+            <div className="stampgrid">
+              {stampCards.map((s) => (
+                <StampCard key={s.id} stamp={s} demo />
+              ))}
+            </div>
+          )}
+
+          <h2 style={{ marginTop: 6 }}>Token balances</h2>
+          {!data || data.balances.length === 0 ? (
+            <Empty
+              title="No balances"
+              action={
+                <Link className="btn" href="/launch">
+                  Launch a coin
+                </Link>
+              }
+            >
+              Balances on the demo Solana ledger appear here.
+            </Empty>
+          ) : (
+            <div className="coinlist">
+              {data.balances.map((b) => (
+                <CoinRow
+                  key={b.mint}
+                  coin={{
+                    mint: b.mint,
+                    name: b.name,
+                    symbol: b.symbol,
+                    imageDataUrl: collections.get(b.mint)?.imageDataUrl ?? null,
+                  }}
+                  href={`/convert?mint=${b.mint}`}
+                  action="Convert"
+                  detail={
+                    <span className="num">
+                      {formatUnits(b.amountBase, b.decimals)} {b.symbol}
+                    </span>
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <aside className="stack">
+          <Panel>
+            <h2>Issuance jobs</h2>
+            {!data || data.jobs.length === 0 ? (
+              <p className="tiny muted" style={{ marginTop: 8 }}>
+                No issuance job has been started by this wallet.
+              </p>
+            ) : (
+              <div className="steps" style={{ marginTop: 8 }}>
+                {data.jobs.map((j) => (
+                  <Link className="step" key={j.id} href={`/jobs/${j.id}`}>
+                    <span className="tiny mono">{shortId(j.id, 8, 4)}</span>
+                    <Badge state={j.state === "confirmed" ? "settled" : j.state}>
+                      {humanState(j.state)}
+                    </Badge>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </Panel>
+
+          <Panel tone="ink">
+            <h2>Ownership rules</h2>
+            <ul className="tiny" style={{ marginTop: 8 }}>
+              <li>Only the current owner can transfer or list a stamp.</li>
+              <li>Spending the inscription output does not move a stamp.</li>
+              <li>Stamps sent to outside addresses cannot be transferred here.</li>
+            </ul>
+          </Panel>
+
+          <Tech>
+            <dl className="kv">
+              <dt>Public key (hex)</dt>
+              <dd className="mono">{wallet.publicKeyHex}</dd>
+              <dt>Stamps indexed</dt>
+              <dd className="mono">{data?.stamps.length ?? 0}</dd>
+              <dt>Raw balances</dt>
+              <dd className="mono">
+                {(data?.balances ?? [])
+                  .map((b) => `${b.amountBase} base (${b.decimals} dp)`)
+                  .join(", ") || "none"}
+              </dd>
+            </dl>
+          </Tech>
+        </aside>
+      </div>
+    </>
+  );
+}

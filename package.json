@@ -1,0 +1,38 @@
+{
+  "name": "stamp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Stamppad — launch on Solana, stamp on Zcash. Experimental burn-and-issue protocol.",
+  "scripts": {
+    "dev": "next dev -H 127.0.0.1 -p 3477",
+    "build": "next build",
+    "start": "next start -H 127.0.0.1 -p 3477",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "worker": "tsx src/worker/index.ts",
+    "ledger:rebuild": "tsx scripts/rebuild-ledger.ts",
+    "seed:market": "tsx scripts/seed-demo-market.ts",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.4",
+    "bs58": "^6.0.0",
+    "next": "^15.5.3",
+    "pg": "^8.16.3",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tweetnacl": "^1.0.3",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@types/pg": "^8.15.5",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
