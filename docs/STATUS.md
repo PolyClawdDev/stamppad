@@ -19,7 +19,7 @@ Legend: **verified** (docs/live probe) · **implemented** (code exists) · **tes
 | Worker state machine | implemented, tested | Survives restart after a finalized burn (in-memory and postgres stores persist jobs). |
 | Ledger rebuild | implemented, tested | `npm run ledger:rebuild`. Two rebuilds of issuance **and** ownership are byte-identical. |
 | Upstream stamp protocol compatibility | **not claimed** | No repository or specification was supplied. See `docs/EVIDENCE.md`. |
-| Ownership transfers (`stamp-exp/1`) | implemented (demo), tested, **blocked** (live) | Signed transfer record plus published authorization. Spending the inscription output does **not** transfer a stamp. Mainnet t-address key binding is not implemented, so those stamps are non-transferable here. |
+| Ownership transfers (`stamp-exp/1`) | implemented (demo), tested, **blocked** (live) | Signed transfer record plus published authorization. Spending the inscription output does **not** transfer a stamp. Transparent addresses are transferable: the holder signs with their own wallet's `signmessage` and the key is recovered from the compact signature. Listing one still needs a one-time control proof. |
 | Whole-stamp listings | implemented (demo), tested | One live listing per stamp; one buyer per ownership sequence. No partial fills, no split/merge. |
 | ZEC settlement | **blocked** | ZIP-300 HTLC design is specified and simulated. Real sales require `STAMP_ALLOW_LIVE_STAMP_SALES` and are off. Not consensus-atomic; see `docs/PROTOCOL.md` §22. |
 | Zebra relay constraints | verified, implemented | One `OP_RETURN` per transaction, ≤80 data bytes. Issuance 38 bytes, ownership records 74 bytes. |
@@ -49,9 +49,12 @@ In `STAMP_MODE=demo` you can:
 3. **No funded isolated Zcash publisher.** Live inscription needs ZEC for ZIP-317 fees. That key must not live on the app server.
 4. **ZSAs are draft.** Transparent OP_RETURN stamps are not Shielded Assets.
 5. **Mainnet burns are irreversible.** Default flags refuse them.
-6. **No verified key binding for external t-addresses.** Ownership operations
-   need a signature attributable to the destination. Only demo destinations
-   have that binding here, so mainnet ownership transfer is disabled.
+6. **Listing a transparent-address stamp needs a control proof.** Transferring
+   one is implemented and tested: the holder signs the canonical preimage with
+   `signmessage` and the secp256k1 key is recovered from it. Listing asks for
+   the owner's public key before any signature exists, so that screen still
+   refuses. Signing Zcash v5 transactions (ZIP-244) remains unsolved and is a
+   separate problem from message signing.
 7. **HTLC settlement is untested against real wallets.** ZIP 300 is
    Informational and, by its own status section, not widely adopted. No wallet
    was verified to redeem the P2SH branches, so real sales are off.

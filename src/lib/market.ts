@@ -99,6 +99,15 @@ export async function stampWithOwnership(stamp: StampRow, state?: IndexedState) 
     history: owned?.history ?? [],
     transferable: capability.canAuthorize,
     transferabilityNote: capability.reason,
+    // Listing asks for the owner's public key before any signature exists, and
+    // only an ed25519 destination can hand one over up front. A transparent
+    // holder proves control by signing, and the key is recovered from that, so
+    // transferring works while listing waits on a one-time control proof.
+    listable: capability.canAuthorize && capability.scheme === "ed25519",
+    listabilityNote:
+      capability.scheme === "zcash-signmessage"
+        ? "Transfers from this transparent address are verified by signing with your Zcash wallet. Listing it for sale additionally needs a one-time proof of control, which is not wired into this screen yet."
+        : capability.reason,
     pendingOwnershipRecords: pending,
     rejectedOwnershipRecords: rejected,
     indexed: Boolean(owned),

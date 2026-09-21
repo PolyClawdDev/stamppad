@@ -154,14 +154,56 @@ Verified:
 
 Maya Protocol's 80-byte memo note is a third-party integration guide, not a Zcash consensus rule. STAMP cites the node implementations' relay policy instead.
 
+### Transparent address control (verified)
+
+Proving control of a t-address is the scheme `zcashd` established and Zallet
+kept, so any wallet that can `signmessage` produces a proof this build accepts.
+
+- `strMessageMagic` is `"Zcash Signed Message:\n"` (zcash/zcash, `src/main.cpp`).
+- The magic and the caller's message are each CompactSize-length-prefixed,
+  concatenated, and double-SHA256 hashed.
+- The signature is a recoverable ECDSA blob of 65 bytes, `[header][r][s]`,
+  base64 encoded. `header = 27 + recovery_id`, plus 4 when the key is
+  compressed.
+- Verification recovers the public key, hashes it with hash160, and compares
+  against the 20 bytes the address commits to. No key material is involved.
+
+The magic prefix is the security boundary: it stops a signature over user text
+from being replayed as a signature over a transaction, and it means a Bitcoin
+signature will not verify here. That is intended.
+
+Implemented in `src/lib/protocol/secp256k1.ts` (key recovery),
+`src/lib/protocol/hash160.ts` (RIPEMD-160) and `src/lib/protocol/tsig.ts`
+(digest, address binding), with no new dependencies. Node's crypto and the Web
+Crypto API cannot recover a public key from a signature, so the curve
+arithmetic is ours; it is checked against Node's ECDSA and against Bitcoin
+Core's published `message_verify` vectors, whose scheme differs only in the
+magic string. `verifyOwnerSignature` dispatches on address kind so the request
+path and the deterministic rebuild apply one rule.
+
+Address kinds differ in what they can prove:
+
+| Kind | Proof |
+| --- | --- |
+| `t1…` p2pkh | Supported. Commits to one secp256k1 key. |
+| `t3…` p2sh | Refused. Commits to a script, so a signed message cannot speak for it. |
+| `tex1…` (ZIP 320) | Not implemented. |
+
+Still unsolved: **signing Zcash v5 transactions.** Publishing an inscription
+means building a NU5 transaction with a custom P2SH redeem script, and ZIP-244
+replaced the sighash with a BLAKE2b digest tree using personalised hashes. That
+is unrelated to message signing, which is why control proofs work while live
+publication does not.
+
 ### Blockers for live Zcash publication
 
 1. ZIP 226/227 are draft; ZSA issuance is unavailable.
 2. A live publisher needs an isolated funded transparent key, a Zcash node or light client, and explicit approval to spend ZEC.
 3. Mainnet burns and publication are disabled without `STAMP_ALLOW_LIVE_*`.
-4. Ownership operations need a signature attributable to the destination
-   address. Binding a stamp to the secp256k1 key behind a t-address is not
-   implemented, so only protocol-managed demo destinations are transferable.
+4. Listing a stamp held at a transparent address still needs a one-time proof
+   of control, because the listing step asks for the owner's public key before
+   any signature exists. Transfers from a transparent address are implemented
+   and verified; see "Transparent address control" below.
 5. No wallet was verified to construct or redeem the ZIP-300 P2SH branches, so
    real ZEC settlement stays behind `STAMP_ALLOW_LIVE_STAMP_SALES`.
 

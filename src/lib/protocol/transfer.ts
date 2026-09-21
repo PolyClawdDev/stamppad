@@ -16,6 +16,8 @@ import {
   TRANSFER_MAGIC,
 } from "./constants";
 import { bufferEq, decodeBase58, fromHex, sha256, toHex } from "./encoding";
+import { validateTransparentAddress } from "./taddr";
+import { verifyTransparentAuthorization } from "./tsig";
 
 export const OWNERSHIP_VERSION = 1 as const;
 
@@ -175,8 +177,15 @@ export interface SignatureCheck {
 
 /**
  * Verifies that `signatureHex` was produced by the key that the claimed owner
- * address commits to. Only demo addresses are supported: for t-addresses the
- * binding requires secp256k1 key recovery that this build does not enable.
+ * address commits to.
+ *
+ * Two bindings exist. A protocol-managed destination commits to an ed25519 key
+ * and is signed directly. A transparent Zcash address commits to a secp256k1
+ * key, so the owner signs with their own wallet's signmessage and the key is
+ * recovered from the compact signature.
+ *
+ * Every caller routes through here, including the deterministic rebuild, so the
+ * live answer and the rebuilt answer are the same answer.
  */
 export function verifyOwnerSignature(input: {
   address: string;
@@ -185,10 +194,19 @@ export function verifyOwnerSignature(input: {
   signatureHex: string;
 }): SignatureCheck {
   if (!isDemoManagedAddress(input.address)) {
+    const transparent = validateTransparentAddress(input.address);
+    if (transparent.ok && transparent.kind === "p2pkh") {
+      return verifyTransparentAuthorization({
+        address: input.address,
+        preimage: input.preimage,
+        signatureHex: input.signatureHex,
+      });
+    }
     return {
       ok: false,
-      message:
-        "Ownership operations require a protocol-managed destination. Stamps issued to an external transparent address have no verified key binding in this build, so they cannot be transferred or sold.",
+      message: transparent.ok
+        ? "That address commits to a script rather than a single key, so a signature cannot prove control of it."
+        : "Ownership operations need a protocol-managed destination or a transparent Zcash address.",
     };
   }
   if (!demoAddressMatchesKey(input.address, input.publicKeyHex)) {

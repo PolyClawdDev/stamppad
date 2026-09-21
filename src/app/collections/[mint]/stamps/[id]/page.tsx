@@ -49,6 +49,8 @@ interface StampView {
   currentOwner: string;
   sequence: number;
   transferable: boolean;
+  listable: boolean;
+  listabilityNote: string;
   transferabilityNote: string;
   indexNote: string;
   zcashTx: string;
@@ -593,7 +595,7 @@ export default function StampDetailPage() {
               </>
             )}
 
-            {wallet && !liveListing && isOwner && stamp.transferable && (
+            {wallet && !liveListing && isOwner && stamp.listable && (
               <>
                 <div className="field" style={{ marginTop: 10 }}>
                   <label htmlFor="ask">Asking price (ZEC)</label>
@@ -616,9 +618,9 @@ export default function StampDetailPage() {
               </>
             )}
 
-            {wallet && !liveListing && isOwner && !stamp.transferable && (
+            {wallet && !liveListing && isOwner && !stamp.listable && (
               <Note tone="warn" title="Listing disabled">
-                {stamp.transferabilityNote}
+                {stamp.listabilityNote}
               </Note>
             )}
 
