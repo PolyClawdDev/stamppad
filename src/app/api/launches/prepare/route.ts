@@ -8,6 +8,7 @@
 import { prepareMainnetLaunch } from "@/lib/app";
 import { artworkProblem } from "@/lib/artwork";
 import { fail, ok } from "@/lib/http";
+import { ZEC_QUOTE_MINT } from "@/lib/protocol";
 
 export async function POST(request: Request) {
   try {
@@ -20,8 +21,8 @@ export async function POST(request: Request) {
       quoteMint?: string;
       quoteAmountDisplay?: string;
     };
-    if (!body.owner || !body.name || !body.symbol || !body.quoteMint || !body.quoteAmountDisplay) {
-      return fail("owner, name, symbol, quoteMint, and quoteAmountDisplay are required.");
+    if (!body.owner || !body.name || !body.symbol || !body.quoteAmountDisplay) {
+      return fail("owner, name, symbol, and quoteAmountDisplay are required.");
     }
     if (body.name.length > 32) return fail("Name is limited to 32 characters.");
     if (body.symbol.length > 10) return fail("Symbol is limited to 10 characters.");
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
         symbol: body.symbol,
         description: body.description ?? "",
         imageDataUrl: body.imageDataUrl ?? null,
-        quoteMint: body.quoteMint,
+        quoteMint: body.quoteMint || ZEC_QUOTE_MINT,
         quoteAmountDisplay: body.quoteAmountDisplay,
       }),
     );

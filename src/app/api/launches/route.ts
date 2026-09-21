@@ -1,6 +1,7 @@
 import { createDemoLaunch } from "@/lib/app";
 import { artworkProblem } from "@/lib/artwork";
 import { fail, ok } from "@/lib/http";
+import { ZEC_QUOTE_MINT } from "@/lib/protocol";
 import { getStore } from "@/lib/store";
 
 export async function GET() {
@@ -20,8 +21,8 @@ export async function POST(request: Request) {
       buyDisplay?: string;
       convertDisplay?: string;
     };
-    if (!body.owner || !body.name || !body.symbol || !body.quoteMint) {
-      return fail("owner, name, symbol, and quoteMint are required.");
+    if (!body.owner || !body.name || !body.symbol) {
+      return fail("owner, name, and symbol are required.");
     }
     if (body.name.length > 32) return fail("Name is limited to 32 characters (Stonk metadata limit).");
     if (body.symbol.length > 10) return fail("Symbol is limited to 10 characters.");
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
         symbol: body.symbol,
         description: body.description ?? "",
         imageDataUrl: body.imageDataUrl ?? null,
-        quoteMint: body.quoteMint,
+        quoteMint: body.quoteMint || ZEC_QUOTE_MINT,
         buyDisplay: body.buyDisplay,
         convertDisplay: body.convertDisplay,
       }),

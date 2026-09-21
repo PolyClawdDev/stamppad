@@ -79,8 +79,8 @@ export async function quoteLaunch(quoteMint: string) {
       // pricing response carries whichever pair was captured, so reading the
       // symbol off it would name the wrong asset.
       initialPurchase:
-        pair.symbol === "SOL"
-          ? "Paid in SOL from the connected wallet. That buy is what becomes the burnable allocation."
+        pair.symbol === "ZEC"
+          ? "Paid in bridged ZEC from the connected Phantom wallet. That buy is what becomes the burnable allocation."
           : `Paid in ${pair.symbol}. That buy is what becomes the burnable allocation.`,
       stampFee: "0",
       network: liveLaunchStatus().launchEnabled

@@ -6,6 +6,17 @@ export const TOKEN_2022_PROGRAM_ID = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuE
 export const MEMO_PROGRAM_ID = "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4";
 export const NATIVE_MINT = "So11111111111111111111111111111111111111112";
 
+/**
+ * Bridged ZEC on Solana. Stonk lists this mint as launchable and LaunchLab-ready;
+ * every stamp launch is quoted against it unless a caller names another pair.
+ */
+export const ZEC_QUOTE_MINT = "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS";
+export const ZEC_QUOTE = {
+  mint: ZEC_QUOTE_MINT,
+  symbol: "ZEC",
+  name: "Zcash",
+} as const;
+
 export const BURN_IX = 8;
 export const BURN_CHECKED_IX = 15;
 

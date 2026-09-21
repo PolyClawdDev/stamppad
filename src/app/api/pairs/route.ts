@@ -1,6 +1,7 @@
 import { quoteLaunch } from "@/lib/app";
-import { getPairs } from "@/lib/stonk/client";
 import { fail, ok } from "@/lib/http";
+import { ZEC_QUOTE_MINT } from "@/lib/protocol";
+import { getPairs } from "@/lib/stonk/client";
 
 export async function GET() {
   try {
@@ -13,8 +14,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as { quoteMint?: string };
-    if (!body.quoteMint) return fail("quoteMint is required");
-    return ok(await quoteLaunch(body.quoteMint));
+    return ok(await quoteLaunch(body.quoteMint || ZEC_QUOTE_MINT));
   } catch (error) {
     return fail(error instanceof Error ? error.message : "quote failed");
   }

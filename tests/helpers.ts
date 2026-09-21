@@ -14,11 +14,15 @@ import {
   type MintView,
   type SourceNetwork,
   type TokenAccountView,
+  ZEC_QUOTE_MINT,
 } from "../src/lib/protocol";
 import { FIXTURE_PAIRS } from "../src/lib/stonk/fixtures";
 
-/** Launches are always quoted in Zcash, so the fixture pair list has to carry ZEC. */
-export const ZEC_QUOTE_MINT = FIXTURE_PAIRS.find((p) => p.symbol === "ZEC")!.mint;
+export { ZEC_QUOTE_MINT };
+
+if (!FIXTURE_PAIRS.some((p) => p.mint === ZEC_QUOTE_MINT && p.symbol === "ZEC")) {
+  throw new Error("Fixture pairs must keep the live ZEC quote mint.");
+}
 
 export const OWNER = "StampOwner11111111111111111111111111111111".slice(0, 43);
 export const MINT = "StampMint111111111111111111111111111111111".slice(0, 43);

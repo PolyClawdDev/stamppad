@@ -385,7 +385,9 @@ export async function prepareLiveLaunch(input: PrepareLaunchInput): Promise<Prep
     const quoteBalance = await rpc.getTokenAccountBalance(quoteTokenAccount.toBase58());
     if (quoteBalance === null) {
       throw new LiveLaunchError(
-        `This wallet has no ${pricing.quote.symbol} token account, so it cannot fund the initial buy.`,
+        pricing.quote.symbol === "ZEC"
+          ? "This wallet has no Solana ZEC token account, so it cannot fund the initial buy. A stamp launch is quoted in bridged ZEC (A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS), not SOL and not native Zcash. Receive that token into Phantom first."
+          : `This wallet has no ${pricing.quote.symbol} token account, so it cannot fund the initial buy.`,
       );
     }
     if (BigInt(quoteBalance) < input.quoteAmountIn) {

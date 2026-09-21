@@ -6,18 +6,8 @@ import { useWallet, walletStateLine } from "@/components/Wallet";
 import { Note, Panel, Tech } from "@/components/ui";
 import { ARTWORK_MAX_BYTES, ARTWORK_MAX_LABEL } from "@/lib/artwork";
 import { formatUnits } from "@/lib/format";
+import { ZEC_QUOTE } from "@/lib/protocol/constants";
 import { describeTransparent, validateTransparentAddress } from "@/lib/protocol/taddr";
-
-/**
- * Issuing a stamp launches a SOL-paired token on the venue and burns the whole
- * creator allocation into the inscription. The stamp is delivered to a Zcash
- * address; the buy that funds it is SOL, which is how Stonk LaunchLab runs.
- */
-const SOL_QUOTE = {
-  mint: "So11111111111111111111111111111111111111112",
-  symbol: "SOL",
-  name: "Solana",
-};
 
 type Step = "idle" | "issuing" | "stamping" | "building" | "approving";
 
@@ -81,7 +71,7 @@ export default function IssuePage() {
     void fetch("/api/pairs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quoteMint: SOL_QUOTE.mint }),
+      body: JSON.stringify({ quoteMint: ZEC_QUOTE.mint }),
     })
       .then((r) => r.json())
       .then((j) => {
@@ -102,6 +92,7 @@ export default function IssuePage() {
   const parameters = quote?.parameters as
     | { decimals: number; supplyDisplay: number; supplyBase: string; poolBase: string; note: string }
     | undefined;
+  const raise = (quote?.pricing as { raise?: { units?: number; basis?: string } } | undefined)?.raise;
   const costs = quote?.costs as Record<string, unknown> | undefined;
   const live = quote?.live as LiveStatus | undefined;
   const mainnet = Boolean(live?.launchEnabled);
@@ -147,7 +138,7 @@ export default function IssuePage() {
         symbol: form.symbol,
         description: form.description,
         imageDataUrl: form.imageDataUrl,
-        quoteMint: SOL_QUOTE.mint,
+        quoteMint: ZEC_QUOTE.mint,
         quoteAmountDisplay: form.denomination,
       }),
     });
@@ -253,7 +244,7 @@ export default function IssuePage() {
         symbol: form.symbol,
         description: form.description,
         imageDataUrl: form.imageDataUrl,
-        quoteMint: SOL_QUOTE.mint,
+        quoteMint: ZEC_QUOTE.mint,
         buyDisplay: form.denomination,
       }),
     });
@@ -349,8 +340,16 @@ export default function IssuePage() {
             />
           </div>
           <div className="field">
+            <label htmlFor="quote">Quote token</label>
+            <input id="quote" readOnly value={`${ZEC_QUOTE.symbol} — ${ZEC_QUOTE.name}`} />
+            <span className="hint">
+              Locked to Zcash. The token trades against bridged ZEC on Stonk&apos;s bonding curve,
+              not SOL. Stonk lists ZEC under Custom; this page does not make you pick it.
+            </span>
+          </div>
+          <div className="field">
             <label htmlFor="denomination">
-              {mainnet ? `Initial buy (${SOL_QUOTE.symbol})` : "Denomination"}
+              {mainnet ? `Initial buy (${ZEC_QUOTE.symbol})` : "Denomination"}
             </label>
             <input
               id="denomination"
@@ -361,7 +360,7 @@ export default function IssuePage() {
             />
             <span className="hint">
               {mainnet
-                ? `How much SOL to spend buying your own allocation at launch. The curve decides how many tokens that is, and all of them are burned to cut the stamp, so this is what sets the stamp's denomination.`
+                ? `How much Solana ZEC to spend buying your own allocation at launch. Phantom must already hold the bridged ZEC token. The curve decides how many tokens that buy is, and all of them are burned to cut the stamp.`
                 : "The quantity this stamp represents. It is destroyed permanently to cut the stamp and cannot be redeemed."}
             </span>
           </div>
@@ -439,7 +438,7 @@ export default function IssuePage() {
             <dl className="kv" style={{ marginTop: 12 }}>
               <dt>Creates mint</dt>
               <dd className="mono">{preparedLaunch.mint}</dd>
-              <dt>SOL you spend</dt>
+              <dt>SOL rent and fees</dt>
               <dd>{preparedLaunch.costs.totalSol}</dd>
               <dt>Initial buy</dt>
               <dd>
@@ -567,8 +566,17 @@ export default function IssuePage() {
             <dl className="kv" style={{ marginTop: 12 }}>
               <dt>Priced in</dt>
               <dd>
-                {SOL_QUOTE.symbol} — {SOL_QUOTE.name}. The stamp still lands on Zcash.
+                {ZEC_QUOTE.symbol} — {ZEC_QUOTE.name}. The pool and the stamp are both ZEC-sided.
               </dd>
+              {raise?.units != null && (
+                <>
+                  <dt>Curve raise</dt>
+                  <dd>
+                    {raise.units} ZEC
+                    {raise.basis ? ` — ${raise.basis}` : ""}
+                  </dd>
+                </>
+              )}
               <dt>Venue fee</dt>
               <dd>{String(costs?.launchVenue)}</dd>
               <dt>StampPad fee</dt>
@@ -580,7 +588,7 @@ export default function IssuePage() {
           {!parameters && (
             <p className="tiny muted" style={{ marginTop: 10 }}>
               {error
-                ? "The venue did not return published parameters for the SOL pair."
+                ? "The venue did not return published parameters for the ZEC pair."
                 : "Reading the published parameters…"}
             </p>
           )}
@@ -621,11 +629,11 @@ export default function IssuePage() {
 
         {live?.launchEnabled && (
           <Note tone="warn" title="This spends real money on Solana mainnet">
-            Launching here creates a real Token-2022 mint on Solana mainnet and spends the SOL you
-            name to buy the allocation (plus rent). The allocation
-            is then burned, which destroys those tokens permanently and cannot be reversed. You
-            will see the exact amounts, and the result of simulating the transaction against
-            mainnet, before Phantom asks you to approve anything.
+            Launching here creates a real Token-2022 mint on Solana mainnet, paired against
+            bridged ZEC, and spends the ZEC you name to buy the allocation (plus SOL rent). The
+            allocation is then burned, which destroys those tokens permanently and cannot be
+            reversed. You will see the exact amounts, and the result of simulating the
+            transaction against mainnet, before Phantom asks you to approve anything.
             {!live.zcashPublishEnabled && (
               <>
                 {" "}
@@ -638,7 +646,7 @@ export default function IssuePage() {
 
         <Tech>
           <p className="tiny muted">
-            Under the stamp: issuing creates a SOL-paired token on the venue and burns your whole
+            Under the stamp: issuing creates a ZEC-paired token on the venue and burns your whole
             allocation into the inscription. Supply and decimals come from the venue&apos;s
             published launch path, not from you.
           </p>
@@ -652,7 +660,7 @@ export default function IssuePage() {
               {parameters ? formatUnits(parameters.poolBase, parameters.decimals) : "—"}
             </dd>
             <dt>Quote mint</dt>
-            <dd className="mono">{SOL_QUOTE.mint}</dd>
+            <dd className="mono">{ZEC_QUOTE.mint}</dd>
             <dt>Pairs source</dt>
             <dd className="mono">{(quote?.pairSource as string) || "—"}</dd>
           </dl>
