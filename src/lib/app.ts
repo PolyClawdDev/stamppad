@@ -11,6 +11,7 @@ import { assertLiveBurnsAllowed } from "./solana/live";
 import { prepareSolToQuoteSwap, quoteShortfall } from "./solana/jupiter";
 import { prepareLiveBurn } from "./solana/live-burn";
 import { readQuoteHeld } from "./solana/live-launch";
+import { SolanaRpc } from "./solana/rpc";
 import { launchIntegrationFor } from "./modules/launch";
 import { getPairs, getPricing, getStats, getToken, stonkTokenUrl } from "./stonk/client";
 import { getStore, type JobRow, type LaunchRow, type StampRow } from "./store";
@@ -490,10 +491,37 @@ export async function convert(input: {
   });
 }
 
-export async function launchView(mint: string) {
+export async function recordLaunchTx(mint: string, launchTx: string): Promise<void> {
   const store = getStore();
   const launch = await store.getLaunch(mint);
+  if (!launch) throw new Error("Launch not found.");
+  if (launch.launchTx && launch.launchTx !== launchTx) return;
+  await store.upsertLaunch({
+    ...launch,
+    launchTx,
+    source: "confirmed on Solana mainnet",
+  });
+}
+
+export async function hydrateLaunchTx(launch: LaunchRow): Promise<LaunchRow> {
+  if (launch.launchTx || !flags().solanaRpc) return launch;
+  try {
+    const sigs = await new SolanaRpc(flags().solanaRpc).getSignaturesForAddress(launch.mint, 12);
+    const first = [...sigs].reverse().find((s) => !s.err);
+    if (!first) return launch;
+    const next = { ...launch, launchTx: first.signature, source: "confirmed on Solana mainnet" };
+    await getStore().upsertLaunch(next);
+    return next;
+  } catch {
+    return launch;
+  }
+}
+
+export async function launchView(mint: string) {
+  const store = getStore();
+  let launch = await store.getLaunch(mint);
   if (!launch) return null;
+  launch = await hydrateLaunchTx(launch);
   const stamps = await store.stampsForMint(mint);
   const jobs = (await store.listJobs()).filter((j) => j.mint === mint);
   const { solana } = await store.loadDemo();

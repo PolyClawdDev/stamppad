@@ -209,6 +209,11 @@ export default function IssuePage() {
     try {
       const signature = await sendTransaction(preparedLaunch.transactionBase64);
       setSent({ launch: signature, burn: null });
+      await fetch("/api/launches/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mint: preparedLaunch.mint, launchTx: signature }),
+      });
       // The allocation exists only once the launch has landed, so the burn is
       // built against the chain rather than predicted.
       const res = await fetch("/api/convert/prepare", {

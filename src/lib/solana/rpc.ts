@@ -323,6 +323,16 @@ export class SolanaRpc {
     };
   }
 
+  async getSignaturesForAddress(
+    address: string,
+    limit = 8,
+  ): Promise<Array<{ signature: string; err: unknown }>> {
+    return this.call<Array<{ signature: string; err: unknown }>>("getSignaturesForAddress", [
+      address,
+      { limit, commitment: "confirmed" },
+    ]);
+  }
+
   /** Null when the signature is unknown or not yet finalized. */
   async getTransaction(signature: string): Promise<ParsedTransaction | null> {
     return this.call<ParsedTransaction | null>("getTransaction", [
