@@ -5,10 +5,15 @@ export const TOKEN_PROGRAM_ID = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 export const TOKEN_2022_PROGRAM_ID = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 export const MEMO_PROGRAM_ID = "MemoSq4gqABAXKb96QnHj5ZbxdnGBnVWJChLWKFgS4";
 export const NATIVE_MINT = "So11111111111111111111111111111111111111112";
+export const SOL_QUOTE = {
+  mint: NATIVE_MINT,
+  symbol: "SOL",
+  name: "Solana",
+} as const;
 
 /**
- * Bridged ZEC on Solana. Stonk lists this mint as launchable and LaunchLab-ready;
- * every stamp launch is quoted against it unless a caller names another pair.
+ * Bridged ZEC on Solana. Stonk lists it as launchable; StampPad launches on
+ * Stonk's SOL pair. The stamp is still delivered to a Zcash t-address.
  */
 export const ZEC_QUOTE_MINT = "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS";
 export const ZEC_QUOTE = {

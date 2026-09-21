@@ -8,7 +8,7 @@
 import { prepareMainnetLaunch } from "@/lib/app";
 import { artworkProblem } from "@/lib/artwork";
 import { fail, ok } from "@/lib/http";
-import { ZEC_QUOTE_MINT } from "@/lib/protocol";
+import { NATIVE_MINT } from "@/lib/protocol";
 
 export async function POST(request: Request) {
   try {
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         website: body.website,
         twitter: body.twitter,
         telegram: body.telegram,
-        quoteMint: body.quoteMint || ZEC_QUOTE_MINT,
+        quoteMint: body.quoteMint || NATIVE_MINT,
         quoteAmountDisplay: body.quoteAmountDisplay,
       }),
     );

@@ -1,7 +1,7 @@
 import { createDemoLaunch } from "@/lib/app";
 import { artworkProblem } from "@/lib/artwork";
 import { fail, ok } from "@/lib/http";
-import { ZEC_QUOTE_MINT } from "@/lib/protocol";
+import { NATIVE_MINT } from "@/lib/protocol";
 import { getStore } from "@/lib/store";
 
 export async function GET() {
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         website: body.website,
         twitter: body.twitter,
         telegram: body.telegram,
-        quoteMint: body.quoteMint || ZEC_QUOTE_MINT,
+        quoteMint: body.quoteMint || NATIVE_MINT,
         buyDisplay: body.buyDisplay,
         convertDisplay: body.convertDisplay,
       }),
