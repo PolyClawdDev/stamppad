@@ -181,7 +181,7 @@ export default function ExplorePage() {
               <a className="btn btn--primary" href="#assets">
                 Explore stamps
               </a>
-              <Link className="btn" href="/convert">
+              <Link className="btn" href="/launch">
                 Launch a stamp
               </Link>
             </div>
@@ -243,7 +243,7 @@ export default function ExplorePage() {
                 art={<BlankStampArt />}
                 title="No stamps issued yet"
                 action={
-                  <Link className="btn btn--primary" href="/convert">
+                  <Link className="btn btn--primary" href="/launch">
                     Launch a stamp
                   </Link>
                 }
@@ -276,7 +276,7 @@ export default function ExplorePage() {
                   <StampCard key={s.id} stamp={s} />
                 ))}
                 {visibleStamps.length < 3 && (
-                  <Link className="stampcard stampcard--ghost" href="/convert">
+                  <Link className="stampcard stampcard--ghost" href="/launch">
                     <div className="stampcard__art dither">
                       <BlankStampArt />
                     </div>
@@ -311,7 +311,7 @@ export default function ExplorePage() {
               <li>Collect or trade. Stamps move to a new owner as a whole, priced in ZEC.</li>
             </ol>
             <div className="cluster" style={{ marginTop: 14 }}>
-              <Link className="btn btn--sm btn--primary" href="/convert">
+              <Link className="btn btn--sm btn--primary" href="/launch">
                 Launch a stamp
               </Link>
               <Link className="btn btn--sm" href="/market">

@@ -293,7 +293,7 @@ export default function MarketPage() {
               art={<BlankStampArt />}
               title="Nothing has been issued yet"
               action={
-                <Link className="btn btn--primary" href="/convert">
+                <Link className="btn btn--primary" href="/launch">
                   Launch a stamp
                 </Link>
               }

@@ -195,8 +195,8 @@ export default function PortfolioPage() {
             <Empty
               title="No stamps yet"
               action={
-                <Link className="btn btn--primary" href="/convert">
-                  Convert tokens
+                <Link className="btn btn--primary" href="/launch">
+                  Launch a stamp
                 </Link>
               }
             >
