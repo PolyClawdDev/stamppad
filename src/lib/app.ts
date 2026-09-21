@@ -1,3 +1,4 @@
+import { artworkProblem } from "./artwork";
 import { flags, liveMoneyMovementBlocked, stampMode } from "./mode";
 import {
   DESTINATION_NOTICE_ZATOSHIS,
@@ -92,6 +93,8 @@ export async function createDemoLaunch(input: {
   if (stampMode() !== "demo") {
     throw new Error(blocked ?? "Live launch is not enabled in this build.");
   }
+  const artwork = artworkProblem(input.imageDataUrl);
+  if (artwork) throw new Error(artwork);
   const quote = await quoteLaunch(input.quoteMint);
   const store = getStore();
   const { solana, zcash } = await store.loadDemo();

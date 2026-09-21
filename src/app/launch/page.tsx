@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet, walletStateLine } from "@/components/Wallet";
 import { Note, Panel, Tech } from "@/components/ui";
+import { ARTWORK_MAX_BYTES, ARTWORK_MAX_LABEL } from "@/lib/artwork";
 import { formatUnits } from "@/lib/format";
 import { describeTransparent, validateTransparentAddress } from "@/lib/protocol/taddr";
 
@@ -75,8 +76,8 @@ export default function IssuePage() {
   );
 
   async function onImage(file: File) {
-    if (file.size > 512 * 1024) {
-      setError("Artwork must be 512 KB or smaller.");
+    if (file.size > ARTWORK_MAX_BYTES) {
+      setError(`Artwork must be ${ARTWORK_MAX_LABEL} or smaller.`);
       return;
     }
     const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -167,8 +168,8 @@ export default function IssuePage() {
               }}
             />
             <span className="hint">
-              Optional, 512 KB maximum. This is the face of the stamp. Without one it gets
-              generated pixel art.
+              Optional, {ARTWORK_MAX_LABEL} maximum. This is the face of the stamp. Without one it
+              gets generated pixel art.
             </span>
           </div>
           <div className="field">

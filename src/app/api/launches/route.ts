@@ -1,4 +1,5 @@
 import { createDemoLaunch } from "@/lib/app";
+import { artworkProblem } from "@/lib/artwork";
 import { fail, ok } from "@/lib/http";
 import { getStore } from "@/lib/store";
 
@@ -24,6 +25,8 @@ export async function POST(request: Request) {
     }
     if (body.name.length > 32) return fail("Name is limited to 32 characters (Stonk metadata limit).");
     if (body.symbol.length > 10) return fail("Symbol is limited to 10 characters.");
+    const artwork = artworkProblem(body.imageDataUrl);
+    if (artwork) return fail(artwork);
     return ok(
       await createDemoLaunch({
         owner: body.owner,
