@@ -20,12 +20,15 @@ import {
   ComputeBudgetProgram,
   Keypair,
   PublicKey,
+  SystemProgram,
   Transaction,
 } from "@solana/web3.js";
 import {
   createAssociatedTokenAccountIdempotentInstruction,
+  createSyncNativeInstruction,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
+import { NATIVE_MINT } from "../protocol/constants";
 import { flags } from "../mode";
 import { getPairs, getPricing, type StonkPricing } from "../stonk/client";
 import {
@@ -360,24 +363,36 @@ export async function prepareLiveLaunch(input: PrepareLaunchInput): Promise<Prep
   const slippageBps = BigInt(input.slippageBps ?? DEFAULT_SLIPPAGE_BPS);
   const minimumBase = (buy.amountOut * (10_000n - slippageBps)) / 10_000n;
 
-  // The creator must already hold the quote asset. Refusing here, by name, is
-  // better than a simulation failure the user has to interpret.
+  // Wrapped SOL is bought with the wallet's SOL. Other quotes need an existing
+  // token account. Refusing here, by name, is better than a simulation error.
   const quoteTokenAccount = getAssociatedTokenAddressSync(
     quoteMint,
     creator,
     false,
     quoteTokenProgram,
   );
-  const quoteBalance = await rpc.getTokenAccountBalance(quoteTokenAccount.toBase58());
-  if (quoteBalance === null) {
-    throw new LiveLaunchError(
-      `This wallet has no ${pricing.quote.symbol} token account, so it cannot fund the initial buy. A ZEC-paired launch is bought with ${pricing.quote.symbol}, not SOL.`,
-    );
-  }
-  if (BigInt(quoteBalance) < input.quoteAmountIn) {
-    throw new LiveLaunchError(
-      `This wallet holds ${quoteBalance} base units of ${pricing.quote.symbol} and the initial buy needs ${input.quoteAmountIn}.`,
-    );
+  const nativeSol = input.quoteMint === NATIVE_MINT;
+  if (nativeSol) {
+    const wallet = await rpc.getAccountInfo(creator.toBase58());
+    const lamports = BigInt(wallet?.lamports ?? 0);
+    const floor = input.quoteAmountIn + 20_000_000n;
+    if (lamports < floor) {
+      throw new LiveLaunchError(
+        `This wallet holds ${formatLamports(lamports)} and the initial buy plus rent needs about ${formatLamports(floor)}.`,
+      );
+    }
+  } else {
+    const quoteBalance = await rpc.getTokenAccountBalance(quoteTokenAccount.toBase58());
+    if (quoteBalance === null) {
+      throw new LiveLaunchError(
+        `This wallet has no ${pricing.quote.symbol} token account, so it cannot fund the initial buy.`,
+      );
+    }
+    if (BigInt(quoteBalance) < input.quoteAmountIn) {
+      throw new LiveLaunchError(
+        `This wallet holds ${quoteBalance} base units of ${pricing.quote.symbol} and the initial buy needs ${input.quoteAmountIn}.`,
+      );
+    }
   }
 
   // The program creates the mint, so the mint must sign. This key exists only
@@ -426,8 +441,28 @@ export async function prepareLiveLaunch(input: PrepareLaunchInput): Promise<Prep
         baseMint,
         token2022,
       ),
-    )
-    .add(
+    );
+  if (nativeSol) {
+    transaction
+      .add(
+        createAssociatedTokenAccountIdempotentInstruction(
+          creator,
+          quoteTokenAccount,
+          creator,
+          quoteMint,
+          quoteTokenProgram,
+        ),
+      )
+      .add(
+        SystemProgram.transfer({
+          fromPubkey: creator,
+          toPubkey: quoteTokenAccount,
+          lamports: Number(input.quoteAmountIn),
+        }),
+      )
+      .add(createSyncNativeInstruction(quoteTokenAccount));
+  }
+  transaction.add(
       buyExactInInstruction({
         programId,
         payer: creator,

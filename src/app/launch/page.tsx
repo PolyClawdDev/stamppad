@@ -9,17 +9,14 @@ import { formatUnits } from "@/lib/format";
 import { describeTransparent, validateTransparentAddress } from "@/lib/protocol/taddr";
 
 /**
- * Issuing a stamp launches a ZEC-paired token on the venue and burns the whole
- * creator allocation into the inscription. The token is machinery, so it is
- * described under technical details rather than in the flow.
- *
- * Verified launchable and LaunchLab-ready on
- * https://www.stonkfun.xyz/api/public/v1/pairs on 2026-09-20.
+ * Issuing a stamp launches a SOL-paired token on the venue and burns the whole
+ * creator allocation into the inscription. The stamp is delivered to a Zcash
+ * address; the buy that funds it is SOL, which is how Stonk LaunchLab runs.
  */
-const ZEC_QUOTE = {
-  mint: "A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS",
-  symbol: "ZEC",
-  name: "Zcash",
+const SOL_QUOTE = {
+  mint: "So11111111111111111111111111111111111111112",
+  symbol: "SOL",
+  name: "Solana",
 };
 
 type Step = "idle" | "issuing" | "stamping" | "building" | "approving";
@@ -84,7 +81,7 @@ export default function IssuePage() {
     void fetch("/api/pairs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quoteMint: ZEC_QUOTE.mint }),
+      body: JSON.stringify({ quoteMint: SOL_QUOTE.mint }),
     })
       .then((r) => r.json())
       .then((j) => {
@@ -150,7 +147,7 @@ export default function IssuePage() {
         symbol: form.symbol,
         description: form.description,
         imageDataUrl: form.imageDataUrl,
-        quoteMint: ZEC_QUOTE.mint,
+        quoteMint: SOL_QUOTE.mint,
         quoteAmountDisplay: form.denomination,
       }),
     });
@@ -256,7 +253,7 @@ export default function IssuePage() {
         symbol: form.symbol,
         description: form.description,
         imageDataUrl: form.imageDataUrl,
-        quoteMint: ZEC_QUOTE.mint,
+        quoteMint: SOL_QUOTE.mint,
         buyDisplay: form.denomination,
       }),
     });
@@ -353,7 +350,7 @@ export default function IssuePage() {
           </div>
           <div className="field">
             <label htmlFor="denomination">
-              {mainnet ? `Initial buy (${ZEC_QUOTE.symbol})` : "Denomination"}
+              {mainnet ? `Initial buy (${SOL_QUOTE.symbol})` : "Denomination"}
             </label>
             <input
               id="denomination"
@@ -364,7 +361,7 @@ export default function IssuePage() {
             />
             <span className="hint">
               {mainnet
-                ? `How much ${ZEC_QUOTE.symbol} to spend buying your own allocation at launch. The curve decides how many tokens that is, and all of them are burned to cut the stamp, so this is what sets the stamp's denomination.`
+                ? `How much SOL to spend buying your own allocation at launch. The curve decides how many tokens that is, and all of them are burned to cut the stamp, so this is what sets the stamp's denomination.`
                 : "The quantity this stamp represents. It is destroyed permanently to cut the stamp and cannot be redeemed."}
             </span>
           </div>
@@ -444,7 +441,7 @@ export default function IssuePage() {
               <dd className="mono">{preparedLaunch.mint}</dd>
               <dt>SOL you spend</dt>
               <dd>{preparedLaunch.costs.totalSol}</dd>
-              <dt>{ZEC_QUOTE.symbol} you spend</dt>
+              <dt>Initial buy</dt>
               <dd>
                 {formatUnits(preparedLaunch.quote.amountIn, preparedLaunch.quote.decimals)}{" "}
                 {preparedLaunch.quote.symbol}
@@ -570,7 +567,7 @@ export default function IssuePage() {
             <dl className="kv" style={{ marginTop: 12 }}>
               <dt>Priced in</dt>
               <dd>
-                {ZEC_QUOTE.symbol} — {ZEC_QUOTE.name}. Not a choice.
+                {SOL_QUOTE.symbol} — {SOL_QUOTE.name}. The stamp still lands on Zcash.
               </dd>
               <dt>Venue fee</dt>
               <dd>{String(costs?.launchVenue)}</dd>
@@ -583,7 +580,7 @@ export default function IssuePage() {
           {!parameters && (
             <p className="tiny muted" style={{ marginTop: 10 }}>
               {error
-                ? "The venue did not return published parameters for the ZEC pair."
+                ? "The venue did not return published parameters for the SOL pair."
                 : "Reading the published parameters…"}
             </p>
           )}
@@ -624,8 +621,8 @@ export default function IssuePage() {
 
         {live?.launchEnabled && (
           <Note tone="warn" title="This spends real money on Solana mainnet">
-            Launching here creates a real Token-2022 mint on Solana mainnet, pays real SOL for its
-            rent, and spends the {ZEC_QUOTE.symbol} you name to buy the allocation. The allocation
+            Launching here creates a real Token-2022 mint on Solana mainnet and spends the SOL you
+            name to buy the allocation (plus rent). The allocation
             is then burned, which destroys those tokens permanently and cannot be reversed. You
             will see the exact amounts, and the result of simulating the transaction against
             mainnet, before Phantom asks you to approve anything.
@@ -641,7 +638,7 @@ export default function IssuePage() {
 
         <Tech>
           <p className="tiny muted">
-            Under the stamp: issuing creates a ZEC-paired token on the venue and burns your whole
+            Under the stamp: issuing creates a SOL-paired token on the venue and burns your whole
             allocation into the inscription. Supply and decimals come from the venue&apos;s
             published launch path, not from you.
           </p>
@@ -655,7 +652,7 @@ export default function IssuePage() {
               {parameters ? formatUnits(parameters.poolBase, parameters.decimals) : "—"}
             </dd>
             <dt>Quote mint</dt>
-            <dd className="mono">{ZEC_QUOTE.mint}</dd>
+            <dd className="mono">{SOL_QUOTE.mint}</dd>
             <dt>Pairs source</dt>
             <dd className="mono">{(quote?.pairSource as string) || "—"}</dd>
           </dl>

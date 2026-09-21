@@ -78,7 +78,10 @@ export async function quoteLaunch(quoteMint: string) {
       // The pair list is the authority on the quote's symbol. The fixture
       // pricing response carries whichever pair was captured, so reading the
       // symbol off it would name the wrong asset.
-      initialPurchase: `Paid in ${pair.symbol}, not SOL, and it is what becomes the burnable allocation.`,
+      initialPurchase:
+        pair.symbol === "SOL"
+          ? "Paid in SOL from the connected wallet. That buy is what becomes the burnable allocation."
+          : `Paid in ${pair.symbol}. That buy is what becomes the burnable allocation.`,
       stampFee: "0",
       network: liveLaunchStatus().launchEnabled
         ? "Solana rent and signature fees, paid by the creator's wallet. The exact amount is measured by simulating the launch before you approve it."
