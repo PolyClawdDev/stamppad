@@ -224,7 +224,7 @@ There is no atomic completion across chains.
 
 | Network | Accepted |
 | --- | --- |
-| `zcash:demo` | `zdemo1` followed by 20–80 lowercase alphanumeric characters |
+| `zcash:demo` | `zdemo1` followed by 20–80 lowercase alphanumeric characters, or any address accepted for `zcash:main`. A wallet owner naming their own mainnet t-address is the ordinary case; the `zdemo1` form is the protocol-managed destination whose key binding can be verified. |
 | `zcash:main` | Transparent `t1` / `t3` with valid base58check version bytes, or ZIP-320 `tex1…` bech32m |
 | `zcash:test` | Transparent `tm` / `t2` with valid checksum, or `textest1…` |
 

@@ -30,7 +30,8 @@ Legend: **verified** (docs/live probe) · **implemented** (code exists) · **tes
 
 In `STAMP_MODE=demo` you can:
 
-1. Connect a browser-generated demo Solana wallet (secret never leaves the browser).
+1. Connect Phantom through its injected provider and prove the key with a signed,
+   nonce-bound statement the server verifies. No key is generated or requested.
 2. Launch a coin whose supply and decimals match the captured LaunchLab path.
 3. See mint, demo transaction, a Stonk-shaped page URL, and **actual** balances (pool inventory is not credited to the creator).
 4. Burn owned units and receive a confirmed demo Zcash stamp.

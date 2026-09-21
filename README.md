@@ -18,15 +18,26 @@ In **demo mode** (the default) the two chains run in process. Nothing is
 pre-populated: a fresh instance has no coins, no stamps, no listings and no
 sales until someone makes them. What you can do:
 
-1. Connect a browser-generated Solana keypair. The secret stays in `sessionStorage`. No seed phrase is requested.
+1. Connect Phantom. The app reads the injected provider, asks Phantom to sign a
+   short statement naming this site and a single-use nonce, and verifies that
+   ed25519 signature on the server before adopting the key. Your identity here is
+   your real Solana public key; no key is generated and none is requested.
 2. Launch a coin whose supply and decimals come from the LaunchLab path Stonk publishes (1 billion tokens, 6 decimals).
 3. See mint, transaction, a Stonk-shaped URL, and **actual** balances. Pool inventory is not credited to the creator.
-4. Burn units you hold and receive a confirmed demo Zcash stamp.
+4. Burn units you hold and receive a confirmed demo Zcash stamp. You supply the
+   Zcash transparent address it is issued to; Phantom holds no Zcash key, so
+   nothing is derived on your behalf.
 5. Inspect launch aggregates and stamp verification evidence.
 6. Export a claim package if publication fails after a finalized burn.
 7. Transfer a stamp you own by signing a transfer authorization in the browser.
 8. List a whole stamp for ZEC and walk the settlement steps against a simulated
-   ZIP-300 HTLC. Add a second wallet with the `+` button to play both sides.
+   ZIP-300 HTLC, for stamps issued to a protocol-managed destination.
+
+Ownership operations are the one place a real Zcash address costs you something:
+the protocol proves ownership from the key an address commits to, and this build
+cannot recover the secp256k1 key behind a t-address. A stamp issued to your own
+t-address is verifiable but cannot be transferred or listed here, and the UI says
+so at the point you name the address.
 
 Live mainnet burns, LaunchLab sends, Zcash publication, and real sales are **off**. See `docs/STATUS.md` for verified / implemented / tested / blocked.
 
@@ -53,6 +64,7 @@ implementations refuse rather than degrade.
 | Burn verifier | `src/lib/modules/verifier.ts` | Fetches a transaction and hands it to the pure validator. Holds no keys. |
 | Stamp publisher | `src/lib/modules/publisher.ts` | Writes payloads to Zcash. Decides nothing. |
 | Wallet adapter | `src/lib/modules/wallet.ts` | Verifies signatures and reports which addresses can authorize. Never sees a private key. |
+| Phantom connection | `src/lib/wallet/` | Provider detection, the signed connect statement, nonce issuance, and the session cookie. The provider is an interface, so the flow is testable without an extension. |
 | Settlement adapter | `src/lib/modules/settlement.ts` | Listing lifecycle and the HTLC delivery sequence. |
 | Deterministic indexer | `src/lib/indexer/` | Replays chain data into issuance and ownership. The source of truth for the UI. |
 | Protocol | `src/lib/protocol/` | Pure encoding, validation, ownership resolution. No I/O. |

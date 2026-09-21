@@ -30,7 +30,10 @@ STAMP v0 does not provide:
 
 | Threat | Mitigation |
 | --- | --- |
-| Server asked for a seed phrase or stores a user key | Never implemented. Demo keys stay in the browser. Live signing is wallet-local. |
+| Server asked for a seed phrase or stores a user key | Never implemented. Signing happens inside Phantom; the server only ever sees a public key and a detached signature. |
+| Session adopted from an unproved public key | Connecting requires an ed25519 signature over a statement naming this host and a single-use server nonce, verified with tweetnacl before the key becomes the app identity. A signature harvested on another origin names that origin and is refused. |
+| Connect signature replayed later | Nonces are single-use with a five-minute lifetime, and the statement's issued-at is checked against the same window. |
+| Session cookie edited into another identity | The cookie is HMAC-authenticated with a per-process or configured secret and carries its own expiry. |
 | Publisher key on the app server | Live publisher key is a file path for a **separate** worker. Documented isolation. Demo has no real key. |
 | Fake burn accepted | Validator requires a successful finalized Token `Burn`/`BurnChecked` for the mint and amount. Tests cover fabricated and failed txs. |
 | Memo without burn authority | Same-transaction rule: burn authority must sign. Memo alone is insufficient. |
