@@ -1,6 +1,7 @@
 import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from "pg";
 import { emptyChain } from "../solana/demo";
 import { emptyZcash } from "../zcash/demo";
+import { connectionString, hostedPostgres, postgresUrl } from "./connection";
 import { MIGRATIONS } from "./schema";
 import { deserializeClaim, deserializeDemo, serializeClaim, serializeDemo } from "./serialize";
 import type { JobRow, LaunchRow, ListingRow, StampRow, Store, TransferRow } from "./types";
@@ -9,9 +10,17 @@ let pool: Pool | null = null;
 
 function db(): Pool {
   if (!pool) {
-    const url = process.env.DATABASE_URL;
+    const url = postgresUrl();
     if (!url) throw new Error("DATABASE_URL is required for the postgres store.");
-    pool = new Pool({ connectionString: url });
+    const hosted = hostedPostgres(url);
+    pool = new Pool({
+      connectionString: connectionString(url),
+      // One connection per serverless isolate. Neon free and pgbouncer both
+      // choke when every cold start opens a ten-wide pool.
+      max: hosted ? 1 : 10,
+      idleTimeoutMillis: hosted ? 8_000 : 30_000,
+      connectionTimeoutMillis: 15_000,
+    });
   }
   return pool;
 }
@@ -47,34 +56,31 @@ export function ensureMigrated(): Promise<void> {
 export async function migrate(): Promise<void> {
   const client = await db().connect();
   try {
-    await client.query(`SELECT pg_advisory_lock(${SCHEMA_LOCK})`);
-    try {
+    // Transaction-scoped lock, not a session lock. Neon's pooled URL goes
+    // through pgbouncer in transaction mode, which will not hold a session
+    // advisory lock across the next query.
+    await client.query("BEGIN");
+    await client.query(`SELECT pg_advisory_xact_lock(${SCHEMA_LOCK})`);
+    await client.query(
+      `CREATE TABLE IF NOT EXISTS schema_migrations (
+         name TEXT PRIMARY KEY,
+         applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+       )`,
+    );
+    const { rows } = await client.query<{ name: string }>("SELECT name FROM schema_migrations");
+    const applied = new Set(rows.map((r) => r.name));
+    for (const step of MIGRATIONS) {
+      if (applied.has(step.name)) continue;
+      await client.query(step.sql);
       await client.query(
-        `CREATE TABLE IF NOT EXISTS schema_migrations (
-           name TEXT PRIMARY KEY,
-           applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-         )`,
+        "INSERT INTO schema_migrations (name) VALUES ($1) ON CONFLICT (name) DO NOTHING",
+        [step.name],
       );
-      const { rows } = await client.query<{ name: string }>("SELECT name FROM schema_migrations");
-      const applied = new Set(rows.map((r) => r.name));
-      for (const step of MIGRATIONS) {
-        if (applied.has(step.name)) continue;
-        await client.query("BEGIN");
-        try {
-          await client.query(step.sql);
-          await client.query(
-            "INSERT INTO schema_migrations (name) VALUES ($1) ON CONFLICT (name) DO NOTHING",
-            [step.name],
-          );
-          await client.query("COMMIT");
-        } catch (error) {
-          await client.query("ROLLBACK");
-          throw error;
-        }
-      }
-    } finally {
-      await client.query(`SELECT pg_advisory_unlock(${SCHEMA_LOCK})`);
     }
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw error;
   } finally {
     client.release();
   }

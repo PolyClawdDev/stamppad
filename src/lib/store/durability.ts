@@ -19,8 +19,8 @@ export function durability(): Durability {
 
 export const EPHEMERAL_STORE_MESSAGE =
   "This deployment has no database, so anything written here is lost as soon as the request ends. " +
-  "Set DATABASE_URL to a Postgres connection string in the hosting environment and redeploy; " +
-  "the schema is created automatically on the first request.";
+  "In Vercel, open Storage, open the Neon database, connect it to this project for Production, " +
+  "and redeploy. DATABASE_URL or POSTGRES_URL is enough; the schema is created on the first request.";
 
 /**
  * Why a write must be refused, or null when it may proceed.

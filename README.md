@@ -91,10 +91,11 @@ npm run build
 npm start
 ```
 
-Production (Vercel) needs a database. Without `DATABASE_URL` the app writes
-to `/tmp` and the next request often cannot see the launch. Attach Vercel
-Postgres or any Postgres provider, set `DATABASE_URL`, and redeploy. Do **not**
-also set `STAMP_STORE=memory`. The schema is created on the first request.
+Production (Vercel) needs a database. Creating Neon in Storage is not enough:
+open the Neon store, **Connect Project**, pick StampPad, and include
+Production. Then redeploy. `DATABASE_URL` or `POSTGRES_URL` is enough. Do
+**not** set `STAMP_STORE=memory`. Ignore Neon's comments-form tutorial; this
+app already talks Postgres and creates its own schema on the first request.
 
 Optional local PostgreSQL:
 

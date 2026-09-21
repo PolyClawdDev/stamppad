@@ -114,14 +114,31 @@ describe("an ephemeral ledger is a misconfiguration, not a mode", () => {
   }
 
   it("calls a database durable and a working copy a file", () => {
-    withEnv({ DATABASE_URL: "postgres://stamp:stamp@127.0.0.1:5432/stamp", STAMP_STORE: undefined }, () => {
-      expect(durability()).toBe("durable");
-      expect(durabilityProblem()).toBeNull();
-    });
-    withEnv({ DATABASE_URL: undefined, STAMP_STORE: undefined }, () => {
-      expect(durability()).toBe("file");
-      expect(durabilityProblem()).toBeNull();
-    });
+    withEnv(
+      {
+        DATABASE_URL: "postgres://stamp:stamp@127.0.0.1:5432/stamp",
+        POSTGRES_URL: undefined,
+        STAMP_STORE: undefined,
+      },
+      () => {
+        expect(durability()).toBe("durable");
+        expect(durabilityProblem()).toBeNull();
+      },
+    );
+    withEnv(
+      {
+        DATABASE_URL: undefined,
+        POSTGRES_URL: undefined,
+        POSTGRES_PRISMA_URL: undefined,
+        DATABASE_URL_UNPOOLED: undefined,
+        POSTGRES_URL_NON_POOLING: undefined,
+        STAMP_STORE: undefined,
+      },
+      () => {
+        expect(durability()).toBe("file");
+        expect(durabilityProblem()).toBeNull();
+      },
+    );
   });
 
   it("chooses postgres from a connection string alone", () => {
@@ -134,6 +151,17 @@ describe("an ephemeral ledger is a misconfiguration, not a mode", () => {
     withEnv({ DATABASE_URL: undefined, STAMP_STORE: undefined }, () => {
       expect(storeKind()).toBe("memory");
     });
+    withEnv(
+      {
+        DATABASE_URL: undefined,
+        POSTGRES_URL: "postgres://stamp:stamp@127.0.0.1:5432/stamp",
+        STAMP_STORE: undefined,
+      },
+      () => {
+        expect(storeKind()).toBe("postgres");
+        expect(durability()).toBe("durable");
+      },
+    );
   });
 });
 
@@ -141,7 +169,7 @@ describe("an ephemeral ledger is a misconfiguration, not a mode", () => {
  * The real thing, against a real server. Skipped without a database because a
  * skipped test is honest and a mocked one would not be evidence of anything.
  */
-const PG = process.env.DATABASE_URL;
+const PG = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
 describe.skipIf(!PG)("postgres keeps the ledger", () => {
   beforeEach(async () => {

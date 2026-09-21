@@ -1,3 +1,5 @@
+import { hasPostgresUrl } from "./store/connection";
+
 export type StampMode = "demo" | "testnet" | "mainnet";
 export type StoreKind = "memory" | "postgres";
 
@@ -17,7 +19,7 @@ export function stampMode(): StampMode {
 export function storeKind(): StoreKind {
   if (process.env.STAMP_STORE === "memory") return "memory";
   if (process.env.STAMP_STORE === "postgres") return "postgres";
-  return process.env.DATABASE_URL ? "postgres" : "memory";
+  return hasPostgresUrl() ? "postgres" : "memory";
 }
 
 export function flags() {
