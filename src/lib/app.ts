@@ -8,7 +8,9 @@ import {
 } from "./protocol";
 import { eligibleBalance, launchDemoMint } from "./solana/demo";
 import { assertLiveBurnsAllowed } from "./solana/live";
+import { prepareSolToQuoteSwap, quoteShortfall } from "./solana/jupiter";
 import { prepareLiveBurn } from "./solana/live-burn";
+import { readQuoteHeld } from "./solana/live-launch";
 import { launchIntegrationFor } from "./modules/launch";
 import { getPairs, getPricing, getStats, getToken, stonkTokenUrl } from "./stonk/client";
 import { getStore, type JobRow, type LaunchRow, type StampRow } from "./store";
@@ -81,7 +83,7 @@ export async function quoteLaunch(quoteMint: string) {
       // symbol off it would name the wrong asset.
       initialPurchase:
         pair.symbol === "ZEC"
-          ? "Paid in bridged ZEC from the connected Phantom wallet. That buy is what becomes the burnable allocation."
+          ? "The pool is ZEC-paired. Phantom pays in SOL if it does not already hold bridged ZEC; that buy is what becomes the burnable allocation."
           : `Paid in ${pair.symbol}. That buy is what becomes the burnable allocation.`,
       stampFee: "0",
       network: liveLaunchStatus().launchEnabled
@@ -234,6 +236,33 @@ export async function prepareMainnetLaunch(input: {
   if (quoteAmountIn <= 0n) {
     throw new Error(`The initial buy must be more than zero ${quote.pricing.quote.symbol}.`);
   }
+  const held = await readQuoteHeld({
+    owner: input.owner,
+    quoteMint: input.quoteMint,
+    tokenProgram: quote.pricing.quote.tokenProgram,
+  });
+  const shortfall = quoteShortfall(held, quoteAmountIn);
+  if (shortfall > 0n) {
+    const funding = await prepareSolToQuoteSwap({
+      creator: input.owner,
+      quoteMint: input.quoteMint,
+      quoteSymbol: quote.pair.symbol,
+      quoteDecimals: quote.pricing.quote.decimals,
+      amountOut: shortfall,
+    });
+    return {
+      step: "fund_quote" as const,
+      funding,
+      launch: null,
+      quote: {
+        mint: input.quoteMint,
+        symbol: quote.pair.symbol,
+        decimals: quote.pricing.quote.decimals,
+        amountIn: quoteAmountIn.toString(10),
+        held: held.toString(10),
+      },
+    };
+  }
   const integration = launchIntegrationFor((await getStore().loadDemo()).solana);
   const prepared = await integration.prepare({
     creator: input.owner,
@@ -266,6 +295,7 @@ export async function prepareMainnetLaunch(input: {
     createdAt: new Date().toISOString(),
   });
   return {
+    step: "launch" as const,
     launch: prepared,
     burnPlan: {
       note: "The whole allocation is burned to cut the stamp. The amount is read off chain after the launch lands, because the curve decides it.",

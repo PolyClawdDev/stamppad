@@ -36,6 +36,16 @@ interface PreparedLaunch {
   metadataUri: string;
 }
 
+interface PreparedFunding {
+  transactionBase64: string;
+  solIn: string;
+  quoteOut: string;
+  quoteDecimals: number;
+  quoteSymbol: string;
+  simulation: { ok: boolean; err: unknown };
+  note: string;
+}
+
 interface PreparedBurn {
   mint: string;
   transactionBase64: string;
@@ -54,6 +64,7 @@ export default function IssuePage() {
   const [quote, setQuote] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<Step>("idle");
+  const [funding, setFunding] = useState<PreparedFunding | null>(null);
   const [preparedLaunch, setPreparedLaunch] = useState<PreparedLaunch | null>(null);
   const [preparedBurn, setPreparedBurn] = useState<PreparedBurn | null>(null);
   const [sent, setSent] = useState<{ launch: string; burn: string | null } | null>(null);
@@ -154,7 +165,40 @@ export default function IssuePage() {
       setError(json.error.message);
       return;
     }
+    if (json.data.step === "fund_quote" && json.data.funding) {
+      setFunding(json.data.funding as PreparedFunding);
+      setPreparedLaunch(null);
+      return;
+    }
+    setFunding(null);
     setPreparedLaunch(json.data.launch as PreparedLaunch);
+  }
+
+  /** Buy the missing ZEC with SOL, then rebuild the launch against the new balance. */
+  async function approveFunding() {
+    if (!funding || !wallet) return;
+    setError(null);
+    setStep("approving");
+    try {
+      await sendTransaction(funding.transactionBase64);
+      const needed = BigInt(funding.quoteOut);
+      const deadline = Date.now() + 45_000;
+      while (Date.now() < deadline) {
+        const res = await fetch("/api/launches/quote-balance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ owner: wallet.publicKey, quoteMint: ZEC_QUOTE.mint }),
+        });
+        const json = await res.json();
+        if (!json.error && BigInt(json.data.amountBase ?? "0") >= needed) break;
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
+      setFunding(null);
+      await buildMainnet();
+    } catch (sendError) {
+      setError(sendError instanceof Error ? sendError.message : "Phantom could not send the SOL → ZEC swap.");
+      setStep("idle");
+    }
   }
 
   /** Mainnet path, step two: the user approves the launch in Phantom. */
@@ -402,7 +446,7 @@ export default function IssuePage() {
             />
             <span className="hint">
               {mainnet
-                ? `How much Solana ZEC to spend buying your own allocation at launch. Phantom must already hold the bridged ZEC token. The curve decides how many tokens that buy is, and all of them are burned to cut the stamp.`
+                ? `How much ZEC the curve should take for your allocation. Phantom pays that in SOL if it does not already hold bridged ZEC — the t-address below is only where the stamp is delivered.`
                 : "The quantity this stamp represents. It is destroyed permanently to cut the stamp and cannot be redeemed."}
             </span>
           </div>
@@ -470,6 +514,55 @@ export default function IssuePage() {
       </Panel>
 
       <aside className="stack">
+        {funding && !preparedLaunch && (
+          <Panel tone="sage">
+            <h2>Buy ZEC with SOL first?</h2>
+            <p className="lede" style={{ marginTop: 6 }}>
+              The token launches ZEC-paired on Stonk. Phantom does not hold that ZEC yet, so this
+              approval swaps SOL for it. Your Zcash address is not used here — it only receives
+              the stamp after the burn.
+            </p>
+            <dl className="kv" style={{ marginTop: 12 }}>
+              <dt>Spend</dt>
+              <dd>{formatUnits(funding.solIn, 9)} SOL</dd>
+              <dt>Receive</dt>
+              <dd>
+                {formatUnits(funding.quoteOut, funding.quoteDecimals)} {funding.quoteSymbol}
+              </dd>
+              <dt>Then</dt>
+              <dd>The launch is built against that ZEC. You approve that separately.</dd>
+              <dt>Mainnet simulation</dt>
+              <dd>{funding.simulation.ok ? "Succeeded." : `Failed: ${JSON.stringify(funding.simulation.err)}`}</dd>
+            </dl>
+            <p className="tiny muted" style={{ marginTop: 10 }}>
+              {funding.note}
+            </p>
+            {!funding.simulation.ok && (
+              <Note tone="error" title="Simulation failed, so this is not offered for approval">
+                The SOL → ZEC swap was rejected in simulation. Nothing is signed.
+              </Note>
+            )}
+            <div className="cluster" style={{ marginTop: 12 }}>
+              <button
+                className="btn btn--primary"
+                type="button"
+                disabled={!funding.simulation.ok || step === "approving"}
+                onClick={() => void approveFunding()}
+              >
+                {step === "approving" ? "Waiting for Phantom…" : "Approve SOL → ZEC in Phantom"}
+              </button>
+              <button
+                className="btn btn--sm"
+                type="button"
+                onClick={() => setFunding(null)}
+                disabled={step === "approving"}
+              >
+                Cancel
+              </button>
+            </div>
+          </Panel>
+        )}
+
         {preparedLaunch && !sent && (
           <Panel tone="sage">
             <h2>Approve this on mainnet?</h2>
@@ -680,10 +773,9 @@ export default function IssuePage() {
         {live?.launchEnabled && (
           <Note tone="warn" title="This spends real money on Solana mainnet">
             Launching here creates a real Token-2022 mint on Solana mainnet, paired against
-            bridged ZEC, and spends the ZEC you name to buy the allocation (plus SOL rent). The
-            allocation is then burned, which destroys those tokens permanently and cannot be
-            reversed. You will see the exact amounts, and the result of simulating the
-            transaction against mainnet, before Phantom asks you to approve anything.
+            bridged ZEC. If Phantom has no ZEC, the first approval buys it with SOL; the second
+            creates the pool. The allocation is then burned. You will see the exact amounts,
+            and the result of simulating each transaction, before Phantom asks you to approve.
             {!live.zcashPublishEnabled && (
               <>
                 {" "}

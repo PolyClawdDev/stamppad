@@ -305,8 +305,14 @@ export function WalletProvider({
           "This wallet cannot send transactions. Phantom supports it; update the extension and try again.",
         );
       }
-      const { Transaction } = await import("@solana/web3.js");
-      const transaction = Transaction.from(Buffer.from(transactionBase64, "base64"));
+      const { Transaction, VersionedTransaction } = await import("@solana/web3.js");
+      const bytes = Buffer.from(transactionBase64, "base64");
+      let transaction: InstanceType<typeof Transaction> | InstanceType<typeof VersionedTransaction>;
+      try {
+        transaction = Transaction.from(bytes);
+      } catch {
+        transaction = VersionedTransaction.deserialize(bytes);
+      }
       try {
         return readSendResult(await provider.signAndSendTransaction(transaction));
       } catch (error) {

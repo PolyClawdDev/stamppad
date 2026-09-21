@@ -20,6 +20,6 @@ describe("ZEC is the stamp launch quote", () => {
     const quoted = await quoteLaunch(ZEC_QUOTE_MINT);
     expect(quoted.pair.mint).toBe(ZEC_QUOTE_MINT);
     expect(quoted.pair.symbol).toBe("ZEC");
-    expect(quoted.costs.initialPurchase).toMatch(/bridged ZEC/);
+    expect(quoted.costs.initialPurchase).toMatch(/ZEC-paired/);
   });
 });

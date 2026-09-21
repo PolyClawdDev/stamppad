@@ -185,6 +185,29 @@ function formatLamports(lamports: bigint): string {
   return frac ? `${whole}.${frac} SOL` : `${whole} SOL`;
 }
 
+function quoteAta(owner: string, mint: string, tokenProgram: string): PublicKey {
+  return getAssociatedTokenAddressSync(
+    new PublicKey(mint),
+    new PublicKey(owner),
+    false,
+    new PublicKey(tokenProgram),
+  );
+}
+
+/** Base units of the quote mint held by the creator, or 0 when no account exists. */
+export async function readQuoteHeld(input: {
+  owner: string;
+  quoteMint: string;
+  tokenProgram: string;
+}): Promise<bigint> {
+  const rpcUrl = flags().solanaRpc;
+  if (!rpcUrl) throw new LiveLaunchError("SOLANA_RPC_URL is required to read the quote balance.");
+  const balance = await new SolanaRpc(rpcUrl).getTokenAccountBalance(
+    quoteAta(input.owner, input.quoteMint, input.tokenProgram).toBase58(),
+  );
+  return balance === null ? 0n : BigInt(balance);
+}
+
 /** Parses the curve half of a pricing response into instruction arguments. */
 function curveArgsFrom(pricing: StonkPricing): {
   supply: bigint;
@@ -363,14 +386,10 @@ export async function prepareLiveLaunch(input: PrepareLaunchInput): Promise<Prep
   const slippageBps = BigInt(input.slippageBps ?? DEFAULT_SLIPPAGE_BPS);
   const minimumBase = (buy.amountOut * (10_000n - slippageBps)) / 10_000n;
 
-  // Wrapped SOL is bought with the wallet's SOL. Other quotes need an existing
-  // token account. Refusing here, by name, is better than a simulation error.
-  const quoteTokenAccount = getAssociatedTokenAddressSync(
-    quoteMint,
-    creator,
-    false,
-    quoteTokenProgram,
-  );
+  const quoteTokenAccount = quoteAta(input.creator, input.quoteMint, pricing.quote.tokenProgram);
+
+  // Wrapped SOL is bought with the wallet's SOL. A ZEC (or other SPL) quote is
+  // funded from SOL in a separate Jupiter swap when this account is empty.
   const nativeSol = input.quoteMint === NATIVE_MINT;
   if (nativeSol) {
     const wallet = await rpc.getAccountInfo(creator.toBase58());

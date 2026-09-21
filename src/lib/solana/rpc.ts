@@ -302,6 +302,7 @@ export class SolanaRpc {
       replaceRecentBlockhash: true,
       commitment: "confirmed",
       encoding: "base64",
+      maxSupportedTransactionVersion: 0,
     };
     if (options.addresses?.length) {
       config.accounts = { encoding: "base64", addresses: options.addresses };
