@@ -236,6 +236,28 @@ export function validatePublication(
   return { ok: true };
 }
 
+/**
+ * A mainnet inscription has no OP_RETURN. The reveal pays dust to the
+ * destination and carries the envelope in the scriptSig, so the OP_RETURN
+ * check used for demo publications does not apply.
+ */
+export function acceptPublishedStamp(
+  issuance: IssuanceFields,
+  publication: ZcashPublication,
+): AcceptedIssuance {
+  const destOut =
+    publication.outputs.find((o) => o.address === issuance.destination) ?? publication.outputs[0];
+  return {
+    ...issuance,
+    commitmentHex: toHex(commitmentOf(issuance)),
+    zcashTx: publication.txid,
+    zcashOutputIndex: destOut?.index ?? 0,
+    zcashNullDataIndex: destOut?.index ?? 0,
+    zcashHeight: publication.height ?? 0,
+    confirmations: publication.confirmations,
+  };
+}
+
 export function acceptIssuance(
   issuance: IssuanceFields,
   publication: ZcashPublication,

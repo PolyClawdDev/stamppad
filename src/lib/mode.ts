@@ -3,6 +3,16 @@ import { hasPostgresUrl } from "./store/connection";
 export type StampMode = "demo" | "testnet" | "mainnet";
 export type StoreKind = "memory" | "postgres";
 
+/**
+ * One operator switch that opens launch, burn and Zcash publish together.
+ * Sales stay behind their own flag. The exact-string `true` test is unchanged
+ * so a deployment that only sets STAMP_MODE=mainnet still refuses.
+ */
+function envFlag(name: "STAMP_ALLOW_LIVE_LAUNCH" | "STAMP_ALLOW_LIVE_BURNS" | "STAMP_ALLOW_LIVE_ZCASH_PUBLISH"): boolean {
+  if (process.env[name] === "true") return true;
+  return process.env.STAMP_GO_LIVE === "true";
+}
+
 export function stampMode(): StampMode {
   const raw = (process.env.STAMP_MODE ?? process.env.NEXT_PUBLIC_STAMP_MODE ?? "demo").toLowerCase();
   if (raw === "testnet" || raw === "mainnet") return raw;
@@ -27,9 +37,9 @@ export function flags() {
     mode: stampMode(),
     store: storeKind(),
     stonkReadLive: process.env.STAMP_STONK_READ_LIVE === "true",
-    allowLiveLaunch: process.env.STAMP_ALLOW_LIVE_LAUNCH === "true",
-    allowLiveBurns: process.env.STAMP_ALLOW_LIVE_BURNS === "true",
-    allowLiveZcashPublish: process.env.STAMP_ALLOW_LIVE_ZCASH_PUBLISH === "true",
+    allowLiveLaunch: envFlag("STAMP_ALLOW_LIVE_LAUNCH"),
+    allowLiveBurns: envFlag("STAMP_ALLOW_LIVE_BURNS"),
+    allowLiveZcashPublish: envFlag("STAMP_ALLOW_LIVE_ZCASH_PUBLISH"),
     allowLiveStampSales: process.env.STAMP_ALLOW_LIVE_STAMP_SALES === "true",
     stonkApiBase: process.env.STONK_API_BASE ?? "https://www.stonkfun.xyz/api/public/v1",
     solanaRpc: process.env.SOLANA_RPC_URL ?? "",

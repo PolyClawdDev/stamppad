@@ -9,16 +9,25 @@ export async function POST(request: Request) {
       amountDisplay?: string;
       destination?: string;
       fail?: boolean;
+      sourceTx?: string;
+      amountBase?: string;
+      decimals?: number;
     };
-    if (!body.mint || !body.owner || !body.amountDisplay || !body.destination) {
-      return fail("mint, owner, amountDisplay, and destination are required.");
+    if (!body.mint || !body.owner || !body.destination) {
+      return fail("mint, owner, and destination are required.");
+    }
+    if (!body.amountDisplay && !body.amountBase) {
+      return fail("amountDisplay or amountBase is required.");
     }
     const job = await convert({
       mint: body.mint,
       owner: body.owner,
-      amountDisplay: body.amountDisplay,
+      amountDisplay: body.amountDisplay ?? "0",
       destination: body.destination,
       fail: body.fail,
+      sourceTx: body.sourceTx,
+      amountBase: body.amountBase,
+      decimals: body.decimals,
     });
     return ok({ job: publicJob(job), stampId: job.commitmentHex });
   } catch (error) {

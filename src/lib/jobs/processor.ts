@@ -25,6 +25,11 @@ export function nowIso(): string {
 }
 
 export async function processDueJobs(): Promise<void> {
+  if (flags().mode !== "demo") {
+    const { processLiveJobs } = await import("./live");
+    await processLiveJobs();
+    return;
+  }
   const store = getStore();
   const f = flags();
   const { solana, zcash } = await store.loadDemo();

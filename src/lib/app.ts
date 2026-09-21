@@ -309,10 +309,11 @@ export async function prepareMainnetBurn(input: {
  * https before a mainnet launch will build at all.
  */
 export function launchMetadataUriTemplate(): string {
-  const base = (process.env.STAMP_METADATA_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "").replace(
-    /\/$/,
-    "",
-  );
+  const configured = process.env.STAMP_METADATA_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const hosted = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "";
+  const base = (configured || hosted).replace(/\/$/, "");
   if (!/^https:\/\//.test(base)) {
     throw new Error(
       "A mainnet launch needs STAMP_METADATA_BASE_URL (or NEXT_PUBLIC_APP_URL) set to an https origin: the metadata URI is written onto the mint permanently and cannot be corrected later.",
@@ -404,9 +405,29 @@ export async function convert(input: {
   amountDisplay: string;
   destination: string;
   fail?: boolean;
+  sourceTx?: string;
+  amountBase?: string;
+  decimals?: number;
 }) {
   if (stampMode() !== "demo") {
-    throw new Error(liveMoneyMovementBlocked("burn") ?? "Live burns are disabled.");
+    const blocked = liveMoneyMovementBlocked("burn");
+    if (blocked) throw new Error(blocked);
+    if (!input.sourceTx) {
+      throw new Error("A mainnet stamp needs the Solana burn signature after Phantom sends it.");
+    }
+    const { submitLiveBurn } = await import("./jobs/live");
+    const decimals = input.decimals ?? 6;
+    const amountBase = input.amountBase
+      ? BigInt(input.amountBase)
+      : parseDisplay(input.amountDisplay, decimals);
+    return submitLiveBurn({
+      owner: input.owner,
+      mint: input.mint,
+      amountBase,
+      decimals,
+      destination: input.destination,
+      sourceTx: input.sourceTx,
+    });
   }
   const preview = await previewConvert(input);
   return submitDemoBurn({

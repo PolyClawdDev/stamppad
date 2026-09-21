@@ -4,7 +4,6 @@
  */
 import { flags } from "../mode";
 import {
-  encodeOpReturnPayload,
   encodeRecord,
   fromHex,
   type DestNetwork,
@@ -18,12 +17,30 @@ import {
   publishDemoStamp,
   type DemoZcashChain,
 } from "../zcash/demo";
+import {
+  buildStamp,
+  finalizeP2pkhInputs,
+  finalizeReveal,
+  planInscription,
+  toRawHex,
+} from "../zcash/inscribe";
+import { loadPublisherKey } from "../zcash/publisher-key";
+import { ZcashRpc } from "../zcash/rpc";
+import { signDigestDer } from "../zcash/sign";
+
+export interface IssuancePublication {
+  destination: string;
+  commitmentHex: string;
+  mint: string;
+  burn: string;
+  amountBase: string;
+}
 
 export interface StampPublisher {
   readonly kind: "demo" | "live";
   network(): DestNetwork;
   feeZat(): bigint;
-  publishIssuance(input: { destination: string; commitmentHex: string }): Promise<ZcashPublication>;
+  publishIssuance(input: IssuancePublication): Promise<ZcashPublication>;
   publishRecord(input: {
     record: OnChainRecord;
     noticeAddress: string | null;
@@ -40,7 +57,7 @@ export class DemoStampPublisher implements StampPublisher {
   feeZat(): bigint {
     return estimatePublicationFeeZat();
   }
-  async publishIssuance(input: { destination: string; commitmentHex: string }) {
+  async publishIssuance(input: IssuancePublication) {
     return publishDemoStamp({
       chain: this.chain,
       network: this.network(),
@@ -71,15 +88,67 @@ export class LiveStampPublisher implements StampPublisher {
   feeZat(): bigint {
     return estimatePublicationFeeZat();
   }
-  async publishIssuance(input: { destination: string; commitmentHex: string }): Promise<ZcashPublication> {
-    assertLivePublishAllowed();
-    void encodeOpReturnPayload(fromHex(input.commitmentHex));
-    throw new Error("Live Zcash publication is not implemented in this build.");
+  async publishIssuance(input: IssuancePublication): Promise<ZcashPublication> {
+    await assertLivePublishAllowed();
+    if (!input.mint || !input.burn || !input.amountBase) {
+      throw new Error("A live stamp needs the mint, the burn signature and the amount.");
+    }
+    const key = loadPublisherKey();
+    const rpc = new ZcashRpc(flags().zcashRpc);
+    const tip = await rpc.getChainTip();
+    if (tip.network !== this.network()) {
+      throw new Error(`ZCASH_RPC_URL is on ${tip.network}, expected ${this.network()}.`);
+    }
+    const utxos = await rpc.getUtxos([key.address]);
+    const plan = planInscription({
+      payload: {
+        p: "stamp-exp",
+        op: "mint",
+        v: 0,
+        mint: input.mint,
+        burn: input.burn,
+        amt: input.amountBase,
+        to: input.destination,
+      },
+      revealPublicKey: key.publicKey,
+      commitment: fromHex(input.commitmentHex),
+      network: "zcash:main",
+    });
+    const pair = buildStamp({
+      plan,
+      utxos,
+      changeAddress: key.address,
+      tipHeight: tip.height,
+      network: "zcash:main",
+    });
+    const commitTx = finalizeP2pkhInputs({
+      unsigned: pair.commit,
+      signatures: pair.commit.sighashes.map((digest) => ({
+        signatureDer: signDigestDer(digest, key.scalar),
+        publicKey: key.publicKey,
+      })),
+    });
+    const revealTx = finalizeReveal({
+      unsigned: pair.reveal,
+      plan,
+      signatureDer: signDigestDer(pair.reveal.sighashes[0]!, key.scalar),
+    });
+    await rpc.sendRawTransaction(toRawHex(commitTx));
+    const revealTxid = await rpc.sendRawTransaction(toRawHex(revealTx));
+    return {
+      txid: revealTxid,
+      network: this.network(),
+      height: tip.height + 1,
+      confirmations: 0,
+      inBestChain: true,
+      outputs: [{ index: 0, valueZat: plan.dustZat, address: input.destination, nullData: null }],
+    };
   }
   async publishRecord(input: { record: OnChainRecord; noticeAddress: string | null }): Promise<ZcashPublication> {
-    assertLivePublishAllowed();
+    await assertLivePublishAllowed();
     void encodeRecord(input.record);
-    throw new Error("Live Zcash publication is not implemented in this build.");
+    void input.noticeAddress;
+    throw new Error("Live ownership-record publication is not implemented in this build.");
   }
 }
 

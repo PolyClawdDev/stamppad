@@ -99,6 +99,22 @@ function bytesEq(a: Uint8Array, b: Uint8Array): boolean {
   return x === 0;
 }
 
+/** Build a t1/tm address from a HASH160, so a publisher key can name itself. */
+export function encodeP2pkhAddress(hash160: Uint8Array, network: TransparentNetwork = "zcash:main"): string {
+  if (hash160.length !== 20) throw new Error("HASH160 is 20 bytes");
+  const version = network === "zcash:main" ? [0x1c, 0xb8] : [0x1d, 0x25];
+  const payload = Uint8Array.from([...version, ...hash160]);
+  const checksum = sha256d(payload).subarray(0, 4);
+  const encoded = new Uint8Array(payload.length + 4);
+  encoded.set(payload);
+  encoded.set(checksum, payload.length);
+  return bs58.encode(encoded);
+}
+
+function sha256d(bytes: Uint8Array): Uint8Array {
+  return sha256(sha256(bytes));
+}
+
 export function toHex(bytes: Uint8Array): string {
   let out = "";
   for (const byte of bytes) out += byte.toString(16).padStart(2, "0");

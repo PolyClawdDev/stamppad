@@ -19,6 +19,7 @@ const ENV_KEYS = [
   "STAMP_ALLOW_LIVE_BURNS",
   "STAMP_ALLOW_LIVE_ZCASH_PUBLISH",
   "STAMP_ALLOW_LIVE_STAMP_SALES",
+  "STAMP_GO_LIVE",
   "SOLANA_RPC_URL",
 ] as const;
 
@@ -49,6 +50,15 @@ describe("live money movement is off by default", () => {
     for (const kind of KINDS) {
       expect(liveMoneyMovementBlocked(kind)).toBeTruthy();
     }
+  });
+
+  it("opens launch, burn and publish together from STAMP_GO_LIVE", () => {
+    process.env.STAMP_MODE = "mainnet";
+    process.env.STAMP_GO_LIVE = "true";
+    expect(liveMoneyMovementBlocked("launch")).toBeNull();
+    expect(liveMoneyMovementBlocked("burn")).toBeNull();
+    expect(liveMoneyMovementBlocked("publish")).toBeNull();
+    expect(liveMoneyMovementBlocked("stampSale")).toBeTruthy();
   });
 
   it("opens only the kind whose own flag is set", () => {

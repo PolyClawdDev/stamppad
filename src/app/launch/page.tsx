@@ -206,7 +206,27 @@ export default function IssuePage() {
       const signature = await sendTransaction(preparedBurn.transactionBase64);
       setSent((prior) => ({ launch: prior?.launch ?? "", burn: signature }));
       setZcashDestination(form.destination);
+      const recorded = await fetch("/api/convert/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mint: preparedBurn.mint,
+          owner: wallet!.publicKey,
+          destination: form.destination,
+          amountBase: preparedBurn.amountBase,
+          decimals: preparedBurn.decimals,
+          sourceTx: signature,
+        }),
+      });
+      const json = await recorded.json();
       setPreparedBurn(null);
+      if (json.error) {
+        setError(
+          `The burn landed as ${signature}, but the stamp job could not be recorded: ${json.error.message}`,
+        );
+        return;
+      }
+      router.push(`/jobs/${json.data.job.id}`);
     } catch (sendError) {
       setError(sendError instanceof Error ? sendError.message : "Phantom could not send the burn.");
     } finally {
