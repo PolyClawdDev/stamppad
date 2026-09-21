@@ -11,10 +11,15 @@ const URL_KEYS = [
   "POSTGRES_URL_NON_POOLING",
 ] as const;
 
+/** Docs and .env.example use this host. It is not a database. */
+export function isPlaceholderUrl(url: string): boolean {
+  return /db\.example\.com|:pass@|user:pass@/i.test(url);
+}
+
 export function postgresUrl(): string | undefined {
   for (const key of URL_KEYS) {
     const value = process.env[key]?.trim();
-    if (value) return value;
+    if (value && !isPlaceholderUrl(value)) return value;
   }
   return undefined;
 }

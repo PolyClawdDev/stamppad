@@ -18,6 +18,23 @@ describe("postgres connection strings", () => {
     }
   });
 
+  it("skips the example URL so a leftover DATABASE_URL cannot hide Neon", () => {
+    const before = {
+      database: process.env.DATABASE_URL,
+      postgres: process.env.POSTGRES_URL,
+    };
+    try {
+      process.env.DATABASE_URL = "postgresql://user:pass@db.example.com:5432/app";
+      process.env.POSTGRES_URL = "postgresql://u:p@ep-x.eu-central-1.aws.neon.tech/neondb";
+      expect(postgresUrl()).toContain("neon.tech");
+    } finally {
+      if (before.database === undefined) delete process.env.DATABASE_URL;
+      else process.env.DATABASE_URL = before.database;
+      if (before.postgres === undefined) delete process.env.POSTGRES_URL;
+      else process.env.POSTGRES_URL = before.postgres;
+    }
+  });
+
   it("adds sslmode on a Neon host that forgot it", () => {
     const url = "postgresql://u:p@ep-x.eu-central-1.aws.neon.tech/neondb";
     expect(connectionString(url)).toBe(`${url}?sslmode=require`);
