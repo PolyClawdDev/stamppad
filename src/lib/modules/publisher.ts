@@ -25,7 +25,7 @@ import {
   toRawHex,
 } from "../zcash/inscribe";
 import { loadPublisherKey } from "../zcash/publisher-key";
-import { ZcashRpc } from "../zcash/rpc";
+import { zcashRpcFromEnv } from "../zcash/rpc";
 import { signDigestDer } from "../zcash/sign";
 
 export interface IssuancePublication {
@@ -94,7 +94,7 @@ export class LiveStampPublisher implements StampPublisher {
       throw new Error("A live stamp needs the mint, the burn signature and the amount.");
     }
     const key = loadPublisherKey();
-    const rpc = new ZcashRpc(flags().zcashRpc);
+    const rpc = zcashRpcFromEnv();
     const tip = await rpc.getChainTip();
     if (tip.network !== this.network()) {
       throw new Error(`ZCASH_RPC_URL is on ${tip.network}, expected ${this.network()}.`);

@@ -2,7 +2,7 @@ import { flags } from "../mode";
 import { acceptPublishedStamp, commitmentOf, toHex, type IssuanceFields } from "../protocol";
 import { LiveStampPublisher } from "../modules/publisher";
 import { SolanaRpc } from "../solana/rpc";
-import { ZcashRpc } from "../zcash/rpc";
+import { zcashRpcFromEnv } from "../zcash/rpc";
 import { randomUUID } from "node:crypto";
 import { getStore, type JobRow, type StampRow } from "../store";
 
@@ -155,7 +155,7 @@ export async function processLiveJobs(): Promise<void> {
       let confirmations = job.confirmations;
       let inBestChain = true;
       try {
-        const rpc = new ZcashRpc(f.zcashRpc);
+        const rpc = zcashRpcFromEnv();
         const tip = await rpc.getChainTip();
         const seen = await rpc.getTransaction(job.zcashTx);
         height = seen.height ?? height;

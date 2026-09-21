@@ -163,6 +163,13 @@ export interface ZcashRpcOptions {
   fetchImpl?: typeof fetch;
 }
 
+/** Tatum and similar gateways want the key in a header, not in the URL. */
+export function zcashRpcFromEnv(): ZcashRpc {
+  const url = process.env.ZCASH_RPC_URL ?? "";
+  const apiKey = process.env.ZCASH_RPC_API_KEY ?? process.env.TATUM_API_KEY ?? "";
+  return new ZcashRpc(url, apiKey ? { headers: { "x-api-key": apiKey } } : {});
+}
+
 export class ZcashRpc {
   private readonly headers: Record<string, string>;
   private readonly fetchImpl: typeof fetch;
