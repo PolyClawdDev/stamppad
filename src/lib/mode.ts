@@ -41,7 +41,8 @@ export function flags() {
     allowLiveBurns: envFlag("STAMP_ALLOW_LIVE_BURNS"),
     allowLiveZcashPublish: envFlag("STAMP_ALLOW_LIVE_ZCASH_PUBLISH"),
     allowLiveStampSales: process.env.STAMP_ALLOW_LIVE_STAMP_SALES === "true",
-    stonkApiBase: process.env.STONK_API_BASE ?? "https://www.stonkfun.xyz/api/public/v1",
+    stonkApiBase:
+      process.env.STONK_API_BASE?.trim() || "https://www.stonkfun.xyz/api/public/v1",
     solanaRpc: process.env.SOLANA_RPC_URL ?? "",
     zcashRpc: process.env.ZCASH_RPC_URL ?? "",
     zcashMinConfirmations: Number(process.env.ZCASH_MIN_CONFIRMATIONS ?? 10),
