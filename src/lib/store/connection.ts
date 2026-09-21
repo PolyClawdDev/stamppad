@@ -13,7 +13,7 @@ const URL_KEYS = [
 
 /** Docs and .env.example use this host. It is not a database. */
 export function isPlaceholderUrl(url: string): boolean {
-  return /db\.example\.com|:pass@|user:pass@/i.test(url);
+  return /db\.example\.com|user:pass@/i.test(url);
 }
 
 export function postgresUrl(): string | undefined {

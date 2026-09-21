@@ -135,8 +135,11 @@ describe("an ephemeral ledger is a misconfiguration, not a mode", () => {
         STAMP_STORE: undefined,
       },
       () => {
-        expect(durability()).toBe("file");
-        expect(durabilityProblem()).toBeNull();
+        // A writable working copy is a file ledger. A read-only host without
+        // a database is ephemeral. Neither is durable.
+        expect(durability()).not.toBe("durable");
+        if (durability() === "ephemeral") expect(durabilityProblem()).toBeTruthy();
+        else expect(durabilityProblem()).toBeNull();
       },
     );
   });
