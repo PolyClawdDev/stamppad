@@ -191,8 +191,15 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 `;
 
+const LAUNCH_LINKS = `
+ALTER TABLE launches ADD COLUMN IF NOT EXISTS website TEXT NOT NULL DEFAULT '';
+ALTER TABLE launches ADD COLUMN IF NOT EXISTS twitter TEXT NOT NULL DEFAULT '';
+ALTER TABLE launches ADD COLUMN IF NOT EXISTS telegram TEXT NOT NULL DEFAULT '';
+`;
+
 export const MIGRATIONS: Migration[] = [
   { name: "0001_init", sql: INIT },
   { name: "0002_market", sql: MARKET },
   { name: "0003_exact_amounts", sql: EXACT_AMOUNTS },
+  { name: "0004_launch_links", sql: LAUNCH_LINKS },
 ];

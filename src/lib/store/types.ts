@@ -16,6 +16,9 @@ export interface LaunchRow {
   symbol: string;
   description: string;
   imageDataUrl: string | null;
+  website: string;
+  twitter: string;
+  telegram: string;
   quoteMint: string;
   quoteSymbol: string;
   tokenProgram: string;

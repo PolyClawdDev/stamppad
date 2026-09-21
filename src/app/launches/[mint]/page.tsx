@@ -50,6 +50,9 @@ export default function LaunchDetailPage() {
     decimals: number;
     description: string;
     imageDataUrl: string | null;
+    website?: string;
+    twitter?: string;
+    telegram?: string;
   };
   const stamps = (view.stamps as Array<{ id: string; amountBase: string; zcashTx: string }>) ?? [];
   const jobs = (view.jobs as Array<{ id: string; state: string; amountBase: string }>) ?? [];
@@ -75,6 +78,25 @@ export default function LaunchDetailPage() {
               <Badge>vs {launch.quoteSymbol}</Badge>
             </div>
             <p className="muted">{launch.description || "No description was provided."}</p>
+            {(launch.website || launch.twitter || launch.telegram) && (
+              <div className="cluster">
+                {launch.website && (
+                  <a className="btn btn--sm" href={launch.website} target="_blank" rel="noreferrer">
+                    Website
+                  </a>
+                )}
+                {launch.twitter && (
+                  <a className="btn btn--sm" href={launch.twitter} target="_blank" rel="noreferrer">
+                    X
+                  </a>
+                )}
+                {launch.telegram && (
+                  <a className="btn btn--sm" href={launch.telegram} target="_blank" rel="noreferrer">
+                    Telegram
+                  </a>
+                )}
+              </div>
+            )}
             <div className="cluster">
               <Link className="btn btn--sm btn--primary" href={`/convert?mint=${launch.mint}`}>
                 Convert to a stamp

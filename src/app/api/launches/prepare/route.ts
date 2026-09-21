@@ -18,6 +18,9 @@ export async function POST(request: Request) {
       symbol?: string;
       description?: string;
       imageDataUrl?: string | null;
+      website?: string;
+      twitter?: string;
+      telegram?: string;
       quoteMint?: string;
       quoteAmountDisplay?: string;
     };
@@ -35,6 +38,9 @@ export async function POST(request: Request) {
         symbol: body.symbol,
         description: body.description ?? "",
         imageDataUrl: body.imageDataUrl ?? null,
+        website: body.website,
+        twitter: body.twitter,
+        telegram: body.telegram,
         quoteMint: body.quoteMint || ZEC_QUOTE_MINT,
         quoteAmountDisplay: body.quoteAmountDisplay,
       }),

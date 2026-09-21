@@ -12,6 +12,7 @@
  * unreadable to every one of them.
  */
 import { getStore } from "@/lib/store";
+import { metadataOrigin, tokenMetadataJson } from "@/lib/token-metadata";
 
 export async function GET(_request: Request, context: { params: Promise<{ mint: string }> }) {
   const { mint } = await context.params;
@@ -26,14 +27,7 @@ export async function GET(_request: Request, context: { params: Promise<{ mint: 
       { status: 404 },
     );
   }
-  return Response.json(
-    {
-      name: launch.name,
-      symbol: launch.symbol,
-      description: launch.description,
-      image: launch.imageDataUrl ?? undefined,
-      external_url: `${process.env.STAMP_METADATA_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? ""}/launches/${mint}`,
-    },
-    { headers: { "Cache-Control": "public, max-age=60" } },
-  );
+  return Response.json(tokenMetadataJson(launch, metadataOrigin()), {
+    headers: { "Cache-Control": "public, max-age=60" },
+  });
 }

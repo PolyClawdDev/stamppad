@@ -62,6 +62,9 @@ export default function IssuePage() {
     name: "",
     symbol: "",
     description: "",
+    website: "",
+    twitter: "",
+    telegram: "",
     denomination: "",
     destination: "",
     imageDataUrl: "" as string | null,
@@ -138,6 +141,9 @@ export default function IssuePage() {
         symbol: form.symbol,
         description: form.description,
         imageDataUrl: form.imageDataUrl,
+        website: form.website,
+        twitter: form.twitter,
+        telegram: form.telegram,
         quoteMint: ZEC_QUOTE.mint,
         quoteAmountDisplay: form.denomination,
       }),
@@ -244,6 +250,9 @@ export default function IssuePage() {
         symbol: form.symbol,
         description: form.description,
         imageDataUrl: form.imageDataUrl,
+        website: form.website,
+        twitter: form.twitter,
+        telegram: form.telegram,
         quoteMint: ZEC_QUOTE.mint,
         buyDisplay: form.denomination,
       }),
@@ -338,6 +347,39 @@ export default function IssuePage() {
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
+          </div>
+          <div className="field">
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              type="url"
+              inputMode="url"
+              placeholder="https://"
+              value={form.website}
+              onChange={(e) => setForm({ ...form, website: e.target.value })}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="twitter">X / Twitter</label>
+            <input
+              id="twitter"
+              placeholder="https://x.com/project"
+              value={form.twitter}
+              onChange={(e) => setForm({ ...form, twitter: e.target.value })}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="telegram">Telegram</label>
+            <input
+              id="telegram"
+              placeholder="https://t.me/project"
+              value={form.telegram}
+              onChange={(e) => setForm({ ...form, telegram: e.target.value })}
+            />
+            <span className="hint">
+              Optional. Saved in the token&apos;s permanent metadata, the same place as the name
+              and artwork. Leave blank if there is nothing to link yet.
+            </span>
           </div>
           <div className="field">
             <label htmlFor="quote">Quote token</label>
@@ -453,6 +495,14 @@ export default function IssuePage() {
                 )}{" "}
                 {form.symbol || "tokens"}
               </dd>
+              {(form.website || form.twitter || form.telegram) && (
+                <>
+                  <dt>Project links</dt>
+                  <dd>
+                    {[form.website, form.twitter, form.telegram].filter(Boolean).join(" · ")}
+                  </dd>
+                </>
+              )}
               <dt>Then burned</dt>
               <dd>All of it, permanently. This cannot be undone.</dd>
               <dt>Mainnet simulation</dt>

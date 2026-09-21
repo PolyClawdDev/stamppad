@@ -111,6 +111,9 @@ function launchFrom(r: Record<string, unknown>): LaunchRow {
     symbol: String(r.symbol),
     description: String(r.description),
     imageDataUrl: (r.image_data_url as string | null) ?? null,
+    website: String(r.website ?? ""),
+    twitter: String(r.twitter ?? ""),
+    telegram: String(r.telegram ?? ""),
     quoteMint: String(r.quote_mint),
     quoteSymbol: String(r.quote_symbol),
     tokenProgram: String(r.token_program),
@@ -245,21 +248,24 @@ export class PostgresStore implements Store {
   async upsertLaunch(row: LaunchRow) {
     await q(
       `INSERT INTO launches (
-        mint, name, symbol, description, image_data_url, quote_mint, quote_symbol,
-        token_program, decimals, launch_supply, pool_base, current_supply, creator,
-        launch_tx, stonk_url, source, created_at
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+        mint, name, symbol, description, image_data_url, website, twitter, telegram,
+        quote_mint, quote_symbol, token_program, decimals, launch_supply, pool_base,
+        current_supply, creator, launch_tx, stonk_url, source, created_at
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
       ON CONFLICT (mint) DO UPDATE SET
         name=EXCLUDED.name, symbol=EXCLUDED.symbol, description=EXCLUDED.description,
-        image_data_url=EXCLUDED.image_data_url, quote_mint=EXCLUDED.quote_mint,
-        quote_symbol=EXCLUDED.quote_symbol, token_program=EXCLUDED.token_program,
-        decimals=EXCLUDED.decimals, launch_supply=EXCLUDED.launch_supply,
-        pool_base=EXCLUDED.pool_base, current_supply=EXCLUDED.current_supply,
-        creator=EXCLUDED.creator, launch_tx=EXCLUDED.launch_tx,
-        stonk_url=EXCLUDED.stonk_url, source=EXCLUDED.source, created_at=EXCLUDED.created_at`,
+        image_data_url=EXCLUDED.image_data_url, website=EXCLUDED.website,
+        twitter=EXCLUDED.twitter, telegram=EXCLUDED.telegram,
+        quote_mint=EXCLUDED.quote_mint, quote_symbol=EXCLUDED.quote_symbol,
+        token_program=EXCLUDED.token_program, decimals=EXCLUDED.decimals,
+        launch_supply=EXCLUDED.launch_supply, pool_base=EXCLUDED.pool_base,
+        current_supply=EXCLUDED.current_supply, creator=EXCLUDED.creator,
+        launch_tx=EXCLUDED.launch_tx, stonk_url=EXCLUDED.stonk_url,
+        source=EXCLUDED.source, created_at=EXCLUDED.created_at`,
       [
-        row.mint, row.name, row.symbol, row.description, row.imageDataUrl, row.quoteMint,
-        row.quoteSymbol, row.tokenProgram, row.decimals, row.launchSupply, row.poolBase,
+        row.mint, row.name, row.symbol, row.description, row.imageDataUrl,
+        row.website, row.twitter, row.telegram, row.quoteMint, row.quoteSymbol,
+        row.tokenProgram, row.decimals, row.launchSupply, row.poolBase,
         row.currentSupply, row.creator, row.launchTx, row.stonkUrl, row.source, row.createdAt,
       ],
     );

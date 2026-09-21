@@ -23,6 +23,15 @@ function fromStored(row: StoredJob): JobRow {
   return { ...row, claimPackage: row.claimPackage ? deserializeClaim(row.claimPackage) : null };
 }
 
+function withLaunchLinks(row: LaunchRow): LaunchRow {
+  return {
+    ...row,
+    website: row.website ?? "",
+    twitter: row.twitter ?? "",
+    telegram: row.telegram ?? "",
+  };
+}
+
 interface MemoryShape {
   launches: Record<string, LaunchRow>;
   jobs: Record<string, StoredJob>;
@@ -91,10 +100,13 @@ export class MemoryStore implements Store {
   }
 
   async listLaunches() {
-    return Object.values(this.read().launches).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    return Object.values(this.read().launches)
+      .map(withLaunchLinks)
+      .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   }
   async getLaunch(mint: string) {
-    return this.read().launches[mint] ?? null;
+    const row = this.read().launches[mint];
+    return row ? withLaunchLinks(row) : null;
   }
   async upsertLaunch(row: LaunchRow) {
     const data = this.read();

@@ -1,4 +1,5 @@
 import { artworkProblem } from "./artwork";
+import { EMPTY_LAUNCH_LINKS, launchLinksProblem, parseLaunchLinks, type LaunchLinks } from "./links";
 import { flags, liveMoneyMovementBlocked, stampMode } from "./mode";
 import {
   DESTINATION_NOTICE_ZATOSHIS,
@@ -118,10 +119,14 @@ export async function createDemoLaunch(input: {
   symbol: string;
   description: string;
   imageDataUrl: string | null;
+  website?: string;
+  twitter?: string;
+  telegram?: string;
   quoteMint: string;
   buyDisplay?: string;
   convertDisplay?: string;
 }) {
+  const links = parseAndCheckLinks(input);
   const blocked = liveMoneyMovementBlocked("launch");
   if (stampMode() !== "demo") {
     throw new Error(blocked ?? "Live launch is not enabled in this build.");
@@ -155,6 +160,7 @@ export async function createDemoLaunch(input: {
     symbol: launched.mint.symbol,
     description: launched.mint.description,
     imageDataUrl: launched.mint.imageDataUrl,
+    ...links,
     quoteMint: launched.mint.quoteMint,
     quoteSymbol: launched.mint.quoteSymbol,
     tokenProgram: launched.mint.programId,
@@ -211,6 +217,9 @@ export async function prepareMainnetLaunch(input: {
   symbol: string;
   description: string;
   imageDataUrl: string | null;
+  website?: string;
+  twitter?: string;
+  telegram?: string;
   quoteMint: string;
   /** Quote asset to spend on the initial buy, as the user typed it. */
   quoteAmountDisplay: string;
@@ -219,6 +228,7 @@ export async function prepareMainnetLaunch(input: {
   if (undurable) throw new Error(`Refusing to build a launch this deployment cannot record. ${undurable}`);
   const artwork = artworkProblem(input.imageDataUrl);
   if (artwork) throw new Error(artwork);
+  const links = parseAndCheckLinks(input);
   const quote = await quoteLaunch(input.quoteMint);
   const quoteAmountIn = parseDisplay(input.quoteAmountDisplay, quote.pricing.quote.decimals);
   if (quoteAmountIn <= 0n) {
@@ -239,6 +249,7 @@ export async function prepareMainnetLaunch(input: {
     symbol: input.symbol.trim().toUpperCase(),
     description: input.description.trim(),
     imageDataUrl: input.imageDataUrl,
+    ...links,
     quoteMint: input.quoteMint,
     quoteSymbol: quote.pair.symbol,
     tokenProgram: prepared.allocation.tokenProgram,
@@ -311,6 +322,13 @@ export async function prepareMainnetBurn(input: {
  * own host, which is why it comes from configuration and is required to be
  * https before a mainnet launch will build at all.
  */
+function parseAndCheckLinks(input: Partial<LaunchLinks>): LaunchLinks {
+  const links = parseLaunchLinks(input);
+  const problem = launchLinksProblem(links);
+  if (problem) throw new Error(problem);
+  return links.website || links.twitter || links.telegram ? links : EMPTY_LAUNCH_LINKS;
+}
+
 export function launchMetadataUriTemplate(): string {
   const configured = process.env.STAMP_METADATA_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "";
   const hosted = process.env.VERCEL_PROJECT_PRODUCTION_URL
