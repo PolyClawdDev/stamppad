@@ -9,6 +9,7 @@ import {
 import { nonceStore } from "@/lib/wallet/nonce";
 import { requestDomain } from "@/lib/wallet/origin";
 import { parseSessionMessage, toHex, verifySessionProof } from "@/lib/wallet/session";
+import { proofStore, sessionKey } from "@/lib/wallet/taddr-proof";
 import bs58 from "bs58";
 
 /**
@@ -69,7 +70,14 @@ export async function GET(request: Request) {
   });
 }
 
-export async function DELETE() {
+/**
+ * Disconnecting drops the session and everything scoped to it, including any
+ * transparent-address control proofs. A proof is this session's word that it
+ * holds a Zcash key, so it must not outlive the session that gave it.
+ */
+export async function DELETE(request: Request) {
+  const session = readSessionCookie(request);
+  if (session) proofStore.revoke(sessionKey(session));
   const response = ok({ session: null });
   response.headers.set("Set-Cookie", clearCookieHeader());
   return response;

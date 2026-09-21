@@ -24,6 +24,7 @@ import {
   isUserRejection,
   keyTextOf,
   publicKeyOf,
+  readSendResult,
   readSignature,
   subscribe,
   type PhantomProvider,
@@ -55,6 +56,11 @@ interface WalletApi {
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
   sign: (preimage: string) => Promise<{ signatureHex: string; publicKeyHex: string }>;
+  /**
+   * Approves and broadcasts a transaction this app built. Real money moves
+   * here, and only after the user approves it in Phantom's own window.
+   */
+  sendTransaction: (transactionBase64: string) => Promise<string>;
   /** Zcash t-address this wallet last used, remembered locally. */
   zcashDestination: string | null;
   setZcashDestination: (address: string | null) => void;
@@ -70,6 +76,9 @@ const Ctx = createContext<WalletApi>({
   connect: async () => undefined,
   disconnect: async () => undefined,
   sign: async () => {
+    throw new Error("No wallet is connected.");
+  },
+  sendTransaction: async () => {
     throw new Error("No wallet is connected.");
   },
   zcashDestination: null,
@@ -277,6 +286,37 @@ export function WalletProvider({
     [provider, wallet],
   );
 
+  /**
+   * Hands a transaction this app built to Phantom to approve and broadcast.
+   *
+   * The transaction arrives already carrying any signature it needed from a
+   * key that is not the user's, so it is deserialized without verifying
+   * signatures; the user's is the one still missing. web3.js is imported here
+   * rather than at the top of the module so the wallet context does not pull it
+   * into every page that only needs to know who is connected.
+   */
+  const sendTransaction = useCallback(
+    async (transactionBase64: string) => {
+      if (!provider || !wallet) {
+        throw new Error("Connect Phantom and prove ownership before approving a transaction.");
+      }
+      if (!provider.signAndSendTransaction) {
+        throw new Error(
+          "This wallet cannot send transactions. Phantom supports it; update the extension and try again.",
+        );
+      }
+      const { Transaction } = await import("@solana/web3.js");
+      const transaction = Transaction.from(Buffer.from(transactionBase64, "base64"));
+      try {
+        return readSendResult(await provider.signAndSendTransaction(transaction));
+      } catch (error) {
+        if (isUserRejection(error)) throw new Error("You declined the transaction in Phantom.");
+        throw error;
+      }
+    },
+    [provider, wallet],
+  );
+
   const setZcashDestination = useCallback(
     (address: string | null) => {
       if (!wallet) return;
@@ -311,6 +351,7 @@ export function WalletProvider({
       connect,
       disconnect,
       sign,
+      sendTransaction,
       zcashDestination,
       setZcashDestination,
     }),
@@ -324,6 +365,7 @@ export function WalletProvider({
       connect,
       disconnect,
       sign,
+      sendTransaction,
       zcashDestination,
       setZcashDestination,
     ],

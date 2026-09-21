@@ -6,21 +6,18 @@ import { BlankStampArt } from "@/components/art/PixelArt";
 import { PostOffice } from "@/components/art/PostOffice";
 import { StampCard, type StampCardData } from "@/components/AssetCards";
 import { Empty, Note, Panel, Tech } from "@/components/ui";
-import { formatUnits, formatZec, shortId, stampNumbers } from "@/lib/format";
+import { formatUnits, formatZec, shortId } from "@/lib/format";
 
-/** The metadata supplied when a stamp was issued: name, ticker and artwork. */
-interface StampMeta {
-  mint: string;
-  name: string;
-  symbol: string;
-  imageDataUrl: string | null;
-}
-
+/** The stamp API serves each stamp with the identity of the launch it came from. */
 interface Stamp {
   id: string;
   mint: string;
   amountBase: string;
   decimals: number;
+  name: string | null;
+  symbol: string;
+  imageDataUrl: string | null;
+  number: number;
   currentOwner: string;
   sequence: number;
   transferable: boolean;
@@ -49,7 +46,6 @@ interface Sale {
 }
 
 export default function ExplorePage() {
-  const [meta, setMeta] = useState<StampMeta[]>([]);
   const [stamps, setStamps] = useState<Stamp[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
@@ -64,15 +60,13 @@ export default function ExplorePage() {
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const [l, s, m, st, h] = await Promise.all([
-        fetch("/api/launches").then((r) => r.json()),
+      const [s, m, st, h] = await Promise.all([
         fetch("/api/stamps").then((r) => r.json()),
         fetch("/api/market").then((r) => r.json()),
         fetch("/api/status").then((r) => r.json()),
         fetch("/api/sales").then((r) => r.json()),
       ]);
       if (cancelled) return;
-      setMeta(l.data?.launches ?? []);
       setStamps(s.data?.stamps ?? []);
       setListings([...(m.data?.listings ?? []), ...(m.data?.history ?? [])]);
       setSales(h.data?.sales ?? []);
@@ -85,8 +79,6 @@ export default function ExplorePage() {
     };
   }, []);
 
-  const metaByMint = useMemo(() => new Map(meta.map((m) => [m.mint, m])), [meta]);
-  const numbers = useMemo(() => stampNumbers(stamps), [stamps]);
   const liveListing = useMemo(() => {
     const map = new Map<string, Listing>();
     for (const l of listings) {
@@ -106,24 +98,23 @@ export default function ExplorePage() {
   const stampCards: StampCardData[] = useMemo(
     () =>
       stamps.map((s) => {
-        const issued = metaByMint.get(s.mint);
         const sale = lastSales.get(s.id);
         return {
           id: s.id,
           mint: s.mint,
           amountBase: s.amountBase,
           decimals: s.decimals,
-          name: issued?.name ?? "Untitled stamp",
-          symbol: issued?.symbol ?? "",
-          imageDataUrl: issued?.imageDataUrl ?? null,
-          number: numbers.get(s.id) ?? 1,
+          name: s.name,
+          symbol: s.symbol,
+          imageDataUrl: s.imageDataUrl,
+          number: s.number,
           listing: liveListing.get(s.id) ?? null,
           lastSale: sale
             ? { priceZat: sale.priceZat, settledAt: sale.settledAt, height: sale.height }
             : null,
         };
       }),
-    [stamps, metaByMint, numbers, liveListing, lastSales],
+    [stamps, liveListing, lastSales],
   );
 
   const q = query.trim().toLowerCase();
@@ -132,7 +123,7 @@ export default function ExplorePage() {
     if (!q) return true;
     return (
       s.id.toLowerCase().includes(q) ||
-      s.name.toLowerCase().includes(q) ||
+      (s.name ?? "").toLowerCase().includes(q) ||
       s.symbol.toLowerCase().includes(q) ||
       s.mint.toLowerCase().includes(q)
     );
@@ -153,15 +144,13 @@ export default function ExplorePage() {
       events.push({
         key: `stamp-${s.id}`,
         when: s.zcashHeight,
-        line: `Stamp issued · ${formatUnits(s.amountBase, s.decimals)} ${
-          metaByMint.get(s.mint)?.symbol ?? ""
-        }`.trim(),
+        line: `Stamp issued · ${formatUnits(s.amountBase, s.decimals)} ${s.symbol}`.trim(),
         sub: `height ${s.zcashHeight} · ${shortId(s.id, 8, 4)}`,
         href: `/collections/${s.mint}/stamps/${s.id}`,
       });
     }
     return events.sort((a, b) => b.when - a.when).slice(0, 6);
-  }, [sales, stamps, metaByMint]);
+  }, [sales, stamps]);
 
   return (
     <>

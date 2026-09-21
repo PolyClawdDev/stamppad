@@ -10,11 +10,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { StampImage } from "@/components/AssetCards";
+import { StampImage, stampTitle } from "@/components/AssetCards";
 import { PriceChart, toCandles, type ChartPoint } from "@/components/PriceChart";
 import { useWallet } from "@/components/Wallet";
+import { TransparentControlProof, signsWithZcashWallet } from "@/components/ZcashSign";
 import { Badge, Loading, Note, Panel, Tech } from "@/components/ui";
-import { formatUnits, formatZec, humanState, shortId, stampNumbers } from "@/lib/format";
+import { formatUnits, formatZec, humanState, shortId } from "@/lib/format";
 import { explorerNote, zcashTxUrl } from "@/lib/explorer";
 
 interface Sale {
@@ -40,6 +41,11 @@ interface StampView {
   mint: string;
   amountBase: string;
   decimals: number;
+  /** Identity of the launch this stamp was cut from, served with the stamp. */
+  name: string | null;
+  symbol: string;
+  imageDataUrl: string | null;
+  number: number;
   destinationNetwork: string;
   sourceTx: string;
   burnLocator: string;
@@ -51,6 +57,8 @@ interface StampView {
   transferable: boolean;
   listable: boolean;
   listabilityNote: string;
+  /** True when the owner is one Zcash-wallet signature away from being able to list. */
+  needsControlProof: boolean;
   transferabilityNote: string;
   indexNote: string;
   zcashTx: string;
@@ -95,13 +103,6 @@ export default function StampDetailPage() {
   const { wallet, sign, connect, zcashDestination } = useWallet();
 
   const [stamp, setStamp] = useState<StampView | null>(null);
-  /** Name, ticker and artwork as supplied when this stamp was issued. */
-  const [meta, setMeta] = useState<{
-    name: string;
-    symbol: string;
-    imageDataUrl: string | null;
-  } | null>(null);
-  const [number, setNumber] = useState<number | null>(null);
   const [sales, setSales] = useState<Sale[]>([]);
   const [collectionSales, setCollectionSales] = useState<Sale[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -113,26 +114,17 @@ export default function StampDetailPage() {
   const [range, setRange] = useState<(typeof RANGES)[number]["id"]>("all");
 
   const load = useCallback(async () => {
-    const [s, sale, coll, catalogue] = await Promise.all([
+    // The stamp carries its own name, ticker, artwork and catalogue number, so
+    // this page does not have to reassemble them from the launch catalogue.
+    const [s, sale] = await Promise.all([
       fetch(`/api/stamps/${id}`).then((r) => r.json()),
       fetch(`/api/sales?mint=${mint}`).then((r) => r.json()),
-      fetch(`/api/launches/${mint}`).then((r) => r.json()),
-      fetch("/api/stamps").then((r) => r.json()),
     ]);
     if (s.error) return setError(s.error.message);
     setStamp(s.data);
-    // Catalogue number comes from issuance order, so unsold stamps have one too.
-    setNumber(stampNumbers(catalogue.data?.stamps ?? []).get(String(id)) ?? null);
     const all: Sale[] = sale.data?.sales ?? [];
     setCollectionSales(all);
     setSales(all.filter((x) => x.stampId === id));
-    if (coll.data?.launch) {
-      setMeta({
-        name: coll.data.launch.name,
-        symbol: coll.data.launch.symbol,
-        imageDataUrl: coll.data.launch.imageDataUrl ?? null,
-      });
-    }
   }, [id, mint]);
 
   useEffect(() => {
@@ -207,7 +199,12 @@ export default function StampDetailPage() {
         body: JSON.stringify({
           stampId: id,
           sellerAddress: zcashDestination,
-          sellerPublicKeyHex: wallet.publicKeyHex,
+          // A transparent seller's key is the one recovered from their control
+          // proof. Phantom's Solana key does not speak for that address, so it
+          // is not offered as if it did.
+          sellerPublicKeyHex: signsWithZcashWallet(zcashDestination)
+            ? undefined
+            : wallet.publicKeyHex,
           priceZat: zecToZat(priceZec),
         }),
       });
@@ -271,8 +268,8 @@ export default function StampDetailPage() {
     );
   }
 
-  const name = meta?.name ?? "Untitled stamp";
-  const symbol = meta?.symbol ?? "";
+  const name = stampTitle(stamp.name);
+  const symbol = stamp.symbol;
   const explorer = zcashTxUrl(stamp.destinationNetwork, stamp.zcashTx);
   const statusLabel = liveListing
     ? liveListing.state === "listed"
@@ -293,7 +290,7 @@ export default function StampDetailPage() {
           <div className="assethead__art">
             <div className="stampcard stampcard--static">
               <div className="stampcard__art">
-                <StampImage stamp={{ id: stamp.id, name, imageDataUrl: meta?.imageDataUrl }} />
+                <StampImage stamp={{ id: stamp.id, name, imageDataUrl: stamp.imageDataUrl }} />
                 <span className="stampcard__denom">
                   {formatUnits(stamp.amountBase, stamp.decimals)} {symbol}
                 </span>
@@ -307,7 +304,7 @@ export default function StampDetailPage() {
               <Badge state={liveListing?.state}>{statusLabel}</Badge>
             </div>
             <p className="muted">
-              {number ? `Stamp No. ${number} · ` : ""}denomination{" "}
+              Stamp No. {stamp.number} · denomination{" "}
               <strong className="num">
                 {formatUnits(stamp.amountBase, stamp.decimals)} {symbol || "units"}
               </strong>
@@ -366,6 +363,16 @@ export default function StampDetailPage() {
 
       <div className="tradelayout">
         <div className="stack">
+          {/* The wall is in the trade panel; the way through it belongs where
+              there is room to read a statement and paste a signature. */}
+          {wallet && isOwner && !liveListing && stamp.needsControlProof && (
+            <TransparentControlProof
+              address={stamp.currentOwner}
+              note={stamp.listabilityNote}
+              onProven={() => void load()}
+            />
+          )}
+
           <Panel>
             <div className="chart__head">
               <div className="tabs tabs--sm" role="tablist" aria-label="Chart scope">
@@ -619,7 +626,7 @@ export default function StampDetailPage() {
             )}
 
             {wallet && !liveListing && isOwner && !stamp.listable && (
-              <Note tone="warn" title="Listing disabled">
+              <Note tone="warn" title={stamp.needsControlProof ? "One signature away" : "Listing disabled"}>
                 {stamp.listabilityNote}
               </Note>
             )}

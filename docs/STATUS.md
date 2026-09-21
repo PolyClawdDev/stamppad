@@ -7,8 +7,9 @@ Legend: **verified** (docs/live probe) · **implemented** (code exists) · **tes
 | Stonk `GET /stats` | verified, implemented | Live probe 2026-09-20. Demo uses captured fixtures unless `STAMP_STONK_READ_LIVE=true`. |
 | Stonk `GET /pairs` | verified, implemented | Schema captured from live JSON. |
 | Stonk `GET /launchlab/pricing` | verified, implemented | Schema captured from live JSON. Supply/decimals come from this path, not user input. |
-| Stonk `POST /launches/prepare` | verified **disabled** | HTTP 503 on 2026-09-20. Not implemented as a working launcher. |
-| Stonk LaunchLab self-build | verified, **blocked** for money movement | Documented. STAMP will not send mainnet LaunchLab transactions without explicit approval. Demo launch mirrors published constants only. |
+| Stonk `POST /launches/prepare` | verified **disabled** | HTTP 503 on 2026-09-20. A separate Stonk feature; it does not gate the LaunchLab route and is not used. |
+| Stonk LaunchLab self-build | verified, implemented, tested, **simulated on mainnet** | `initialize_with_token_2022` plus the creator's `buy_exact_in`, built from live pricing with Stonk's platform id and curve rule. Proved with `simulateTransaction` against mainnet on 2026-09-21: succeeded, around 171,000 compute units, 0.01164304 SOL of rent and signature fees. Sending is flag-gated off and requires the creator's own wallet. |
+| Mainnet burn with destination memo | implemented, tested, **simulated on mainnet** | `burnChecked` plus SPL Memo v3 in one transaction. Simulated 2026-09-21 with a log byte-identical to the reference burn `RcxGYhJt…x8M`. Flag-gated off. |
 | Stonk `GET /tokens` / `{mint}` | documented, partial | List returned HTTP 500 from this environment on 2026-09-20. Adapter treats live failures as failures. |
 | Solana burn verify | verified, implemented, tested | Pure validator over a canonical transaction. Live RPC adapter is read-capable; live burns are flag-gated and default off. |
 | Token-2022 unsupported extensions | implemented, tested | Rejected with an explicit reason. |
@@ -44,8 +45,14 @@ In `STAMP_MODE=demo` you can:
 
 ## Precise live blockers
 
-1. **Stonk paid launch API is off.** `paidLaunchesEnabled=false`; `POST /launches/prepare` returns 503.
-2. **LaunchLab is mainnet.** Sending a LaunchLab initialize spends real SOL and creates a real mint. Disabled.
+1. **A mainnet launch is not free and not reversible.** The transaction is built
+   and proved by simulation, but sending it costs about 0.0114 SOL in rent and
+   fees plus the quote asset the creator spends on their own allocation, and
+   creates a real mint. It is off unless `STAMP_ALLOW_LIVE_LAUNCH=true`, and even
+   then this server cannot send it: the creator's wallet signs.
+2. **A ZEC-paired launch is bought with ZEC, not SOL.** The creator needs a
+   balance of the quote SPL token before the initial buy can fill, and without
+   an initial buy there is no allocation to burn into a stamp.
 3. **No funded isolated Zcash publisher.** Live inscription needs ZEC for ZIP-317 fees. That key must not live on the app server.
 4. **ZSAs are draft.** Transparent OP_RETURN stamps are not Shielded Assets.
 5. **Mainnet burns are irreversible.** Default flags refuse them.

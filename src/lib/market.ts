@@ -14,7 +14,7 @@ import {
   settlementFor,
   type SettlementAdapter,
 } from "./modules/settlement";
-import { walletAdapter } from "./modules/wallet";
+import { walletAdapter, type OwnerScheme } from "./modules/wallet";
 import {
   toHex,
   transferArtifactHash,
@@ -22,6 +22,8 @@ import {
   type TransferAuthorization,
 } from "./protocol";
 import { getStore, type ListingRow, type StampRow } from "./store";
+import type { CookieSession } from "./wallet/cookie";
+import { proofStore, sessionKey } from "./wallet/taddr-proof";
 import { tickConfirmations, type DemoZcashChain } from "./zcash/demo";
 
 export interface MarketContextResult {
@@ -81,10 +83,22 @@ export async function reconcileListings(state?: IndexedState): Promise<IndexedSt
   return indexed;
 }
 
-export async function stampWithOwnership(stamp: StampRow, state?: IndexedState) {
+/**
+ * `proven` names the transparent addresses the viewing session has proved
+ * control of. It is what turns a t-address stamp listable, and it is deliberately
+ * per-request: the same stamp is listable for the session holding the proof and
+ * not for anyone else.
+ */
+export async function stampWithOwnership(
+  stamp: StampRow,
+  state?: IndexedState,
+  proven?: Iterable<string>,
+) {
   const indexed = state ?? (await indexFromStore());
   const owned = indexed.ownership.stamps[stamp.commitmentHex];
-  const capability = walletAdapter.capability(owned?.currentOwner ?? stamp.destination);
+  const currentOwner = owned?.currentOwner ?? stamp.destination;
+  const capability = walletAdapter.capability(currentOwner);
+  const controlProved = new Set(proven ?? []).has(currentOwner);
   const pending = indexed.ownership.pending.filter(
     (p) => p.stampCommitmentHex === stamp.commitmentHex,
   );
@@ -94,20 +108,20 @@ export async function stampWithOwnership(stamp: StampRow, state?: IndexedState) 
   return {
     ...stamp,
     originalRecipient: stamp.destination,
-    currentOwner: owned?.currentOwner ?? stamp.destination,
+    currentOwner,
     sequence: owned?.sequence ?? 0,
     history: owned?.history ?? [],
     transferable: capability.canAuthorize,
     transferabilityNote: capability.reason,
     // Listing asks for the owner's public key before any signature exists, and
     // only an ed25519 destination can hand one over up front. A transparent
-    // holder proves control by signing, and the key is recovered from that, so
-    // transferring works while listing waits on a one-time control proof.
-    listable: capability.canAuthorize && capability.scheme === "ed25519",
-    listabilityNote:
-      capability.scheme === "zcash-signmessage"
-        ? "Transfers from this transparent address are verified by signing with your Zcash wallet. Listing it for sale additionally needs a one-time proof of control, which is not wired into this screen yet."
-        : capability.reason,
+    // holder proves control by signing instead, once, and the key is recovered
+    // from that signature, so listing waits on a proof that transferring does not.
+    listable:
+      capability.canAuthorize && (capability.scheme === "ed25519" || controlProved),
+    listabilityNote: listabilityNote(capability.scheme, capability.reason, controlProved),
+    /** True when the owner is one control proof away from being able to list. */
+    needsControlProof: capability.scheme === "zcash-signmessage" && !controlProved,
     pendingOwnershipRecords: pending,
     rejectedOwnershipRecords: rejected,
     indexed: Boolean(owned),
@@ -115,6 +129,18 @@ export async function stampWithOwnership(stamp: StampRow, state?: IndexedState) 
       ? "Ownership derived from confirmed records replayed by the indexer."
       : "Issuance is not yet confirmed by the indexer, so ownership still resolves to the original recipient.",
   };
+}
+
+function listabilityNote(
+  scheme: OwnerScheme,
+  reason: string,
+  controlProved: boolean,
+): string {
+  if (scheme !== "zcash-signmessage") return reason;
+  if (controlProved) {
+    return "You proved control of this transparent address for this session, so it can be listed. Disconnecting gives the proof up.";
+  }
+  return "Transfers from this transparent address are verified by signing with your Zcash wallet. Listing it for sale additionally needs a one-time proof of control: sign the statement on this page in that wallet and paste the signature back.";
 }
 
 export async function marketOverview() {
@@ -219,22 +245,60 @@ export async function portfolio(input: { owner: string; zcashAddress: string | n
 export async function createListing(input: {
   stampId: string;
   sellerAddress: string;
-  sellerPublicKeyHex: string;
+  /** Ignored for a transparent seller, whose key comes from their control proof. */
+  sellerPublicKeyHex?: string;
   priceZat: string;
   note?: string;
+  session?: Pick<CookieSession, "publicKey" | "verifiedAt"> | null;
 }) {
   const stamp = await requireStamp(input.stampId);
+  const sellerPublicKeyHex = sellerKeyFor(input);
   return withMarket(stamp.commitmentHex, stamp.destination, async ({ adapter }) =>
     publicListing(
       await adapter.list({
         stamp,
         sellerAddress: input.sellerAddress,
-        sellerPublicKeyHex: input.sellerPublicKeyHex,
+        sellerPublicKeyHex,
         priceZat: BigInt(input.priceZat),
         note: input.note,
       }),
     ),
   );
+}
+
+/**
+ * The key a listing records for its seller.
+ *
+ * For a transparent address this is the key recovered from that session's
+ * control proof, never a key the caller supplied. That is the whole point of the
+ * proof: a stamp can carry only one live listing, so if naming an address were
+ * enough to create one, anyone could name someone else's address and keep the
+ * real owner from ever listing their own stamp. They could not complete such a
+ * sale, but blocking the owner would not need them to.
+ */
+function sellerKeyFor(input: {
+  sellerAddress: string;
+  sellerPublicKeyHex?: string;
+  session?: Pick<CookieSession, "publicKey" | "verifiedAt"> | null;
+}): string {
+  if (walletAdapter.capability(input.sellerAddress).scheme !== "zcash-signmessage") {
+    if (!input.sellerPublicKeyHex) {
+      throw new SettlementError("The seller's public key is required to list a stamp.");
+    }
+    return input.sellerPublicKeyHex;
+  }
+  if (!input.session) {
+    throw new SettlementError(
+      "Listing a stamp held at a transparent address needs a connected wallet, because the proof that you control the address is kept against that session.",
+    );
+  }
+  const proof = proofStore.find(sessionKey(input.session), input.sellerAddress);
+  if (!proof) {
+    throw new SettlementError(
+      "This session has not proved control of that transparent address. Sign the ownership statement in the Zcash wallet that holds it and paste the signature back, then list.",
+    );
+  }
+  return proof.publicKeyHex;
 }
 
 export async function reserveListing(input: {
@@ -292,7 +356,7 @@ export async function advanceListing(input: {
           await adapter.publishOffer({
             listing,
             signatureHex: requireSig(input.signatureHex),
-            publicKeyHex: requireKey(input.publicKeyHex),
+            publicKeyHex: signerKey(listing, input.publicKeyHex),
           }),
         );
       case "authorize":
@@ -300,7 +364,7 @@ export async function advanceListing(input: {
           await adapter.authorize({
             listing,
             signatureHex: requireSig(input.signatureHex),
-            publicKeyHex: requireKey(input.publicKeyHex),
+            publicKeyHex: signerKey(listing, input.publicKeyHex),
           }),
         );
       case "lockPayment":
@@ -439,9 +503,20 @@ function requireSig(sig?: string): string {
   return sig;
 }
 
-function requireKey(key?: string): string {
-  if (!key) throw new SettlementError("The signing public key is required for this step.");
-  return key;
+/**
+ * The key a signature on a live listing is recorded under.
+ *
+ * A transparent seller cannot name one: their key is recovered from whatever they
+ * sign. The listing already carries the key recovered when control of the address
+ * was proved, so that is used instead of asking the browser for something it has
+ * no way to know.
+ */
+function signerKey(listing: ListingRow, claimed?: string): string {
+  if (claimed) return claimed;
+  if (walletAdapter.capability(listing.sellerAddress).scheme === "zcash-signmessage") {
+    return listing.sellerPublicKeyHex;
+  }
+  throw new SettlementError("The signing public key is required for this step.");
 }
 
 export function newListingId(): string {

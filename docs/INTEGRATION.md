@@ -37,16 +37,74 @@ Documented read paths that were not fully schema-validated beyond OpenAPI's gene
 
 ### Launch path that is actually enabled
 
-`paidLaunchesEnabled=false` and `POST /launches/prepare` is disabled. The documented working construction path is:
+`paidLaunchesEnabled=false` and `POST /launches/prepare` is disabled. That is a
+different Stonk feature and does not gate this route. The working path, which
+`src/lib/solana/launchlab.ts` and `src/lib/solana/live-launch.ts` implement:
 
 1. `GET /pairs?launchable=true&launchLabReady=true`
 2. `GET /launchlab/pricing?quoteMint={mint}`
-3. Build `initializeWithToken2022` against Raydium LaunchLab yourself
+3. Build `initialize_with_token_2022` against Raydium LaunchLab yourself
 4. Sign locally with the creator wallet **and** a new mint keypair
 5. Send the transaction yourself
 6. Watch `GET /tokens/{mint}` for `launchpad: "launchlab"` adoption
 
-There is no `paymentSignature` on this path. A LaunchLab launch is not a later trade. Optional initial purchase is a separate `buy_exact_in` the creator may append; STAMP must not assume the prepare/submit API executes it.
+There is no `paymentSignature` on this path. A LaunchLab launch is not a later
+trade. The optional initial purchase is a `buy_exact_in` appended to the same
+transaction; it fills against a pool nobody has touched.
+
+### What the program's own IDL says, read 2026-09-21
+
+The IDL account for `LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj` is on chain and
+settles several things that documentation alone does not.
+
+- **`initialize` is deprecated and always fails with `NotApproved` (6000).** The
+  live entry point is `initialize_v2`, or `initialize_with_token_2022` for a
+  Token-2022 base mint. Stonk's launches are the latter, which is why every
+  LaunchLab base mint is a Token-2022 mint.
+- **`initialize_with_token_2022` takes 15 accounts**, ending with the CPI event
+  authority (`__event_authority`) and the program itself, then the platform allow
+  config if the platform restricts global configs, then the platform curve rule.
+  Remaining accounts are read positionally, so that order matters.
+- **`buy_exact_in` takes three accounts the IDL omits** because they are
+  conditional: the system program, the platform fee vault (`[platform_config,
+  quote_mint]`), and the creator fee vault (`[creator, quote_mint]`), in that
+  order after the named accounts.
+- **Stonk's platform config sets `restrict_curve_param = 1`**, read off
+  `4E876qZTE9FJMrBzgVtBrSrzz2TLivB5Y5QXPjB4gZL7`. Enforcement is already on, so
+  the curve rule account is required, not optional. `restrict_global_config` is
+  `0`, so no allow config is attached.
+- **The curve rule's constraints spell out the shape Stonk adopts.** Read off
+  `2hu6XQkewEDhx6Ck9GkuMDpRXWWLmHf54ae8Ln6D8PbU`: curve type 0 (constant
+  product), migrate type 1 (cpmm), cpmm fee on quote token, the published supply
+  and `totalSellA`, no vesting, base token program 1 (Token-2022), and transfer
+  fee disabled. `totalFundRaisingB` is deliberately unconstrained, which is why
+  `raise.raw` has to be read live.
+
+`curve.derived.virtualA|virtualB` are not instruction arguments. The program
+computes them from supply, `totalSellA` and the raise. `constantCurveReserves`
+reproduces that arithmetic and the launch refuses to build if its result
+disagrees with what the endpoint reports, so a drift on either side stops the
+launch instead of producing a pool at an unintended price.
+
+### Proved by simulation, 2026-09-21
+
+`npx tsx --env-file=.env.local scripts/simulate-mainnet.ts` builds both
+transactions and runs them through `simulateTransaction` on mainnet. Nothing is
+signed and nothing is sent; the fee payer is a real wallet holding SOL and ZEC,
+used only because simulation resolves real accounts.
+
+- Launch: `ok: true`, around 171,000 compute units, 11,633,040 lamports of rent
+  plus 10,000 lamports for two signatures, 1,110 transaction bytes. Compute
+  drifts by a thousand or two between runs because the pool state and the live
+  price the curve is sized from move; the rent does not, because it is the size
+  of the accounts the launch creates.
+- Burn: `ok: true`, 27,689 compute units, of which the memo program spends
+  27,401. Its log is byte-identical to the reference mainnet burn's.
+- The burn simulation asks for the token account back and checks the balance the
+  burn leaves, which is the only unambiguous proof available: the original SPL
+  Token program deployed on mainnet does not log the name of the instruction it
+  ran, so a successful `burnChecked` against a classic mint looks like any other
+  token instruction in the log stream.
 
 ### LaunchLab pricing schema (live sample, 2026-09-20)
 

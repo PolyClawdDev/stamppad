@@ -9,10 +9,16 @@ import {
   StampCard,
   StampImage,
   stampHref,
+  stampTitle,
   type StampCardData,
 } from "@/components/AssetCards";
 import { Empty, Note, Panel, Tech } from "@/components/ui";
-import { formatUnits, formatZec, humanState, shortId, stampNumbers } from "@/lib/format";
+import {
+  ZcashSignForm,
+  signatureBase64ToHex,
+  signsWithZcashWallet,
+} from "@/components/ZcashSign";
+import { formatUnits, formatZec, humanState, shortId } from "@/lib/format";
 
 interface Listing {
   id: string;
@@ -49,11 +55,16 @@ interface Sale {
   txid: string;
 }
 
+/** Served with the identity of the launch the stamp was cut from. */
 interface StampSummary {
   id: string;
   mint: string;
   amountBase: string;
   decimals: number;
+  name: string | null;
+  symbol: string;
+  imageDataUrl: string | null;
+  number: number;
   currentOwner: string;
   zcashHeight: number;
 }
@@ -63,14 +74,6 @@ interface CompletedSale {
   priceZat: string;
   settledAt: string | null;
   height: number;
-}
-
-/** Name, ticker and artwork as they were supplied when the stamp was issued. */
-interface StampMeta {
-  mint: string;
-  name: string;
-  symbol: string;
-  imageDataUrl?: string | null;
 }
 
 const STEP_HELP: Record<string, string> = {
@@ -94,21 +97,15 @@ export default function MarketPage() {
   const [disclosure, setDisclosure] = useState<Disclosure | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  // Listings carry a mint; the metadata supplied at issue time comes from the catalogue.
-  const [collections, setCollections] = useState<Map<string, StampMeta>>(new Map());
   const [stamps, setStamps] = useState<StampSummary[]>([]);
   const [saleHistory, setSaleHistory] = useState<CompletedSale[]>([]);
   const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    void fetch("/api/launches")
-      .then((r) => r.json())
-      .then((j) =>
-        setCollections(
-          new Map((j.data?.launches ?? []).map((l: StampMeta) => [l.mint, l] as const)),
-        ),
-      );
-  }, []);
+  /** The step a transparent seller is signing by hand, when there is one. */
+  const [handSign, setHandSign] = useState<{
+    listingId: string;
+    action: string;
+    preimage: string;
+  } | null>(null);
 
   const load = useCallback(async () => {
     const [json, stampsJson, salesJson] = await Promise.all([
@@ -130,11 +127,10 @@ export default function MarketPage() {
     void load();
   }, [load]);
 
-  const numbers = useMemo(() => stampNumbers(stamps), [stamps]);
-  const mintOf = useMemo(() => new Map(stamps.map((s) => [s.id, s.mint])), [stamps]);
+  const byId = useMemo(() => new Map(stamps.map((s) => [s.id, s])), [stamps]);
   /** Canonical detail URL when the collection is known; the flat alias otherwise. */
   const hrefFor = (stampId: string) => {
-    const mint = mintOf.get(stampId);
+    const mint = byId.get(stampId)?.mint;
     return mint ? stampHref({ mint, id: stampId }) : `/stamps/${stampId}`;
   };
   const lastSales = useMemo(() => {
@@ -151,7 +147,6 @@ export default function MarketPage() {
   const cards: StampCardData[] = useMemo(
     () =>
       stamps.map((s) => {
-        const launch = collections.get(s.mint);
         const sale = lastSales.get(s.id);
         const listing = liveByStamp.get(s.id);
         return {
@@ -159,10 +154,10 @@ export default function MarketPage() {
           mint: s.mint,
           amountBase: s.amountBase,
           decimals: s.decimals,
-          name: launch?.name ?? "Untitled stamp",
-          symbol: launch?.symbol ?? "",
-          imageDataUrl: launch?.imageDataUrl ?? null,
-          number: numbers.get(s.id) ?? 1,
+          name: s.name,
+          symbol: s.symbol,
+          imageDataUrl: s.imageDataUrl,
+          number: s.number,
           listing: listing ? { state: listing.state, priceZat: listing.priceZat } : null,
           lastSale: sale
             ? { priceZat: sale.priceZat, settledAt: sale.settledAt, height: sale.height }
@@ -170,8 +165,19 @@ export default function MarketPage() {
           ownedByViewer: Boolean(zcashDestination && s.currentOwner === zcashDestination),
         };
       }),
-    [stamps, collections, numbers, lastSales, liveByStamp, zcashDestination],
+    [stamps, lastSales, liveByStamp, zcashDestination],
   );
+
+  async function post(listingId: string, body: Record<string, unknown>) {
+    const res = await fetch(`/api/market/listings/${listingId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json();
+    if (json.error) throw new Error(json.error.message);
+    await load();
+  }
 
   async function act(listing: Listing, action: string) {
     if (!wallet) return connect();
@@ -193,18 +199,38 @@ export default function MarketPage() {
           await fetch(`/api/market/listings/${listing.id}?challenge=true`)
         ).json();
         if (challenge.error) throw new Error(challenge.error.message);
+        // A transparent seller signs in their own Zcash wallet, so the preimage
+        // is shown for pasting instead of being handed to Phantom.
+        if (signsWithZcashWallet(listing.sellerAddress)) {
+          setHandSign({ listingId: listing.id, action, preimage: challenge.data.preimage });
+          return;
+        }
         const signed = await sign(challenge.data.preimage);
         body.signatureHex = signed.signatureHex;
         body.publicKeyHex = signed.publicKeyHex;
       }
-      const res = await fetch(`/api/market/listings/${listing.id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error.message);
-      await load();
+      await post(listing.id, body);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "action failed");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  /** Takes a pasted Zcash signature for whichever step opened the panel. */
+  async function submitHandSigned(signatureBase64: string) {
+    if (!handSign) return;
+    setBusy(handSign.listingId);
+    setError(null);
+    try {
+      const signatureHex = signatureBase64ToHex(signatureBase64);
+      if (!signatureHex) {
+        throw new Error("That signature is not valid base64. Copy it again from your wallet.");
+      }
+      // The seller's key is not sent: the listing already carries the one
+      // recovered when control of the address was proved.
+      await post(handSign.listingId, { action: handSign.action, signatureHex });
+      setHandSign(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "action failed");
     } finally {
@@ -326,7 +352,7 @@ export default function MarketPage() {
             listings.map((l) => {
               const isSeller = Boolean(zcashDestination) && zcashDestination === l.sellerAddress;
               const isBuyer = Boolean(zcashDestination) && zcashDestination === l.buyerAddress;
-              const meta = l.stamp ? collections.get(l.stamp.mint) : undefined;
+              const meta = byId.get(l.stampId);
               return (
                 <Panel key={l.id}>
                   <div className="listing">
@@ -342,7 +368,7 @@ export default function MarketPage() {
                     <div className="stack-sm" style={{ minWidth: 0 }}>
                       <div className="spread">
                         <Link className="listing__id" href={hrefFor(l.stampId)}>
-                          {meta?.name ?? "Untitled stamp"}
+                          {stampTitle(meta?.name)}
                         </Link>
                         <ListingStateBadge state={l.state} />
                       </div>
@@ -351,7 +377,7 @@ export default function MarketPage() {
                         {l.stamp && (
                           <span className="tiny muted">
                             denomination {formatUnits(l.stamp.amountBase, l.stamp.decimals)}{" "}
-                            {meta?.symbol ?? "units"}
+                            {meta?.symbol || "units"}
                           </span>
                         )}
                       </div>
@@ -396,6 +422,33 @@ export default function MarketPage() {
                       )
                     )}
                   </div>
+
+                  {handSign?.listingId === l.id && (
+                    <div style={{ marginTop: 12 }}>
+                      <ZcashSignForm
+                        statement={handSign.preimage}
+                        help={
+                          handSign.action === "publishOffer"
+                            ? "This is the offer record. Sign it in whatever Zcash wallet holds the selling address — StampPad never sees your Zcash key."
+                            : "This is the transfer authorization the buyer needs. Sign it in whatever Zcash wallet holds the selling address — StampPad never sees your Zcash key."
+                        }
+                        submitLabel={
+                          handSign.action === "publishOffer"
+                            ? "Publish the offer"
+                            : "Record the authorization"
+                        }
+                        busy={busy === l.id}
+                        onSubmit={submitHandSigned}
+                      />
+                      <button
+                        className="btn btn--sm"
+                        style={{ marginTop: 8 }}
+                        onClick={() => setHandSign(null)}
+                      >
+                        Not now
+                      </button>
+                    </div>
+                  )}
 
                   <div style={{ marginTop: 12 }}>
                     <Tech summary="Settlement record">

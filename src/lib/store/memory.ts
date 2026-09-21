@@ -3,12 +3,29 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { emptyChain } from "../solana/demo";
 import { emptyZcash } from "../zcash/demo";
-import { deserializeDemo, serializeDemo } from "./serialize";
+import { deserializeClaim, deserializeDemo, serializeClaim, serializeDemo } from "./serialize";
 import type { JobRow, LaunchRow, ListingRow, StampRow, Store, TransferRow } from "./types";
+
+/**
+ * A job on disk differs from a job in memory in exactly one place: the claim
+ * package holds a canonical Solana transaction, whose bigint balances and raw
+ * instruction bytes have no JSON of their own.
+ */
+type StoredJob = Omit<JobRow, "claimPackage"> & {
+  claimPackage: ReturnType<typeof serializeClaim> | null;
+};
+
+function toStored(row: JobRow): StoredJob {
+  return { ...row, claimPackage: row.claimPackage ? serializeClaim(row.claimPackage) : null };
+}
+
+function fromStored(row: StoredJob): JobRow {
+  return { ...row, claimPackage: row.claimPackage ? deserializeClaim(row.claimPackage) : null };
+}
 
 interface MemoryShape {
   launches: Record<string, LaunchRow>;
-  jobs: Record<string, JobRow>;
+  jobs: Record<string, StoredJob>;
   stamps: Record<string, StampRow>;
   listings: Record<string, ListingRow>;
   transfers: Record<string, TransferRow>;
@@ -85,17 +102,21 @@ export class MemoryStore implements Store {
     this.write(data);
   }
   async listJobs() {
-    return Object.values(this.read().jobs).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    return Object.values(this.read().jobs)
+      .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+      .map(fromStored);
   }
   async getJob(id: string) {
-    return this.read().jobs[id] ?? null;
+    const row = this.read().jobs[id];
+    return row ? fromStored(row) : null;
   }
   async findJobByIdempotency(key: string) {
-    return Object.values(this.read().jobs).find((j) => j.idempotencyKey === key) ?? null;
+    const row = Object.values(this.read().jobs).find((j) => j.idempotencyKey === key);
+    return row ? fromStored(row) : null;
   }
   async upsertJob(row: JobRow) {
     const data = this.read();
-    data.jobs[row.id] = row;
+    data.jobs[row.id] = toStored(row);
     this.write(data);
   }
   async listStamps() {

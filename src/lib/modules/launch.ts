@@ -1,12 +1,21 @@
 /**
  * Launch integration. The only module that knows Stonk exists.
  *
- * Verified against https://www.stonkfun.xyz/developers on 2026-09-20; see
- * docs/INTEGRATION.md for the captured responses and the paid-launch blocker.
+ * Two integrations sit behind one interface. The demo one launches on an
+ * in-process ledger and can report a signature because it made one up. The live
+ * one builds a real Raydium LaunchLab launch against mainnet and cannot report a
+ * signature, because it has no key and is not allowed one: the creator's wallet
+ * signs, in the creator's own browser. So the live path offers `prepare`, which
+ * returns an unsigned transaction and the mainnet simulation that proves it,
+ * and refuses `create`.
+ *
+ * Verified against https://www.stonkfun.xyz/developers and the program's own
+ * IDL account on mainnet; see docs/INTEGRATION.md.
  */
 import { flags, liveMoneyMovementBlocked } from "../mode";
 import { getPairs, getPricing, getStats, getToken, stonkTokenUrl } from "../stonk/client";
 import { assertLiveLaunchAllowed } from "../solana/live";
+import { prepareLiveLaunch, type PreparedLaunch } from "../solana/live-launch";
 import { launchDemoMint, type DemoChainState } from "../solana/demo";
 
 export interface LaunchParams {
@@ -31,6 +40,18 @@ export interface LaunchResult {
   source: "demo-ledger" | "stonk";
 }
 
+/** What a live launch needs. The creator's wallet supplies the signature. */
+export interface PrepareLaunchParams {
+  creator: string;
+  name: string;
+  symbol: string;
+  /** Metadata address with `{mint}` standing in for the mint being created. */
+  metadataUriTemplate: string;
+  quoteMint: string;
+  /** Quote units spent on the initial buy, which becomes the burnable allocation. */
+  quoteAmountIn: bigint;
+}
+
 export interface LaunchIntegration {
   readonly kind: "demo" | "live";
   pairs(): Promise<Awaited<ReturnType<typeof getPairs>>>;
@@ -39,6 +60,8 @@ export interface LaunchIntegration {
   token(mint: string): Promise<Awaited<ReturnType<typeof getToken>>>;
   venueUrl(mint: string): string;
   create(params: LaunchParams): Promise<LaunchResult>;
+  /** An unsigned mainnet launch, with the simulation that proves it. */
+  prepare(params: PrepareLaunchParams): Promise<PreparedLaunch>;
 }
 
 export class DemoLaunchIntegration implements LaunchIntegration {
@@ -82,6 +105,11 @@ export class DemoLaunchIntegration implements LaunchIntegration {
       source: "demo-ledger",
     };
   }
+  async prepare(): Promise<PreparedLaunch> {
+    throw new Error(
+      "The demo ledger has no Solana transaction to sign. Building a real launch needs STAMP_MODE=mainnet with STAMP_ALLOW_LIVE_LAUNCH=true.",
+    );
+  }
 }
 
 export class LiveLaunchIntegration implements LaunchIntegration {
@@ -101,13 +129,34 @@ export class LiveLaunchIntegration implements LaunchIntegration {
   venueUrl(mint: string) {
     return stonkTokenUrl(mint);
   }
+  /**
+   * A live launch cannot be created here, and that is deliberate rather than
+   * unfinished. Creating it would mean signing as the creator, which would mean
+   * holding the creator's key. `prepare` is the live path.
+   */
   async create(): Promise<LaunchResult> {
+    await this.gate();
+    throw new Error(
+      "A mainnet launch is signed by the creator's own wallet, so this server cannot create one. Prepare the transaction and approve it in Phantom.",
+    );
+  }
+
+  async prepare(params: PrepareLaunchParams): Promise<PreparedLaunch> {
+    await this.gate();
+    return prepareLiveLaunch({
+      creator: params.creator,
+      name: params.name,
+      symbol: params.symbol,
+      metadataUriTemplate: params.metadataUriTemplate,
+      quoteMint: params.quoteMint,
+      quoteAmountIn: params.quoteAmountIn,
+    });
+  }
+
+  private async gate(): Promise<void> {
     const blocked = liveMoneyMovementBlocked("launch");
     if (blocked) throw new Error(blocked);
-    assertLiveLaunchAllowed();
-    throw new Error(
-      "Live LaunchLab transaction construction is not implemented: the Stonk paid-launch endpoint returned 503 and no signed-transaction schema was observed.",
-    );
+    await assertLiveLaunchAllowed();
   }
 }
 

@@ -153,6 +153,59 @@ export function decodeBurns(
   return [...byMint.values()].sort((a, b) => (a.mint < b.mint ? -1 : 1));
 }
 
+export interface AccountInfo {
+  owner: string;
+  lamports: number;
+  data: [string, string];
+  executable: boolean;
+}
+
+interface SimulationValue {
+  err?: unknown;
+  logs?: string[] | null;
+  unitsConsumed?: number;
+  accounts?: Array<AccountInfo | null> | null;
+}
+
+export interface SimulationResult {
+  ok: boolean;
+  err: unknown;
+  logs: string[];
+  unitsConsumed: number | null;
+  accounts: Array<AccountInfo | null> | null;
+  /** The custom program error the logs name, when they name one. */
+  programError: { code: number; name: string | null } | null;
+}
+
+/**
+ * Anchor programs report a failure as a custom error code in the log stream.
+ * Pulling it out turns "custom program error: 0x1789" into something the caller
+ * can act on, and the LaunchLab codes we care about are the ones that mean the
+ * launch shape is wrong rather than the wallet is short of funds.
+ */
+export const LAUNCHLAB_ERROR_NAMES: Record<number, string> = {
+  6000: "NotApproved",
+  6002: "InvalidInput",
+  6003: "InputNotMatchCurveConfig",
+  6004: "ExceededSlippage",
+  6014: "InvalidPlatformInfo",
+  6018: "NotEnoughRemainingAccounts",
+  6020: "CurveParamIsNotExist",
+  6022: "InvalidPlatformAllowConfig",
+  6024: "InvalidPlatformCurveRule",
+  6025: "CurveParamNotMatchPlatformRule",
+};
+
+export function anchorErrorFrom(logs: string[]): { code: number; name: string | null } | null {
+  for (const line of logs) {
+    const match = /custom program error: (0x[0-9a-fA-F]+|\d+)/.exec(line);
+    if (!match) continue;
+    const code = match[1].startsWith("0x") ? parseInt(match[1], 16) : Number(match[1]);
+    return { code, name: LAUNCHLAB_ERROR_NAMES[code] ?? null };
+  }
+  return null;
+}
+
 export class SolanaRpcError extends Error {
   constructor(
     message: string,
@@ -193,6 +246,80 @@ export class SolanaRpc {
 
   async getSlot(): Promise<number> {
     return this.call<number>("getSlot", [{ commitment: "finalized" }]);
+  }
+
+  /** A blockhash a built transaction can be signed against. */
+  async getLatestBlockhash(): Promise<{ blockhash: string; lastValidBlockHeight: number }> {
+    const result = await this.call<{
+      value: { blockhash: string; lastValidBlockHeight: number };
+    }>("getLatestBlockhash", [{ commitment: "confirmed" }]);
+    return result.value;
+  }
+
+  async getAccountInfo(address: string): Promise<AccountInfo | null> {
+    const result = await this.call<{ value: AccountInfo | null }>("getAccountInfo", [
+      address,
+      { encoding: "base64", commitment: "confirmed" },
+    ]);
+    return result.value;
+  }
+
+  /** Base units held, or null when the account does not exist. */
+  async getTokenAccountBalance(address: string): Promise<string | null> {
+    try {
+      const result = await this.call<{ value: { amount: string } }>("getTokenAccountBalance", [
+        address,
+        { commitment: "confirmed" },
+      ]);
+      return result.value.amount;
+    } catch {
+      return null;
+    }
+  }
+
+  async getMinimumBalanceForRentExemption(bytes: number): Promise<number> {
+    return this.call<number>("getMinimumBalanceForRentExemption", [bytes]);
+  }
+
+  /**
+   * Runs a transaction against the current mainnet state without sending it.
+   *
+   * This is how a launch or a burn is proved before anyone is asked to approve
+   * it: the RPC resolves every account and executes every instruction, so a
+   * wrong PDA, a wrong account order, or a mis-encoded argument fails here
+   * rather than after the fee is paid. It costs nothing and moves nothing.
+   *
+   * Signatures are not verified, because a transaction that has not been
+   * approved in a wallet yet does not have them. That is the whole point: the
+   * encoding can be proved before the user is asked for anything.
+   */
+  async simulateTransaction(
+    transactionBase64: string,
+    options: { addresses?: string[] } = {},
+  ): Promise<SimulationResult> {
+    const config: Record<string, unknown> = {
+      sigVerify: false,
+      replaceRecentBlockhash: true,
+      commitment: "confirmed",
+      encoding: "base64",
+    };
+    if (options.addresses?.length) {
+      config.accounts = { encoding: "base64", addresses: options.addresses };
+    }
+    const result = await this.call<{ value: SimulationValue }>("simulateTransaction", [
+      transactionBase64,
+      config,
+    ]);
+    const value = result.value;
+    return {
+      ok: value.err === null || value.err === undefined,
+      err: value.err ?? null,
+      logs: value.logs ?? [],
+      unitsConsumed: value.unitsConsumed ?? null,
+      accounts: value.accounts ?? null,
+      /** Anchor error codes arrive in the logs rather than in err. */
+      programError: anchorErrorFrom(value.logs ?? []),
+    };
   }
 
   /** Null when the signature is unknown or not yet finalized. */

@@ -91,14 +91,17 @@ npm run build
 npm start
 ```
 
-Optional durable PostgreSQL:
+Production (Vercel) needs a database. Without `DATABASE_URL` the app writes
+to `/tmp` and the next request often cannot see the launch. Attach Vercel
+Postgres or any Postgres provider, set `DATABASE_URL`, and redeploy. Do **not**
+also set `STAMP_STORE=memory`. The schema is created on the first request.
+
+Optional local PostgreSQL:
 
 ```bash
 docker compose up -d
 # in .env.local
-# STAMP_STORE=postgres
 # DATABASE_URL=postgres://stamp:stamp@127.0.0.1:5432/stamp
-npm run db:migrate
 npm run dev
 ```
 

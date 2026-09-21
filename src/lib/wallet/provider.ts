@@ -22,6 +22,15 @@ export interface PhantomSignature {
 
 export type PhantomEvent = "connect" | "disconnect" | "accountChanged";
 
+/**
+ * A transaction Phantom will sign and broadcast. The shape is web3.js's
+ * Transaction, described structurally so this module stays free of the
+ * dependency and the connect flow stays drivable by a fake.
+ */
+export interface PhantomTransaction {
+  serialize(config?: { requireAllSignatures?: boolean; verifySignatures?: boolean }): Uint8Array;
+}
+
 export interface PhantomProvider {
   isPhantom?: boolean;
   isConnected?: boolean;
@@ -32,9 +41,27 @@ export interface PhantomProvider {
     message: Uint8Array,
     encoding?: "utf8" | "hex",
   ): Promise<PhantomSignature | Uint8Array>;
+  /**
+   * Adds the wallet's signature and broadcasts. Phantom keeps signatures that
+   * are already on the transaction, which is what lets a launch carry the new
+   * mint's signature while the creator supplies their own.
+   *
+   * Optional, because older Phantom builds and the test fake do not have it.
+   * Absence is reported to the user rather than worked around.
+   */
+  signAndSendTransaction?(
+    transaction: PhantomTransaction,
+  ): Promise<{ signature: string } | string>;
   on(event: PhantomEvent, handler: (payload?: unknown) => void): void;
   off?(event: PhantomEvent, handler: (payload?: unknown) => void): void;
   removeListener?(event: PhantomEvent, handler: (payload?: unknown) => void): void;
+}
+
+/** Phantom returns either the object or the bare signature depending on build. */
+export function readSendResult(result: { signature: string } | string): string {
+  const signature = typeof result === "string" ? result : result?.signature;
+  if (!signature) throw new Error("The wallet did not return a transaction signature.");
+  return signature;
 }
 
 export interface PhantomWindow {

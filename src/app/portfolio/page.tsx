@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWallet, walletStateLine } from "@/components/Wallet";
 import { CoinRow, StampCard, type StampCardData } from "@/components/AssetCards";
 import { Badge, Empty, Loading, Note, Panel, Tech } from "@/components/ui";
-import { formatUnits, humanState, shortId, stampNumbers } from "@/lib/format";
+import { formatUnits, humanState, shortId } from "@/lib/format";
 import { PHANTOM_SITE } from "@/lib/wallet/provider";
 import { truncateKey } from "@/lib/wallet/session";
 
@@ -17,11 +17,16 @@ interface Balance {
   amountBase: string;
 }
 
+/** Served with the identity of the launch the stamp was cut from. */
 interface StampView {
   id: string;
   mint: string;
   amountBase: string;
   decimals: number;
+  name: string | null;
+  symbol: string;
+  imageDataUrl: string | null;
+  number: number;
   currentOwner: string;
   originalRecipient: string;
   sequence: number;
@@ -50,8 +55,9 @@ export default function PortfolioPage() {
     launches: Array<{ mint: string; name: string; symbol: string; imageDataUrl?: string | null }>;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // The portfolio payload only carries launches this wallet created, so stamps
-  // from someone else's collection need the public launch list for their names.
+  // Stamps arrive already named. Token balances do not, and a balance can be in
+  // a coin this wallet did not launch, so the public launch list supplies their
+  // artwork.
   const [catalogue, setCatalogue] = useState<
     Array<{ mint: string; name: string; symbol: string; imageDataUrl?: string | null }>
   >([]);
@@ -93,7 +99,6 @@ export default function PortfolioPage() {
     () => new Map([...catalogue, ...(data?.launches ?? [])].map((l) => [l.mint, l])),
     [data, catalogue],
   );
-  const numbers = useMemo(() => stampNumbers(data?.stamps ?? []), [data]);
 
   if (!ready) {
     return (
@@ -143,10 +148,10 @@ export default function PortfolioPage() {
     mint: s.mint,
     amountBase: s.amountBase,
     decimals: s.decimals,
-    name: collections.get(s.mint)?.name ?? "Untitled stamp",
-    symbol: collections.get(s.mint)?.symbol ?? "",
-    imageDataUrl: collections.get(s.mint)?.imageDataUrl ?? null,
-    number: numbers.get(s.id) ?? 1,
+    name: s.name,
+    symbol: s.symbol,
+    imageDataUrl: s.imageDataUrl,
+    number: s.number,
     listing: s.listing,
     lastSale: lastSales.get(s.id) ?? null,
     ownedByViewer: s.isCurrentOwner,

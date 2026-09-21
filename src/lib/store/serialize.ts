@@ -1,4 +1,4 @@
-import type { CanonicalSolanaTx, MintView, TokenAccountView } from "../protocol";
+import type { CanonicalSolanaTx, ClaimPackage, MintView, TokenAccountView } from "../protocol";
 import type { DemoChainState, DemoMintState } from "../solana/demo";
 import type { DemoZcashChain } from "../zcash/demo";
 
@@ -47,6 +47,21 @@ function deserIx(tx: ReturnType<typeof serIx>): CanonicalSolanaTx {
       },
     })),
   };
+}
+
+/**
+ * A claim package carries the whole canonical burn transaction, which means it
+ * carries bigint balances and raw instruction bytes. Handing that to
+ * JSON.stringify throws on the bigint, and a Uint8Array that does get through
+ * comes back as an object with numeric keys. Both stores put claim packages in
+ * JSON, so both go through this.
+ */
+export function serializeClaim(claim: ClaimPackage) {
+  return { ...claim, solana: { ...claim.solana, transaction: serIx(claim.solana.transaction) } };
+}
+
+export function deserializeClaim(raw: ReturnType<typeof serializeClaim>): ClaimPackage {
+  return { ...raw, solana: { ...raw.solana, transaction: deserIx(raw.solana.transaction) } };
 }
 
 export function serializeDemo(solana: DemoChainState, zcash: DemoZcashChain) {

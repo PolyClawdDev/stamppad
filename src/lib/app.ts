@@ -6,9 +6,12 @@ import {
   validateDestination,
 } from "./protocol";
 import { eligibleBalance, launchDemoMint } from "./solana/demo";
+import { assertLiveBurnsAllowed } from "./solana/live";
+import { prepareLiveBurn } from "./solana/live-burn";
+import { launchIntegrationFor } from "./modules/launch";
 import { getPairs, getPricing, getStats, getToken, stonkTokenUrl } from "./stonk/client";
 import { getStore, type JobRow, type LaunchRow, type StampRow } from "./store";
-import { memoryStateInfo } from "./store/memory";
+import { durability, durabilityProblem } from "./store/durability";
 import { publicationFeeQuote, submitDemoBurn } from "./jobs/processor";
 
 export async function statusPayload() {
@@ -21,8 +24,9 @@ export async function statusPayload() {
     mode: f.mode,
     networks: { source: f.sourceNetwork, destination: f.destNetwork },
     store: f.store,
-    statePersistence:
-      f.store === "postgres" ? "durable" : memoryStateInfo().ephemeral ? "ephemeral" : "file",
+    statePersistence: durability(),
+    stateProblem: durabilityProblem(),
+    acceptingLaunches: durabilityProblem() === null,
     flags: {
       stonkReadLive: f.stonkReadLive,
       allowLiveLaunch: f.allowLiveLaunch,
@@ -67,15 +71,41 @@ export async function quoteLaunch(quoteMint: string) {
       poolBase: pricing.curve.totalSellA,
       note: "Supply and decimals are fixed by the LaunchLab path Stonk publishes. They are not user settings.",
     },
+    live: liveLaunchStatus(),
     costs: {
-      launchVenue: stats.stats.config.paidLaunchesEnabled
-        ? "Stonk paid launch path (currently reported enabled)"
-        : "Stonk paid launch path disabled (503 on 2026-09-20). LaunchLab self-build has no Stonk launch fee.",
-      initialPurchase: "Optional and only if you hold the quote asset. Does not execute a later trade.",
+      launchVenue:
+        "None. StampPad builds the LaunchLab launch itself and attaches Stonk's platform id, which is the path Stonk charges no fee on.",
+      // The pair list is the authority on the quote's symbol. The fixture
+      // pricing response carries whichever pair was captured, so reading the
+      // symbol off it would name the wrong asset.
+      initialPurchase: `Paid in ${pair.symbol}, not SOL, and it is what becomes the burnable allocation.`,
       stampFee: "0",
-      network: "Solana rent + priority fee paid by the creator wallet. This build's ledger does not charge SOL.",
+      network: liveLaunchStatus().launchEnabled
+        ? "Solana rent and signature fees, paid by the creator's wallet. The exact amount is measured by simulating the launch before you approve it."
+        : "Nothing. This deployment's ledger charges no SOL because it is not on Solana.",
       publication: publicationFeeQuote(),
     },
+  };
+}
+
+/**
+ * What this deployment will actually do when someone launches.
+ *
+ * The UI has to be able to say which of the two it is without guessing, and the
+ * reason a path is closed has to be the current reason rather than a stale one.
+ */
+export function liveLaunchStatus() {
+  const f = flags();
+  return {
+    mode: f.mode,
+    launchEnabled: f.mode !== "demo" && f.allowLiveLaunch,
+    burnEnabled: f.mode !== "demo" && f.allowLiveBurns,
+    zcashPublishEnabled: f.mode !== "demo" && f.allowLiveZcashPublish,
+    launchBlockedReason: liveMoneyMovementBlocked("launch"),
+    burnBlockedReason: liveMoneyMovementBlocked("burn"),
+    publishBlockedReason: liveMoneyMovementBlocked("publish"),
+    stonkReadLive: f.stonkReadLive,
+    hasRpc: Boolean(f.solanaRpc),
   };
 }
 
@@ -93,6 +123,8 @@ export async function createDemoLaunch(input: {
   if (stampMode() !== "demo") {
     throw new Error(blocked ?? "Live launch is not enabled in this build.");
   }
+  const undurable = durabilityProblem();
+  if (undurable) throw new Error(`Refusing to record a launch that will not survive. ${undurable}`);
   const artwork = artworkProblem(input.imageDataUrl);
   if (artwork) throw new Error(artwork);
   const quote = await quoteLaunch(input.quoteMint);
@@ -157,12 +189,146 @@ export async function createDemoLaunch(input: {
   };
 }
 
+/**
+ * Builds a real mainnet launch for the creator's wallet to approve.
+ *
+ * Returns rather than sends. Nothing has happened on Solana when this resolves:
+ * the transaction is unsigned by the creator, and the simulation it carries is
+ * the proof that it will do what it says when they sign it.
+ *
+ * The collection identity is recorded here even so. The metadata URI is written
+ * onto the mint at creation and can never be corrected, and it resolves against
+ * this record, so the name, ticker, description and artwork have to exist on the
+ * server before the creator approves anything. Keeping them in the browser until
+ * the launch lands would mean a closed tab left a real mint permanently nameless.
+ */
+export async function prepareMainnetLaunch(input: {
+  owner: string;
+  name: string;
+  symbol: string;
+  description: string;
+  imageDataUrl: string | null;
+  quoteMint: string;
+  /** Quote asset to spend on the initial buy, as the user typed it. */
+  quoteAmountDisplay: string;
+}) {
+  const undurable = durabilityProblem();
+  if (undurable) throw new Error(`Refusing to build a launch this deployment cannot record. ${undurable}`);
+  const artwork = artworkProblem(input.imageDataUrl);
+  if (artwork) throw new Error(artwork);
+  const quote = await quoteLaunch(input.quoteMint);
+  const quoteAmountIn = parseDisplay(input.quoteAmountDisplay, quote.pricing.quote.decimals);
+  if (quoteAmountIn <= 0n) {
+    throw new Error(`The initial buy must be more than zero ${quote.pricing.quote.symbol}.`);
+  }
+  const integration = launchIntegrationFor((await getStore().loadDemo()).solana);
+  const prepared = await integration.prepare({
+    creator: input.owner,
+    name: input.name.trim(),
+    symbol: input.symbol.trim().toUpperCase(),
+    metadataUriTemplate: launchMetadataUriTemplate(),
+    quoteMint: input.quoteMint,
+    quoteAmountIn,
+  });
+  await getStore().upsertLaunch({
+    mint: prepared.mint,
+    name: input.name.trim(),
+    symbol: input.symbol.trim().toUpperCase(),
+    description: input.description.trim(),
+    imageDataUrl: input.imageDataUrl,
+    quoteMint: input.quoteMint,
+    quoteSymbol: quote.pair.symbol,
+    tokenProgram: prepared.allocation.tokenProgram,
+    decimals: prepared.allocation.decimals,
+    launchSupply: prepared.curve.supply,
+    poolBase: prepared.curve.totalSellA,
+    currentSupply: "0",
+    creator: input.owner,
+    // Empty until the creator's signature lands the launch on Solana. Nothing
+    // treats this collection as a mint that exists while it is blank.
+    launchTx: "",
+    stonkUrl: stonkTokenUrl(prepared.mint),
+    source: "prepared on this deployment for the creator's approval; not signed or sent to Solana",
+    createdAt: new Date().toISOString(),
+  });
+  return {
+    launch: prepared,
+    burnPlan: {
+      note: "The whole allocation is burned to cut the stamp. The amount is read off chain after the launch lands, because the curve decides it.",
+      expectedBase: prepared.allocation.expectedBase,
+      decimals: prepared.allocation.decimals,
+    },
+    zcash: {
+      publishEnabled: liveLaunchStatus().zcashPublishEnabled,
+      note:
+        liveLaunchStatus().publishBlockedReason ??
+        "Zcash publication is enabled on this deployment.",
+    },
+  };
+}
+
+/**
+ * Builds a real mainnet burn of the connected wallet's whole allocation, with
+ * the destination memo the stamp rule requires, for that wallet to approve.
+ */
+export async function prepareMainnetBurn(input: {
+  mint: string;
+  owner: string;
+  destination: string;
+  amountDisplay?: string;
+}) {
+  const blocked = liveMoneyMovementBlocked("burn");
+  if (blocked) throw new Error(blocked);
+  await assertLiveBurnsAllowed();
+  const dest = validateDestination(flags().destNetwork, input.destination);
+  if (!dest.ok) throw new Error(dest.message);
+  const prepared = await prepareLiveBurn({
+    mint: input.mint,
+    authority: input.owner,
+    destination: input.destination,
+    amountBase: input.amountDisplay ? parseDisplay(input.amountDisplay, 6) : undefined,
+  });
+  return {
+    burn: prepared,
+    irreversible:
+      "This destroys the tokens permanently. A stamp is not redeemable for anything held in reserve, and a burn whose stamp is never published is simply gone.",
+    zcash: {
+      publishEnabled: liveLaunchStatus().zcashPublishEnabled,
+      note: liveLaunchStatus().publishBlockedReason ?? "Zcash publication is enabled.",
+    },
+  };
+}
+
+/**
+ * Where the token's metadata JSON will live.
+ *
+ * Token-2022 writes the URI onto the mint at creation and this app has no
+ * authority to change it afterwards, so it has to be an address that will still
+ * resolve long after the launch. That rules out deriving it from the request's
+ * own host, which is why it comes from configuration and is required to be
+ * https before a mainnet launch will build at all.
+ */
+export function launchMetadataUriTemplate(): string {
+  const base = (process.env.STAMP_METADATA_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "").replace(
+    /\/$/,
+    "",
+  );
+  if (!/^https:\/\//.test(base)) {
+    throw new Error(
+      "A mainnet launch needs STAMP_METADATA_BASE_URL (or NEXT_PUBLIC_APP_URL) set to an https origin: the metadata URI is written onto the mint permanently and cannot be corrected later.",
+    );
+  }
+  return `${base}/api/launches/{mint}/metadata`;
+}
+
 export async function inspectMint(mint: string, owner?: string) {
   const store = getStore();
   const launch = await store.getLaunch(mint);
   const { solana } = await store.loadDemo();
   const demoMint = solana.mints[mint];
-  if (!launch && !demoMint) {
+  // A launch recorded without a signature is an identity waiting for a mint, not
+  // a mint. Inspecting it would report a supply and a balance that do not exist.
+  if (!launch?.launchTx && !demoMint) {
     const live = await getToken(mint);
     if (!live.token) {
       return {

@@ -397,7 +397,7 @@ describe("nonces and the session cookie", () => {
   });
 
   it("clears the cookie on disconnect", async () => {
-    const response = await endSession();
+    const response = await endSession(request("/api/wallet/session"));
     expect(response.headers.get("set-cookie")).toContain(`${SESSION_COOKIE}=;`);
     expect((await response.json()).data.session).toBeNull();
   });

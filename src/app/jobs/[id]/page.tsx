@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { StampImage, stampTitle } from "@/components/AssetCards";
 import { Badge, Loading, Note, Panel, Tech } from "@/components/ui";
 import { formatUnits, humanState, shortId } from "@/lib/format";
 
@@ -30,10 +31,11 @@ export default function JobPage() {
   const { id } = useParams<{ id: string }>();
   const [payload, setPayload] = useState<{
     job: Record<string, unknown>;
+    /** The launch this stamp is being cut from, served with the job. */
+    collection: { name: string | null; symbol: string; imageDataUrl: string | null };
     claimPackage?: unknown;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [symbol, setSymbol] = useState("");
 
   useEffect(() => {
     let cancel = false;
@@ -52,16 +54,6 @@ export default function JobPage() {
     };
   }, [id]);
 
-  const mint = payload?.job.mint ? String(payload.job.mint) : "";
-  useEffect(() => {
-    if (!mint) return;
-    void fetch(`/api/launches/${mint}`)
-      .then((r) => r.json())
-      .then((j) => {
-        if (j.data?.launch) setSymbol(j.data.launch.symbol);
-      });
-  }, [mint]);
-
   if (error) {
     return (
       <Note tone="error" title="Job unavailable">
@@ -78,6 +70,7 @@ export default function JobPage() {
   }
 
   const job = payload.job;
+  const collection = payload.collection;
   const state = String(job.state);
   const decimals = Number(job.decimals ?? 0);
   const reached = ORDER.indexOf(state);
@@ -89,13 +82,36 @@ export default function JobPage() {
           <h1>Issuance</h1>
           <Badge state={state === "confirmed" ? "settled" : state}>{humanState(state)}</Badge>
         </div>
-        <p className="lede muted">
-          Burning{" "}
-          <strong className="num">
-            {formatUnits(String(job.amountBase), decimals)} {symbol || "tokens"}
-          </strong>{" "}
-          into one Zcash stamp.
-        </p>
+
+        <div className="assethead">
+          {/* Only the uploaded artwork appears here. The generated motif is seeded
+              from the inscription identifier, which does not exist until the stamp
+              is cut, so drawing one now would show a face that then changed. */}
+          {collection.imageDataUrl && (
+            <div className="assethead__art">
+              <div className="stampcard stampcard--static">
+                <div className="stampcard__art">
+                  <StampImage
+                    stamp={{ id: String(id), name: collection.name, imageDataUrl: collection.imageDataUrl }}
+                  />
+                  <span className="stampcard__denom">
+                    {formatUnits(String(job.amountBase), decimals)} {collection.symbol}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="stack-sm" style={{ minWidth: 0 }}>
+            <h2>{stampTitle(collection.name)}</h2>
+            <p className="lede muted">
+              Burning{" "}
+              <strong className="num">
+                {formatUnits(String(job.amountBase), decimals)} {collection.symbol || "tokens"}
+              </strong>{" "}
+              into one Zcash stamp.
+            </p>
+          </div>
+        </div>
 
         <div className="steps" style={{ marginTop: 14 }}>
           {ORDER.map((s, i) => {

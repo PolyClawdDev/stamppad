@@ -8,11 +8,11 @@ export interface StampCardData {
   mint: string;
   amountBase: string;
   decimals: number;
-  /** Name supplied when the stamp was issued. */
-  name: string;
-  /** Ticker supplied when the stamp was issued. */
+  /** Name of the launch this stamp was cut from, null when it carried none. */
+  name: string | null;
+  /** Ticker the launch was given. */
   symbol: string;
-  /** Artwork supplied when the stamp was issued, if any. */
+  /** Artwork uploaded at launch, if any. */
   imageDataUrl?: string | null;
   number: number;
   listing?: { state: string; priceZat: string } | null;
@@ -29,13 +29,21 @@ export function stampHref(stamp: { mint: string; id: string }): string {
 }
 
 /**
- * The picture supplied at issue time. The deterministic pixel motif is only a
- * fallback for stamps that were issued without artwork.
+ * What to call a stamp. Only a stamp whose launch truly carried no name is
+ * untitled, so this is a last resort rather than a default.
+ */
+export function stampTitle(name: string | null | undefined): string {
+  return name?.trim() || "Untitled stamp";
+}
+
+/**
+ * The picture uploaded at launch. The deterministic pixel motif is only a
+ * fallback for stamps whose launch supplied no artwork.
  */
 export function StampImage({
   stamp,
 }: {
-  stamp: { id: string; name?: string; imageDataUrl?: string | null };
+  stamp: { id: string; name?: string | null; imageDataUrl?: string | null };
 }) {
   if (!stamp.imageDataUrl) return <StampArt seed={stamp.id} />;
   // eslint-disable-next-line @next/next/no-img-element
@@ -63,8 +71,8 @@ export function StampCard({ stamp }: { stamp: StampCardData }) {
       </div>
 
       <div className="stampcard__body">
-        <span className="stampcard__name" title={stamp.name}>
-          {stamp.name}
+        <span className="stampcard__name" title={stampTitle(stamp.name)}>
+          {stampTitle(stamp.name)}
         </span>
         <span className="stampcard__meta">
           <span className="mono">No. {stamp.number}</span>

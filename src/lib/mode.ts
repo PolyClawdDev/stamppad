@@ -7,12 +7,17 @@ export function stampMode(): StampMode {
   return "demo";
 }
 
+/**
+ * A connection string is the whole configuration. Attaching a database to a
+ * deployment sets DATABASE_URL and nothing else, so requiring a second opt-in
+ * variable meant the durable store was never chosen and every launch went to a
+ * temp file that the next request could not see. STAMP_STORE stays as an
+ * override for the case of a database being present but deliberately unused.
+ */
 export function storeKind(): StoreKind {
-  if (process.env.STAMP_STORE === "postgres" || process.env.DATABASE_URL) {
-    if (process.env.STAMP_STORE === "memory") return "memory";
-    if (process.env.STAMP_STORE === "postgres") return "postgres";
-  }
-  return process.env.STAMP_STORE === "postgres" ? "postgres" : "memory";
+  if (process.env.STAMP_STORE === "memory") return "memory";
+  if (process.env.STAMP_STORE === "postgres") return "postgres";
+  return process.env.DATABASE_URL ? "postgres" : "memory";
 }
 
 export function flags() {
@@ -39,25 +44,32 @@ export function flags() {
   } as const;
 }
 
+/**
+ * Whether a kind of real money movement is permitted, and why not when it is
+ * not. Demo mode moves nothing, so nothing is blocked there; outside demo, each
+ * kind is off until its own flag is set, and the flag is the operator approval.
+ */
 export function liveMoneyMovementBlocked(
   kind: "launch" | "burn" | "publish" | "stampSale",
 ): string | null {
   const f = flags();
   if (f.mode === "demo") return null;
-  if (kind === "stampSale" && !f.allowLiveStampSales) {
-    return "Live stamp sales are disabled. Settlement depends on ZIP-300 style HTLCs whose wallet support and dispute handling are unverified; see docs/EVIDENCE.md.";
+  switch (kind) {
+    case "stampSale":
+      return f.allowLiveStampSales
+        ? null
+        : "Live stamp sales are disabled. Settlement depends on ZIP-300 style HTLCs whose wallet support and dispute handling are unverified; see docs/EVIDENCE.md.";
+    case "launch":
+      return f.allowLiveLaunch
+        ? null
+        : "Live launches are disabled. A launch creates a real mint on Solana mainnet and spends the creator's own SOL and quote asset, so it is off until STAMP_ALLOW_LIVE_LAUNCH is set.";
+    case "burn":
+      return f.allowLiveBurns
+        ? null
+        : "Live burns are disabled. A burn destroys tokens permanently and cannot be undone, so it is off until STAMP_ALLOW_LIVE_BURNS is set.";
+    case "publish":
+      return f.allowLiveZcashPublish
+        ? null
+        : "Live Zcash publication is disabled. It needs an isolated publisher key, a node, and explicit approval to spend ZEC fees.";
   }
-  if (kind === "launch" && !f.allowLiveLaunch) {
-    return "Live launches are disabled. Stonk paid launches returned 503 on 2026-09-20; LaunchLab construction spends real funds and needs explicit approval.";
-  }
-  if (kind === "burn" && !f.allowLiveBurns) {
-    return "Live burns are disabled. A burn permanently reduces supply and cannot be undone.";
-  }
-  if (kind === "publish" && !f.allowLiveZcashPublish) {
-    return "Live Zcash publication is disabled. It needs an isolated publisher key, a node, and explicit approval to spend ZEC fees.";
-  }
-  if (f.mode === "mainnet") {
-    return "Mainnet money movement is refused without operator approval in this build.";
-  }
-  return null;
 }

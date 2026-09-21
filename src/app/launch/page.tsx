@@ -22,14 +22,54 @@ const ZEC_QUOTE = {
   name: "Zcash",
 };
 
-type Step = "idle" | "issuing" | "stamping";
+type Step = "idle" | "issuing" | "stamping" | "building" | "approving";
+
+/** What the deployment will actually do, as the server reports it. */
+interface LiveStatus {
+  mode: string;
+  launchEnabled: boolean;
+  burnEnabled: boolean;
+  zcashPublishEnabled: boolean;
+  launchBlockedReason: string | null;
+  burnBlockedReason: string | null;
+  publishBlockedReason: string | null;
+  stonkReadLive: boolean;
+  hasRpc: boolean;
+}
+
+interface PreparedLaunch {
+  mint: string;
+  transactionBase64: string;
+  pool: string;
+  quote: { symbol: string; decimals: number; amountIn: string };
+  allocation: { expectedBase: string; minimumBase: string; decimals: number };
+  curve: { platformCurveRule: string | null; matchesVenueDerivation: boolean };
+  costs: { totalSol: string; quoteSpend: string; note: string };
+  simulation: { ok: boolean; err: unknown; unitsConsumed: number | null; programError: { code: number; name: string | null } | null };
+  metadataUri: string;
+}
+
+interface PreparedBurn {
+  mint: string;
+  transactionBase64: string;
+  amountBase: string;
+  decimals: number;
+  memo: string;
+  tokenProgram: string;
+  simulation: { ok: boolean; err: unknown };
+  stampRule: { memoPresent: boolean; memoSignedByAuthority: boolean; burnExecuted: boolean };
+}
 
 export default function IssuePage() {
-  const { wallet, phase, connect, zcashDestination, setZcashDestination } = useWallet();
+  const { wallet, phase, connect, sendTransaction, zcashDestination, setZcashDestination } =
+    useWallet();
   const router = useRouter();
   const [quote, setQuote] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<Step>("idle");
+  const [preparedLaunch, setPreparedLaunch] = useState<PreparedLaunch | null>(null);
+  const [preparedBurn, setPreparedBurn] = useState<PreparedBurn | null>(null);
+  const [sent, setSent] = useState<{ launch: string; burn: string | null } | null>(null);
   const [touchedDestination, setTouchedDestination] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -66,6 +106,8 @@ export default function IssuePage() {
     | { decimals: number; supplyDisplay: number; supplyBase: string; poolBase: string; note: string }
     | undefined;
   const costs = quote?.costs as Record<string, unknown> | undefined;
+  const live = quote?.live as LiveStatus | undefined;
+  const mainnet = Boolean(live?.launchEnabled);
 
   const destinationCheck = useMemo(
     () => (form.destination ? validateTransparentAddress(form.destination) : null),
@@ -89,11 +131,98 @@ export default function IssuePage() {
     setForm((f) => ({ ...f, imageDataUrl: dataUrl }));
   }
 
+  /**
+   * Mainnet path, step one: build the launch and show what it will do.
+   *
+   * Nothing is signed here. The server returns an unsigned transaction and the
+   * simulation it ran against mainnet, and the user sees both before being
+   * asked to approve anything.
+   */
+  async function buildMainnet() {
+    setError(null);
+    setStep("building");
+    const res = await fetch("/api/launches/prepare", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        owner: wallet!.publicKey,
+        name: form.name,
+        symbol: form.symbol,
+        description: form.description,
+        imageDataUrl: form.imageDataUrl,
+        quoteMint: ZEC_QUOTE.mint,
+        quoteAmountDisplay: form.denomination,
+      }),
+    });
+    const json = await res.json();
+    setStep("idle");
+    if (json.error) {
+      setError(json.error.message);
+      return;
+    }
+    setPreparedLaunch(json.data.launch as PreparedLaunch);
+  }
+
+  /** Mainnet path, step two: the user approves the launch in Phantom. */
+  async function approveLaunch() {
+    if (!preparedLaunch) return;
+    setError(null);
+    setStep("approving");
+    try {
+      const signature = await sendTransaction(preparedLaunch.transactionBase64);
+      setSent({ launch: signature, burn: null });
+      // The allocation exists only once the launch has landed, so the burn is
+      // built against the chain rather than predicted.
+      const res = await fetch("/api/convert/prepare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mint: preparedLaunch.mint,
+          owner: wallet!.publicKey,
+          destination: form.destination,
+        }),
+      });
+      const json = await res.json();
+      if (json.error) {
+        setError(
+          `The launch landed as ${signature}, but the burn could not be built: ${json.error.message}`,
+        );
+        return;
+      }
+      setPreparedBurn(json.data.burn as PreparedBurn);
+    } catch (sendError) {
+      setError(sendError instanceof Error ? sendError.message : "Phantom could not send the launch.");
+    } finally {
+      setStep("idle");
+    }
+  }
+
+  /** Mainnet path, step three: the user approves the irreversible burn. */
+  async function approveBurn() {
+    if (!preparedBurn) return;
+    setError(null);
+    setStep("approving");
+    try {
+      const signature = await sendTransaction(preparedBurn.transactionBase64);
+      setSent((prior) => ({ launch: prior?.launch ?? "", burn: signature }));
+      setZcashDestination(form.destination);
+      setPreparedBurn(null);
+    } catch (sendError) {
+      setError(sendError instanceof Error ? sendError.message : "Phantom could not send the burn.");
+    } finally {
+      setStep("idle");
+    }
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (!wallet) {
       await connect();
+      return;
+    }
+    if (mainnet) {
+      await buildMainnet();
       return;
     }
 
@@ -203,7 +332,9 @@ export default function IssuePage() {
             />
           </div>
           <div className="field">
-            <label htmlFor="denomination">Denomination</label>
+            <label htmlFor="denomination">
+              {mainnet ? `Initial buy (${ZEC_QUOTE.symbol})` : "Denomination"}
+            </label>
             <input
               id="denomination"
               inputMode="decimal"
@@ -212,8 +343,9 @@ export default function IssuePage() {
               onChange={(e) => setForm({ ...form, denomination: e.target.value })}
             />
             <span className="hint">
-              The quantity this stamp represents. It is destroyed permanently to cut the stamp and
-              cannot be redeemed.
+              {mainnet
+                ? `How much ${ZEC_QUOTE.symbol} to spend buying your own allocation at launch. The curve decides how many tokens that is, and all of them are burned to cut the stamp, so this is what sets the stamp's denomination.`
+                : "The quantity this stamp represents. It is destroyed permanently to cut the stamp and cannot be redeemed."}
             </span>
           </div>
           <div className="field">
@@ -259,11 +391,17 @@ export default function IssuePage() {
           <button className="btn btn--primary" disabled={busy || (Boolean(wallet) && !ready)} type="submit">
             {!wallet
               ? "Connect Phantom and launch"
-              : step === "issuing"
-                ? "Creating…"
-                : step === "stamping"
-                  ? "Cutting the stamp…"
-                  : "Launch stamp"}
+              : step === "building"
+                ? "Building and simulating…"
+                : step === "approving"
+                  ? "Waiting for Phantom…"
+                  : step === "issuing"
+                    ? "Creating…"
+                    : step === "stamping"
+                      ? "Cutting the stamp…"
+                      : mainnet
+                        ? "Review the mainnet launch"
+                        : "Launch stamp"}
           </button>
           {!wallet && (
             <p className="tiny muted" style={{ marginTop: 8 }}>
@@ -274,6 +412,133 @@ export default function IssuePage() {
       </Panel>
 
       <aside className="stack">
+        {preparedLaunch && !sent && (
+          <Panel tone="sage">
+            <h2>Approve this on mainnet?</h2>
+            <p className="lede" style={{ marginTop: 6 }}>
+              Nothing has happened yet. This transaction is built and simulated but unsigned.
+              Approving it in Phantom creates a real token on Solana mainnet and spends real funds.
+            </p>
+            <dl className="kv" style={{ marginTop: 12 }}>
+              <dt>Creates mint</dt>
+              <dd className="mono">{preparedLaunch.mint}</dd>
+              <dt>SOL you spend</dt>
+              <dd>{preparedLaunch.costs.totalSol}</dd>
+              <dt>{ZEC_QUOTE.symbol} you spend</dt>
+              <dd>
+                {formatUnits(preparedLaunch.quote.amountIn, preparedLaunch.quote.decimals)}{" "}
+                {preparedLaunch.quote.symbol}
+              </dd>
+              <dt>Allocation you get</dt>
+              <dd>
+                {formatUnits(
+                  preparedLaunch.allocation.expectedBase,
+                  preparedLaunch.allocation.decimals,
+                )}{" "}
+                {form.symbol || "tokens"}
+              </dd>
+              <dt>Then burned</dt>
+              <dd>All of it, permanently. This cannot be undone.</dd>
+              <dt>Mainnet simulation</dt>
+              <dd>
+                {preparedLaunch.simulation.ok
+                  ? `Succeeded, ${preparedLaunch.simulation.unitsConsumed} compute units.`
+                  : `Failed: ${preparedLaunch.simulation.programError?.name ?? JSON.stringify(preparedLaunch.simulation.err)}`}
+              </dd>
+            </dl>
+            <p className="tiny muted" style={{ marginTop: 10 }}>
+              {preparedLaunch.costs.note}
+            </p>
+            {!preparedLaunch.simulation.ok && (
+              <Note tone="error" title="Simulation failed, so this is not offered for approval">
+                The transaction was rejected by mainnet in simulation, which means sending it would
+                waste the fee and create nothing. Nothing is signed.
+              </Note>
+            )}
+            <div className="cluster" style={{ marginTop: 12 }}>
+              <button
+                className="btn btn--primary"
+                type="button"
+                disabled={!preparedLaunch.simulation.ok || step === "approving"}
+                onClick={() => void approveLaunch()}
+              >
+                {step === "approving" ? "Waiting for Phantom…" : "Approve in Phantom and launch"}
+              </button>
+              <button
+                className="btn btn--sm"
+                type="button"
+                onClick={() => setPreparedLaunch(null)}
+                disabled={step === "approving"}
+              >
+                Cancel
+              </button>
+            </div>
+          </Panel>
+        )}
+
+        {preparedBurn && (
+          <Panel tone="sage">
+            <h2>Approve the burn?</h2>
+            <p className="lede" style={{ marginTop: 6 }}>
+              Your allocation exists now. Burning it destroys those tokens permanently and is what
+              the stamp is cut from. There is no way to reverse this and nothing is held in reserve.
+            </p>
+            <dl className="kv" style={{ marginTop: 12 }}>
+              <dt>Burning</dt>
+              <dd>
+                {formatUnits(preparedBurn.amountBase, preparedBurn.decimals)}{" "}
+                {form.symbol || "tokens"}
+              </dd>
+              <dt>Delivered to</dt>
+              <dd className="mono">{preparedBurn.memo}</dd>
+              <dt>Stamp rule</dt>
+              <dd>
+                {preparedBurn.stampRule.memoPresent && preparedBurn.stampRule.memoSignedByAuthority
+                  ? "The destination memo is present and signed by the burn authority, so a stamp citing this burn will be accepted."
+                  : "The destination memo did not verify. Do not approve this."}
+              </dd>
+              <dt>Mainnet simulation</dt>
+              <dd>{preparedBurn.simulation.ok ? "Succeeded." : `Failed: ${JSON.stringify(preparedBurn.simulation.err)}`}</dd>
+            </dl>
+            <div className="cluster" style={{ marginTop: 12 }}>
+              <button
+                className="btn btn--primary"
+                type="button"
+                disabled={
+                  !preparedBurn.simulation.ok ||
+                  !preparedBurn.stampRule.memoSignedByAuthority ||
+                  step === "approving"
+                }
+                onClick={() => void approveBurn()}
+              >
+                {step === "approving" ? "Waiting for Phantom…" : "Approve the irreversible burn"}
+              </button>
+              <button className="btn btn--sm" type="button" onClick={() => setPreparedBurn(null)}>
+                Not now
+              </button>
+            </div>
+          </Panel>
+        )}
+
+        {sent && (
+          <Panel>
+            <h2>What landed on Solana</h2>
+            <dl className="kv" style={{ marginTop: 10 }}>
+              <dt>Launch</dt>
+              <dd className="mono">{sent.launch}</dd>
+              <dt>Burn</dt>
+              <dd className="mono">{sent.burn ?? "not sent"}</dd>
+            </dl>
+            {sent.burn && !live?.zcashPublishEnabled && (
+              <Note tone="warn" title="The burn is real; the stamp is not published yet">
+                The tokens are destroyed and the burn carries your destination, so the stamp is
+                claimable the moment publication is enabled. It is not enabled on this deployment:{" "}
+                {live?.publishBlockedReason}
+              </Note>
+            )}
+          </Panel>
+        )}
+
         <Panel>
           <h2>What you get</h2>
           <ol className="howto" style={{ marginTop: 10 }}>
@@ -327,12 +592,32 @@ export default function IssuePage() {
           </p>
         </Panel>
 
-        <Note tone="warn" title="Mainnet launching is off">
-          The venue&apos;s paid launch endpoint returned 503, and the self-build path would spend
-          real SOL on mainnet. Live burns are disabled too, so the burn and the inscription are
-          recorded on this deployment&apos;s in-process ledger, not on Solana mainnet or the Zcash
-          chain. The destination you name is carried through unchanged.
-        </Note>
+        {live && !live.launchEnabled && (
+          <Note tone="warn" title="The mainnet path is not enabled here">
+            {live.launchBlockedReason}{" "}
+            {live.mode === "demo"
+              ? "This deployment is in demo mode, so the token, the burn and the inscription are recorded on its own in-process ledger and nothing touches Solana or Zcash."
+              : "Nothing is recorded on Solana from this page while it is off."}{" "}
+            The destination you name is carried through unchanged.
+          </Note>
+        )}
+
+        {live?.launchEnabled && (
+          <Note tone="warn" title="This spends real money on Solana mainnet">
+            Launching here creates a real Token-2022 mint on Solana mainnet, pays real SOL for its
+            rent, and spends the {ZEC_QUOTE.symbol} you name to buy the allocation. The allocation
+            is then burned, which destroys those tokens permanently and cannot be reversed. You
+            will see the exact amounts, and the result of simulating the transaction against
+            mainnet, before Phantom asks you to approve anything.
+            {!live.zcashPublishEnabled && (
+              <>
+                {" "}
+                Zcash publication is off on this deployment, so a burn you make now will be a real
+                burn with no stamp published yet: {live.publishBlockedReason}
+              </>
+            )}
+          </Note>
+        )}
 
         <Tech>
           <p className="tiny muted">
